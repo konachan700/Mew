@@ -1,0 +1,330 @@
+# depslib dependency file v1.0
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\misc.c
+	"misc.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\misc.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\inc\stm32f10x.h
+	"core_cm3.h"
+	"system_stm32f10x.h"
+	<stdint.h>
+	"stm32f10x_conf.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\cmsis\core_cm3.h
+	<stdint.h>
+	<core_cmInstr.h>
+	<core_cmFunc.h>
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\cmsis\core_cminstr.h
+	<cmsis_iar.h>
+	<cmsis_ccs.h>
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\cmsis\core_cmfunc.h
+	<cmsis_iar.h>
+	<cmsis_ccs.h>
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\inc\system_stm32f10x.h
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\inc\stm32f10x_conf.h
+	"stm32f10x_adc.h"
+	"stm32f10x_bkp.h"
+	"stm32f10x_can.h"
+	"stm32f10x_cec.h"
+	"stm32f10x_crc.h"
+	"stm32f10x_dac.h"
+	"stm32f10x_dbgmcu.h"
+	"stm32f10x_dma.h"
+	"stm32f10x_exti.h"
+	"stm32f10x_flash.h"
+	"stm32f10x_fsmc.h"
+	"stm32f10x_gpio.h"
+	"stm32f10x_i2c.h"
+	"stm32f10x_iwdg.h"
+	"stm32f10x_pwr.h"
+	"stm32f10x_rcc.h"
+	"stm32f10x_rtc.h"
+	"stm32f10x_sdio.h"
+	"stm32f10x_spi.h"
+	"stm32f10x_tim.h"
+	"stm32f10x_usart.h"
+	"stm32f10x_wwdg.h"
+	"misc.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_adc.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_bkp.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_can.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_cec.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_crc.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_dac.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_dbgmcu.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_dma.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_exti.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_flash.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_fsmc.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_gpio.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_i2c.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_iwdg.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_pwr.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_rcc.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_rtc.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_sdio.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_spi.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_tim.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_usart.h
+	"stm32f10x.h"
+
+1469189934 e:\dev2\mew\firmware\v.0.2\mewfw\spl\inc\stm32f10x_wwdg.h
+	"stm32f10x.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_adc.c
+	"stm32f10x_adc.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_bkp.c
+	"stm32f10x_bkp.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_can.c
+	"stm32f10x_can.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_cec.c
+	"stm32f10x_cec.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_crc.c
+	"stm32f10x_crc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_dac.c
+	"stm32f10x_dac.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_dbgmcu.c
+	"stm32f10x_dbgmcu.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_dma.c
+	"stm32f10x_dma.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_exti.c
+	"stm32f10x_exti.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_flash.c
+	"stm32f10x_flash.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_fsmc.c
+	"stm32f10x_fsmc.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_gpio.c
+	"stm32f10x_gpio.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_i2c.c
+	"stm32f10x_i2c.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_iwdg.c
+	"stm32f10x_iwdg.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_pwr.c
+	"stm32f10x_pwr.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_rcc.c
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_rtc.c
+	"stm32f10x_rtc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_sdio.c
+	"stm32f10x_sdio.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_spi.c
+	"stm32f10x_spi.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_tim.c
+	"stm32f10x_tim.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_usart.c
+	"stm32f10x_usart.h"
+	"stm32f10x_rcc.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\spl\src\stm32f10x_wwdg.c
+	"stm32f10x_wwdg.h"
+	"stm32f10x_rcc.h"
+
+1469209630 source:e:\dev2\mew\firmware\v.0.2\mewfw\src\main.c
+	"stm32f10x_conf.h"
+	"hw_config.h"
+	"usb_lib.h"
+	"usb_pwr.h"
+	"board_config.h"
+
+1469205209 e:\dev2\mew\firmware\v.0.2\mewfw\src\board_config.h
+	"stm32f10x_conf.h"
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\src\startup_stm32f10x_md.s
+
+1469189934 source:e:\dev2\mew\firmware\v.0.2\mewfw\src\system_stm32f10x.c
+	"stm32f10x.h"
+
+1469210364 source:e:\dev2\mew\firmware\v.0.2\mewfw\src\board.c
+	"stm32f10x_conf.h"
+	"usb_istr.h"
+	"usb_lib.h"
+	"usb_pwr.h"
+	"platform_config.h"
+	"board_config.h"
+
+1469208333 e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\inc\hw_config.h
+	"platform_config.h"
+	"usb_type.h"
+
+1469207992 e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\inc\platform_config.h
+	"stm32f10x.h"
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usblib\inc\usb_type.h
+	"usb_conf.h"
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\inc\usb_conf.h
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usblib\inc\usb_lib.h
+	"hw_config.h"
+	"usb_type.h"
+	"usb_regs.h"
+	"usb_def.h"
+	"usb_core.h"
+	"usb_init.h"
+	"usb_sil.h"
+	"usb_mem.h"
+	"usb_int.h"
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usblib\inc\usb_regs.h
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usblib\inc\usb_def.h
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usblib\inc\usb_core.h
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usblib\inc\usb_init.h
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usblib\inc\usb_sil.h
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usblib\inc\usb_mem.h
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usblib\inc\usb_int.h
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\inc\usb_pwr.h
+
+1462466874 source:e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\src\usb_desc.c
+	"usb_lib.h"
+	"usb_desc.h"
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\inc\usb_desc.h
+
+1410018362 source:e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\src\usb_endp.c
+	"hw_config.h"
+	"usb_lib.h"
+	"usb_istr.h"
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\inc\usb_istr.h
+	"usb_conf.h"
+
+1410018362 source:e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\src\usb_istr.c
+	"usb_lib.h"
+	"usb_prop.h"
+	"usb_pwr.h"
+	"usb_istr.h"
+
+1410018362 e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\inc\usb_prop.h
+
+1410018362 source:e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\src\usb_prop.c
+	"usb_lib.h"
+	"usb_conf.h"
+	"usb_prop.h"
+	"usb_desc.h"
+	"usb_pwr.h"
+	"hw_config.h"
+
+1410018362 source:e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\src\usb_pwr.c
+	"usb_lib.h"
+	"usb_conf.h"
+	"usb_pwr.h"
+	"hw_config.h"
+
+1410018362 source:e:\dev2\mew\firmware\v.0.2\mewfw\usblib\src\usb_core.c
+	"usb_lib.h"
+
+1410018362 source:e:\dev2\mew\firmware\v.0.2\mewfw\usblib\src\usb_init.c
+	"usb_lib.h"
+
+1410018362 source:e:\dev2\mew\firmware\v.0.2\mewfw\usblib\src\usb_int.c
+	"usb_lib.h"
+
+1410018362 source:e:\dev2\mew\firmware\v.0.2\mewfw\usblib\src\usb_mem.c
+	"usb_lib.h"
+
+1410018362 source:e:\dev2\mew\firmware\v.0.2\mewfw\usblib\src\usb_regs.c
+	"usb_lib.h"
+
+1410018362 source:e:\dev2\mew\firmware\v.0.2\mewfw\usblib\src\usb_sil.c
+	"usb_lib.h"
+
+1469209544 source:e:\dev2\mew\firmware\v.0.2\mewfw\usbhid\src\hw_config.c
+	"hw_config.h"
+	"usb_lib.h"
+	"usb_desc.h"
+	"usb_pwr.h"
+
+1469210364 source:e:\dev2\mew\firmware\v.0.2\mewfw\src\usb-mew.c
+	"stm32f10x_conf.h"
+	"usb_istr.h"
+	"usb_lib.h"
+	"usb_pwr.h"
+	"platform_config.h"
+	"board_config.h"
+
