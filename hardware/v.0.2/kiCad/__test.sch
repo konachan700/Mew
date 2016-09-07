@@ -578,7 +578,6 @@ F 3 "" H 10850 5850 50  0000 C CNN
 	1    10850 5850
 	1    0    0    -1  
 $EndComp
-NoConn ~ 2200 1550
 $Comp
 L LED_RGB D2
 U 1 1 575831EE
@@ -751,4 +750,21 @@ F 3 "" H 3050 6900 50  0000 C CNN
 	1    3050 6900
 	1    0    0    -1  
 $EndComp
+$Comp
+L C C5
+U 1 1 57A3813B
+P 1150 1600
+F 0 "C5" H 1175 1700 50  0000 L CNN
+F 1 "0.1mf" H 1175 1500 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0603_HandSoldering" H 1188 1450 50  0001 C CNN
+F 3 "" H 1150 1600 50  0000 C CNN
+	1    1150 1600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2200 1550 1800 1550
+Wire Wire Line
+	1800 1550 1800 1450
+Wire Wire Line
+	1800 1450 1150 1450
 $EndSCHEMATC
