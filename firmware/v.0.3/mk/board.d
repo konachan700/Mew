@@ -22,4 +22,15 @@ mk/board.o: board.c board.h \
  /home/misaki/devel/libopencm3/include/libopencm3/stm32/f1/nvic.h \
  /home/misaki/devel/libopencm3/include/libopencm3/stm32/exti.h \
  /home/misaki/devel/libopencm3/include/libopencm3/stm32/f1/exti.h \
- /home/misaki/devel/libopencm3/include/libopencm3/stm32/common/exti_common_all.h
+ /home/misaki/devel/libopencm3/include/libopencm3/stm32/common/exti_common_all.h \
+ /usr/include/newlib/errno.h /usr/include/newlib/sys/errno.h \
+ /usr/include/newlib/sys/reent.h /usr/include/newlib/_ansi.h \
+ /usr/include/newlib/newlib.h /usr/include/newlib/sys/config.h \
+ /usr/include/newlib/machine/ieeefp.h \
+ /usr/lib/gcc/arm-none-eabi/4.8/include/stddef.h \
+ /usr/include/newlib/sys/_types.h /usr/include/newlib/machine/_types.h \
+ /usr/include/newlib/sys/lock.h /usr/include/newlib/sys/stat.h \
+ /usr/include/newlib/time.h /usr/include/newlib/_ansi.h \
+ /usr/include/newlib/machine/time.h /usr/include/newlib/sys/types.h \
+ /usr/include/newlib/machine/types.h /usr/include/newlib/sys/cdefs.h \
+ /usr/include/newlib/sys/times.h /usr/include/newlib/sys/unistd.h

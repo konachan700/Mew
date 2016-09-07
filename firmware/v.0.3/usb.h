@@ -22,9 +22,14 @@
 #define MEW_UPPER_CASE							0x02
 #define MEW_LOWER_CASE 							0x00
 
+char __is_shift(char in);
+char __to_hex(char in);
+void __byte_to_hid_hex(char in, char *out);
+
 extern void mew_usb_init(void);
 extern void mew_usb_poll(void);
 extern void mew_hid_send(char* buf, int len);
 extern void mew_send_char(char ch, char char_case);
+extern void mew_send_debug_hex(uint8_t *buf, uint16_t len);
 
 #endif

@@ -27,6 +27,7 @@
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.1124050158" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="/home/misaki/devel/libopencm3/include"/>
+									<listOptionValue builtIn="false" value="/home/misaki/devel/Mew/firmware/v.0.3/libatcrypto"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1124499936" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>

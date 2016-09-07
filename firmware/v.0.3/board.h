@@ -7,8 +7,13 @@
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/exti.h>
 
-//#define MEW_HW_VERSION_2
-#define MEW_HW_VERSION_1
+#include <errno.h>
+#include <sys/stat.h>
+#include <sys/times.h>
+#include <sys/unistd.h>
+
+#define MEW_HW_VERSION_2
+//#define MEW_HW_VERSION_1
 
 #ifdef MEW_HW_VERSION_2
     #define MEW_BUTTONS_PORT        GPIOB
@@ -53,7 +58,7 @@
 #endif
 
 #define MEW_BUTTON(n)       (1 << n)
-#define MEW_BUTTON_MODE     (1 << 15)
+#define MEW_BUTTON_MODE     (1 << 8)
 
 #define MEW_BUTTON_PRESSED 0
 #define MEW_BUTTON_UNPRESSED 1
@@ -62,6 +67,12 @@
 #define MEW_LED_RED     2
 #define MEW_LED_BLUE    3
 #define MEW_LED_READY   4
+
+/* 7 цветов на RGB-светодиоде требуют подбора резисторов, ибо зеленый ярче всех, и красный ярче синего.
+ * Ко всему прочему неудобно много раз нажимать кнопку.
+ * Так что пока жертвуем ёмкостью устройства в угоду удобству. Кому сильно надо - раскомментирует. */
+//#define DEVICE_MODES_7
+#define DEVICE_MODES_4
 
 extern void mew_board_init(void);
 extern void mew_timer2_init(void);

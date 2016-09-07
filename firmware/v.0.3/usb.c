@@ -192,14 +192,73 @@ void mew_hid_send(char* buf, int len) {
 void mew_send_char(char ch, char char_case) {
 	unsigned const char null_buf[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 	unsigned const char buf[8] = { char_case, 0, ch, 0, 0, 0, 0, 0 };
-	if ((ch <= 0x03) || (ch >= 0x28)) return;
+	if ((ch <= 0x03) || (ch >= 0x29)) return;
 	while (usbd_ep_write_packet(mew_usbd_dev, 0x81, buf, 8) == 0);
 	while (usbd_ep_write_packet(mew_usbd_dev, 0x81, null_buf, 8) == 0);
 }
 
+void mew_send_debug_hex(uint8_t *buf, uint16_t len) {
+	char hex[2];
+	uint16_t i;
 
+	for(i=0; i<len; i++) {
+		__byte_to_hid_hex(buf[i], hex);
+		mew_send_char(hex[1], __is_shift(hex[1]));
+		mew_send_char(hex[0], __is_shift(hex[0]));
+	}
+}
 
+void __byte_to_hid_hex(char in, char *out) {
+	char buf_l = (in & 0x0F), buf_h = ((in >> 4) & 0x0F);
+	out[0] = __to_hex(buf_l);
+	out[1] = __to_hex(buf_h);
+}
 
+char __is_shift(char in) {
+	if ((in >= 0x04) && (in <= 0x0F))
+		return MEW_UPPER_CASE;
+	else
+		return MEW_LOWER_CASE;
+}
+
+char __to_hex(char in) {
+	char buf = in & 0x0F;
+	switch (buf) {
+	case 0:
+		return 0x27;
+	case 1:
+		return 0x1E;
+	case 2:
+		return 0x1F;
+	case 3:
+		return 0x20;
+	case 4:
+		return 0x21;
+	case 5:
+		return 0x22;
+	case 6:
+		return 0x23;
+	case 7:
+		return 0x24;
+	case 8:
+		return 0x25;
+	case 9:
+		return 0x26;
+	case 0x0A:
+		return 0x04;
+	case 0x0B:
+		return 0x05;
+	case 0x0C:
+		return 0x06;
+	case 0x0D:
+		return 0x07;
+	case 0x0E:
+		return 0x08;
+	case 0x0F:
+		return 0x09;
+	}
+	return 0x0F;
+}
 
 
 

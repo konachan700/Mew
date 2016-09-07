@@ -20,8 +20,8 @@ PREFIX		?= arm-none-eabi
 
 RM			:= rm -f
 RMDIR		:= rmdir
-CC			:= $(PREFIX)-gcc
-LD			:= $(PREFIX)-gcc
+CC			:= $(PREFIX)-gcc 
+LD			:= $(PREFIX)-gcc --specs=nosys.specs 
 AR			:= $(PREFIX)-ar
 AS			:= $(PREFIX)-as
 OBJCOPY		:= $(PREFIX)-objcopy
@@ -33,7 +33,10 @@ STBOOT		= $(shell which stm32flash)
 ###############################################################################
 # Source files
 LDSCRIPT	?= $(BINARY).ld
-SRC			= $(wildcard *.c)
+SRC			=  $(wildcard *.c)  
+SRC			+= $(wildcard libatcrypto/*.c) 
+SRC			+= $(wildcard libatcrypto/*/*.c) 
+
 OBJS		= $(addprefix $(OBJDIR)/, $(SRC:%.c=%.o))
 
 ifeq ($(strip $(OPENCM3_DIR)),)
@@ -45,10 +48,13 @@ INCLUDE_DIR	= $(OPENCM3_DIR)/include
 LIB_DIR		= $(OPENCM3_DIR)/lib
 SCRIPT_DIR	= $(OPENCM3_DIR)/scripts
 
+INCLUDE_LIBATCRYPTO=/home/misaki/devel/Mew/firmware/v.0.3/libatcrypto
+INCLUDE_ME=/home/misaki/devel/Mew/firmware/v.0.3/
+
 ###############################################################################
 # C flags
 CFLAGS		+= -Os -g
-CFLAGS		+= -Wall -Wextra -Wshadow -Wimplicit-function-declaration
+CFLAGS		+= -Wall -Wimplicit-function-declaration #-Wextra -Wshadow  -Wno-unused
 CFLAGS		+= -Wredundant-decls
 # -Wmissing-prototypes -Wstrict-prototypes
 CFLAGS		+= -fno-common -ffunction-sections -fdata-sections
@@ -56,8 +62,8 @@ CFLAGS		+= -fno-common -ffunction-sections -fdata-sections
 ###############################################################################
 # C & C++ preprocessor common flags
 CPPFLAGS	+= -MD
-CPPFLAGS	+= -Wall -Werror
-CPPFLAGS	+= -I$(INCLUDE_DIR) $(DEFS)
+CPPFLAGS	+= -Wall #-Werror -Wno-unused
+CPPFLAGS	+= -I$(INCLUDE_DIR) -I$(INCLUDE_LIBATCRYPTO) -I$(INCLUDE_ME) $(DEFS)
 
 ###############################################################################
 # Linker flags
@@ -118,8 +124,17 @@ $(ELF): $(OBJDIR) $(OBJS) $(LDSCRIPT) $(LIB_DIR)/lib$(LIBNAME).a
 
 clean:
 	@printf "  CLEAN\n"
-	$(RM) $(OBJS) $(OBJDIR)/*.d $(ELF) $(HEX) $(LIST) $(OBJDIR)/*.map
-	$(RMDIR) $(OBJDIR)
+	$(RM) -rf $(OBJDIR)
+	@mkdir $(OBJDIR)
+	@mkdir $(OBJDIR)/libatcrypto
+	#@mkdir $(OBJDIR)/libatcrypto/atcacert
+	@mkdir $(OBJDIR)/libatcrypto/basic
+	#@mkdir $(OBJDIR)/libatcrypto/crypto
+	@mkdir $(OBJDIR)/libatcrypto/hal
+	#@mkdir $(OBJDIR)/libatcrypto/host
+	#@mkdir $(OBJDIR)/libatcrypto/tls
+	#$(RM) $(OBJS) $(OBJDIR)/*.d $(ELF) $(HEX) $(LIST) $(OBJDIR)/*.map
+	#$(RMDIR) $(OBJDIR)
 
 flash: $(BIN)
 	@printf "  FLASH  $(BIN)\n"

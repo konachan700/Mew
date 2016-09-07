@@ -6,7 +6,9 @@ void mew_board_init(void) {
 	rcc_periph_clock_enable(RCC_GPIOB);
       
 #ifdef MEW_HW_VERSION_2
-	gpio_set_mode(MEW_BUTTONS_PORT, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN, MEW_BUTTON_01_PIN | MEW_BUTTON_02_PIN | MEW_BUTTON_03_PIN | MEW_BUTTON_04_PIN | MEW_BUTTON_MODE_PIN);
+	gpio_set_mode(MEW_BUTTONS_PORT, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN,
+			MEW_BUTTON_01_PIN | MEW_BUTTON_02_PIN | MEW_BUTTON_03_PIN | MEW_BUTTON_04_PIN | MEW_BUTTON_MODE_PIN);
+	gpio_set(MEW_BUTTONS_PORT, MEW_BUTTON_01_PIN | MEW_BUTTON_02_PIN | MEW_BUTTON_03_PIN | MEW_BUTTON_04_PIN | MEW_BUTTON_MODE_PIN);
 	gpio_set_mode(MEW_LED_PORT, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, MEW_LED_R_PIN | MEW_LED_G_PIN | MEW_LED_B_PIN | MEW_LED_PWR_PIN);
 	gpio_set(MEW_LED_PORT, MEW_LED_R_PIN | MEW_LED_G_PIN | MEW_LED_B_PIN | MEW_LED_PWR_PIN);
 #endif
@@ -105,7 +107,7 @@ void mew_timer2_init(void) {
 	nvic_enable_irq(NVIC_TIM2_IRQ);
 	nvic_set_priority(NVIC_TIM2_IRQ, 4);
 	timer_set_mode(TIM2, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-	timer_set_prescaler(TIM2, 7200);
+	timer_set_prescaler(TIM2, 128); //72
 	timer_disable_preload(TIM2);
 	timer_continuous_mode(TIM2);
 	timer_set_period(TIM2, 1000);
@@ -136,15 +138,18 @@ void mew_init_ei(void) {
 #endif
 
 #ifdef MEW_HW_VERSION_2
-	nvic_enable_irq(NVIC_EXTI9_5_IRQ);
 	nvic_enable_irq(NVIC_EXTI15_10_IRQ);
+	nvic_enable_irq(NVIC_EXTI9_5_IRQ);
 
-	exti_select_source(EXTI8 | EXTI9 | EXTI10 | EXTI11 | EXTI12, GPIOB);
+	exti_select_source(EXTI8, GPIOB);
+	exti_select_source(EXTI9, GPIOB);
+	exti_select_source(EXTI10, GPIOB);
+	exti_select_source(EXTI11, GPIOB);
+	exti_select_source(EXTI12, GPIOB);
 	exti_set_trigger(EXTI8 | EXTI9 | EXTI10 | EXTI11 | EXTI12, EXTI_TRIGGER_FALLING);
 	exti_enable_request(EXTI8 | EXTI9 | EXTI10 | EXTI11 | EXTI12);
 #endif
 }
-
 
 
 
