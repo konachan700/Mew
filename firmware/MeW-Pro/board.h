@@ -29,22 +29,23 @@ struct i2c_eeprom_transaction {
     u16 rw_addr;
     u16 count;
     u8* buffer;
+    u16 buffer_size;
     u8  state;
     u8  error;
     void (*on_rw_ok)(struct i2c_eeprom_transaction* me);
     void (*on_error)(struct i2c_eeprom_transaction* me);
-}
+};
 
-#include "ui.h"
-#include "ILI9341.h"
-#include "menu.h"
+int _write(int file, char *ptr, int len);
 
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
-int _write(int file, char *ptr, int len);
+#include "ui.h"
+#include "ILI9341.h"
+#include "menu.h"
 
 extern void start_debug_usart(void);
 extern void start_all_clock(void);
@@ -55,11 +56,15 @@ extern void start_leds(void);
 
 extern void start_i2c1(void);
 extern u32 mew_i2c_read(u8 da, u8 ra);
+extern u32 i2c_read_eeprom_dma(u8 da, u8 ra, u8 page, u8* buf, u16 count);
+extern u32 i2c_read_dma(u8 da, u8* rc_buf, u16 rc_buf_count, u8* buf, u16 count);
+extern void i2c_read_dma_wait(void);
 
 extern void start_spi_2_dma(void);
 extern void start_spi_2_non_dma(void);
 extern void spi_xfer_dma(u8* buf, u16 count, u8 is_blocking);
 
 extern void debug_print(u8* text);
+extern void debug_print_hex(u8* blob, u16 len);
 
 #endif

@@ -75,6 +75,8 @@ void tim2_isr(void) {
 int main(void) {   
     start_all_clock();
     start_debug_usart();
+    debug_print("usart started.");
+    
     start_leds();
     start_backlight();
     start_timer_2();
@@ -89,8 +91,20 @@ int main(void) {
     draw_root_menu();
     
     u32 ret;
-    ret = mew_i2c_read(0xA0 >> 1, 110);
-    if (ret <= 255) direct_draw_string("i2c ok", 50, 200, 2, 0, 255, 0);
+    u8 data[32];
+    debug_print_hex(data, 32);
+    
+//////////////////// test, tbd /////////////////////////////////////////////
+    ret = i2c_read_eeprom_dma(0xA0 >> 1, 100, 2, data, 32);
+    if (ret <= 255) {
+        debug_print("OK I2C: ");
+    } else {
+        debug_print("ERROR I2C: ");
+        debug_print_hex((u8[]) {ret >> 8, ret}, 2);
+    }
+    i2c_read_dma_wait();
+    debug_print_hex(data, 32);
+////////////////////////////////////////////////////////////////////////////
 
     mew_hid_usb_init();
 
