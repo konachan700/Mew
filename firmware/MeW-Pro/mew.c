@@ -34,7 +34,6 @@ void __button_set(u8 b) {
     if (button == BUTTON_NONE) {
         button = b;
         timer_set_counter(TIM2, 0);
-        //gpio_toggle(GPIOC, GPIO3);
     }
 }
 
@@ -91,20 +90,18 @@ int main(void) {
     draw_root_menu();
     
     u32 ret;
-    u8 data[32];
-    debug_print_hex(data, 32);
+    u8 data[64];
     
-//////////////////// test, tbd /////////////////////////////////////////////
-    ret = i2c_read_eeprom_dma(0xA0 >> 1, 100, 2, data, 32);
-    if (ret <= 255) {
-        debug_print("OK I2C: ");
-    } else {
-        debug_print("ERROR I2C: ");
-        debug_print_hex((u8[]) {ret >> 8, ret}, 2);
-    }
-    i2c_read_dma_wait();
-    debug_print_hex(data, 32);
-////////////////////////////////////////////////////////////////////////////
+    ret = i2c_fram_write_dma(0, 0x10, (u8[]){1,2,3,4}, 4);
+    debug_print("RD I2C: ");
+    debug_print_hex((u8[]) {ret >> 8, ret}, 2);
+    
+    ret = i2c_fram_read_dma(0, 0x00, data, 64);
+    debug_print_hex(data, 64);
+    debug_print("RD I2C: ");
+    debug_print_hex((u8[]) {ret >> 8, ret}, 2);
+    
+
 
     mew_hid_usb_init();
 

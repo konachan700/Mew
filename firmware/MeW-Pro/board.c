@@ -2,9 +2,19 @@
 
 volatile u8 dma1_spi2_tx_complete = 1;
 volatile u8 dma1_i2c1_rx_complete = 1;
+volatile u8 dma1_i2c1_tx_complete = 1;
+volatile u8 dma1_i2c1_dev_addr = 0;
+volatile u8 dma1_i2c1_rw = I2C_WRITE;
+//volatile u8 dma1_i2c1_restart = I2C_FIRST_START;
+volatile u8 dma1_i2c1_rwaddr = 0;
+
+volatile u8* dma1_i2c1_buffer;
+volatile u16 dma1_i2c1_buffer_count = 0;
+
+struct dma1_i2c1_transaction* i2c_current_tr;
+
 volatile u8 spi2_mode = 0;
 
-u8* rx_dma_dummy_buffer[1];
 u8 buffer_for_fill_bg[1] = {0};
 
 struct i2c_eeprom_transaction* eep_tr = NULL;
@@ -39,198 +49,193 @@ void start_i2c1(void) {
 	i2c_set_clock_frequency(I2C1, I2C_CR2_FREQ_24MHZ);
 	i2c_set_ccr(I2C1, 210);
 	i2c_set_trise(I2C1, 43);
+    i2c_enable_interrupt(I2C1, I2C_CR2_ITERREN | I2C_CR2_ITEVTEN);
     i2c_peripheral_enable(I2C1);
     
+    nvic_enable_irq(NVIC_I2C1_EV_IRQ);
+    nvic_enable_irq(NVIC_I2C1_ER_IRQ);
     nvic_enable_irq(NVIC_DMA1_STREAM0_IRQ);
-    //nvic_enable_irq(NVIC_DMA1_STREAM6_IRQ);
+    nvic_enable_irq(NVIC_DMA1_STREAM6_IRQ);
 }
 
-
-u32 i2c_read_eeprom_dma(u8 da, u8 ra, u8 page, u8* buf, u16 count) {
-    return i2c_read_dma(da | (page & 0x07), (u8[]) {ra}, 1, buf, count);
+void i2c1_ev_isr(void) {
+    u32 sr1 = I2C_SR1(I2C1), sr2;
+    if (sr1 & I2C_SR1_SB) {
+        i2c_send_7bit_address(I2C1, i2c_current_tr->dev_addr, i2c_current_tr->read_write);
+        I2C_SR1(I2C1) &= !I2C_SR1_SB;
+        //debug_print("I2C EV: I2C_SR1_SB");
+    }
+    
+    if (sr1 & I2C_SR1_ADDR) {
+        sr2 = I2C_SR2(I2C1);
+        if (sr2 == 0) __asm__("NOP"); // prevent optimize
+        I2C_SR1(I2C1) &= !I2C_SR1_ADDR;
+        //debug_print("I2C EV: I2C_SR1_ADDR");
+    }
+    
+//    if (sr1 & I2C_SR1_BTF) {
+//        I2C_SR1(I2C1) &= !I2C_SR1_BTF;
+//        debug_print("I2C EV: I2C_SR1_BTF");
+//    }
+    
+//    if (sr1 & I2C_SR1_STOPF) {
+//        I2C_SR1(I2C1) &= !I2C_SR1_STOPF;
+//        debug_print("I2C EV: I2C_SR1_STOPF"); 
+//    }
 }
 
-u32 i2c_read_dma(u8 da, u8* rc_buf, u16 rc_buf_count, u8* buf, u16 count) {
-    u32 reg, result=0, timer, i;
+void i2c1_er_isr(void) {
+    i2c_current_tr->i2c_sr1 = I2C_SR1(I2C1);
+    i2c_current_tr->i2c_sr2 = I2C_SR2(I2C1);
     
-    while (dma1_i2c1_rx_complete == 0) __asm__("NOP");
-    i2c_disable_dma(I2C1);
+    if (i2c_current_tr->i2c_sr1 & I2C_SR1_BERR) {
+        debug_print("I2C ERR: I2C_SR1_BERR");
+        i2c_current_tr->last_error = I2C_SR1_BERR;
+        I2C_SR1(I2C1) &= !I2C_SR1_BERR;
+    }
     
-    dma_stream_reset(DMA1, DMA_STREAM0);
-    dma_set_transfer_mode(DMA1, DMA_STREAM0, DMA_SxCR_DIR_PERIPHERAL_TO_MEM);
-    dma_set_priority(DMA1,  DMA_STREAM0, DMA_SxCR_PL_HIGH);
-    dma_set_memory_size(DMA1, DMA_STREAM0, DMA_SxCR_MSIZE_8BIT);
-    dma_set_peripheral_size(DMA1, DMA_STREAM0, DMA_SxCR_PSIZE_8BIT);
-    dma_enable_memory_increment_mode(DMA1, DMA_STREAM0);;
-    dma_set_peripheral_address(DMA1, DMA_STREAM0, (uint32_t) &I2C2_DR);
-    dma_channel_select(DMA1, DMA_STREAM0, DMA_SxCR_CHSEL_1);
-    dma_set_memory_address(DMA1, DMA_STREAM0, (uint32_t) buf);
-    dma_set_number_of_data(DMA1, DMA_STREAM0, count);
-    dma_disable_fifo_error_interrupt(DMA1, DMA_STREAM0);
-    dma_disable_half_transfer_interrupt(DMA1, DMA_STREAM0);
+    if (i2c_current_tr->i2c_sr1 & I2C_SR1_AF) {
+        debug_print("I2C ERR: I2C_SR1_AF");
+        i2c_current_tr->last_error = I2C_SR1_AF;
+        I2C_SR1(I2C1) &= !I2C_SR1_AF;
+    }
+    
+    if (i2c_current_tr->i2c_sr1 & I2C_SR1_ARLO) {
+        debug_print("I2C ERR: I2C_SR1_ARLO");
+        i2c_current_tr->last_error = I2C_SR1_ARLO;
+        I2C_SR1(I2C1) &= !I2C_SR1_ARLO;
+    }
+    
+    if (i2c_current_tr->i2c_sr1 & I2C_SR1_OVR) {
+        debug_print("I2C ERR: I2C_SR1_OVR");
+        i2c_current_tr->last_error = I2C_SR1_OVR;
+        I2C_SR1(I2C1) &= !I2C_SR1_OVR;
+    }
+    
+    dma1_i2c1_tx_complete = 1;
+    dma1_i2c1_rx_complete = 1;
+}
 
-    timer = 0;
-    while ((I2C_SR2(I2C1) & I2C_SR2_BUSY)) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1001;
-    }
+void i2c_dma_req(struct dma1_i2c1_transaction* i2c_tr) {
+    u8 dma_ch = (i2c_tr->read_write == I2C_READ) ? DMA_STREAM0 : DMA_STREAM6;
     
-    i2c_set_dma_last_transfer(I2C1);
-    i2c_send_start(I2C1);
-    
-    timer = 0; 
-    while (!((I2C_SR1(I2C1) & I2C_SR1_SB) & (I2C_SR2(I2C1) & (I2C_SR2_MSL | I2C_SR2_BUSY)))) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1002;
-    }
-    
-    i2c_send_7bit_address(I2C1, da, I2C_WRITE);
-    
-    timer = 0;
-    while (!(I2C_SR1(I2C1) & I2C_SR1_ADDR)) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1003;
-    }
-    
-    reg = I2C_SR2(I2C1);
-    (void) reg;
-    
-    for (i=0; i<rc_buf_count; i++) {
-        i2c_send_data(I2C1, rc_buf[i]);
+    if (i2c_tr->read_write == I2C_READ)
+        while (dma1_i2c1_rx_complete == 0) __asm__("NOP");
+    else
+        while (dma1_i2c1_tx_complete == 0) __asm__("NOP");
         
-        timer = 0;
-        while (!(I2C_SR1(I2C1) & (I2C_SR1_BTF))) { 
-            timer++;
-            if (timer > I2C_TIMEOUT) return 0x1004;
-        }
-    }
+    i2c_current_tr = i2c_tr;
     
-    i2c_enable_ack(I2C1);
-    i2c_send_start(I2C1);
+    dma_stream_reset(DMA1, dma_ch);
     
-    timer = 0;
-    while (!((I2C_SR1(I2C1) & I2C_SR1_SB) & (I2C_SR2(I2C1) & (I2C_SR2_MSL | I2C_SR2_BUSY)))) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1005;
-    }
+    if (i2c_tr->read_write == I2C_WRITE)    
+        dma_set_transfer_mode(DMA1, dma_ch, DMA_SxCR_DIR_MEM_TO_PERIPHERAL);
+    else 
+        dma_set_transfer_mode(DMA1, dma_ch, DMA_SxCR_DIR_PERIPHERAL_TO_MEM);
     
-    i2c_send_7bit_address(I2C1, da, I2C_READ);
+    dma_set_priority(DMA1,  dma_ch, DMA_SxCR_PL_HIGH);
+    dma_set_memory_size(DMA1, dma_ch, DMA_SxCR_MSIZE_8BIT);
+    dma_set_peripheral_size(DMA1, dma_ch, DMA_SxCR_PSIZE_8BIT);
+    dma_enable_memory_increment_mode(DMA1, dma_ch);;
+    dma_set_peripheral_address(DMA1, dma_ch, (uint32_t) &I2C1_DR);
+    dma_channel_select(DMA1, dma_ch, DMA_SxCR_CHSEL_1);
+    dma_set_memory_address(DMA1, dma_ch, (uint32_t) i2c_tr->buffer);
+    dma_set_number_of_data(DMA1, dma_ch, i2c_tr->buffer_count);
+    dma_disable_fifo_error_interrupt(DMA1, dma_ch);
+    dma_disable_half_transfer_interrupt(DMA1, dma_ch);
     
-    timer = 0;
-    while (!(I2C_SR1(I2C1) & I2C_SR1_ADDR)) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1006;
-    }
-    
-    reg = I2C_SR2(I2C1);
-    (void) reg;
-    
-    /*
-    i2c_disable_ack(I2C1);
-    
-    
-    i2c_send_stop(I2C1);
-    
-    timer = 0;
-    while (!(I2C_SR1(I2C1) & I2C_SR1_RxNE)) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1007;
-    }*/
+    dma_enable_transfer_complete_interrupt(DMA1, dma_ch);
+    dma_enable_transfer_error_interrupt(DMA1, dma_ch);
+    dma_enable_transfer_complete_interrupt(DMA1, dma_ch);
+    dma_enable_stream(DMA1, dma_ch);
     
     i2c_enable_dma(I2C1);
     
-    dma_enable_transfer_complete_interrupt(DMA1, DMA_STREAM0);
-    dma_enable_transfer_error_interrupt(DMA1,    DMA_STREAM0);
-    dma_enable_transfer_complete_interrupt(DMA1, DMA_STREAM0);
-    dma_enable_stream(DMA1, DMA_STREAM0);
+    if (i2c_tr->read_write == I2C_READ) {
+        i2c_set_dma_last_transfer(I2C1);
+        i2c_enable_ack(I2C1);
+        dma1_i2c1_rx_complete = 0;
+    } else 
+        dma1_i2c1_tx_complete = 0;
     
-    dma1_i2c1_rx_complete = 0;
+    i2c_send_start(I2C1);    
+}
+
+u32 i2c_fram_write_dma(u8 page, u8 start_byte, u8* buffer, u16 count) {
+    struct dma1_i2c1_transaction i2c_tr;
     
-	return result; 
+    u8 buffer_z[count+1];
+    memcpy(buffer_z+1, buffer, count);
+    buffer_z[0] = start_byte;
+    
+    i2c_tr.dev_addr     = (0xA0 >> 1) | (page & 0x07);
+    i2c_tr.read_write   = I2C_WRITE;
+    i2c_tr.buffer_count = count+1;
+    i2c_tr.buffer       = buffer_z;
+    i2c_tr.last_error   = 0;
+    i2c_dma_req(&i2c_tr);
+    i2c_write_dma_wait();
+    
+    if (i2c_tr.last_error != 0) return i2c_tr.last_error;
+    
+    return 0;
+}
+
+u32 i2c_fram_read_dma(u8 page, u8 start_byte, u8* buffer, u16 count) {
+    struct dma1_i2c1_transaction i2c_tr;
+    u8 wr_buf[1] = {start_byte};
+    
+    i2c_tr.dev_addr     = (0xA0 >> 1) | (page & 0x07);
+    i2c_tr.read_write   = I2C_WRITE;
+    i2c_tr.buffer_count = 1;
+    i2c_tr.buffer       = wr_buf;
+    i2c_tr.last_error   = 0;
+    i2c_dma_req(&i2c_tr);
+    i2c_write_dma_wait();
+    
+    if (i2c_tr.last_error != 0) return i2c_tr.last_error;
+    
+    i2c_tr.dev_addr     = (0xA0 >> 1) | (page & 0x07);
+    i2c_tr.read_write   = I2C_READ;
+    i2c_tr.buffer_count = count;
+    i2c_tr.buffer       = buffer;
+    i2c_tr.last_error   = 0;
+    i2c_dma_req(&i2c_tr);
+    i2c_read_dma_wait();
+    
+    if (i2c_tr.last_error != 0) return i2c_tr.last_error;
+    
+    return 0;
 }
 
 void i2c_read_dma_wait(void) {
     while (dma1_i2c1_rx_complete == 0) __asm__("NOP");
 }
 
+void i2c_write_dma_wait(void) {
+    while (dma1_i2c1_tx_complete == 0) __asm__("NOP");
+}
+
 void dma1_stream0_isr(void) {
-    i2c_disable_dma(I2C1);
-    i2c_send_stop(I2C1);
     dma_stream_reset(DMA1, DMA_STREAM0);
     dma_disable_stream(DMA1, DMA_STREAM0);
+    
+    i2c_send_stop(I2C1);
+    i2c_disable_dma(I2C1);
+    
     dma1_i2c1_rx_complete = 1;
     //debug_print("dma1_stream0_isr");
 }
 
-
-
-u32 mew_i2c_read(u8 da, u8 ra) {
-    u32 reg, result, timer;
+void dma1_stream6_isr(void) {
+    dma_stream_reset(DMA1, DMA_STREAM6);
+    dma_disable_stream(DMA1, DMA_STREAM6);
     
-    timer = 0;
-    while ((I2C_SR2(I2C1) & I2C_SR2_BUSY)) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1001;
-    }
-    
-    i2c_send_start(I2C1);
-    
-    timer = 0; 
-    while (!((I2C_SR1(I2C1) & I2C_SR1_SB) & (I2C_SR2(I2C1) & (I2C_SR2_MSL | I2C_SR2_BUSY)))) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1002;
-    }
-    
-    i2c_send_7bit_address(I2C1, da, I2C_WRITE);
-    
-    timer = 0;
-    while (!(I2C_SR1(I2C1) & I2C_SR1_ADDR)) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1003;
-    }
-    
-    reg = I2C_SR2(I2C1);
-    (void) reg;
-    i2c_send_data(I2C1, ra);
-    
-    timer = 0;
-    while (!(I2C_SR1(I2C1) & (I2C_SR1_BTF))) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1004;
-    }
-    
-    i2c_send_start(I2C1);
-    
-    timer = 0;
-    while (!((I2C_SR1(I2C1) & I2C_SR1_SB) & (I2C_SR2(I2C1) & (I2C_SR2_MSL | I2C_SR2_BUSY)))) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1005;
-    }
-    
-    i2c_send_7bit_address(I2C1, da, I2C_READ);
-    
-    timer = 0;
-    while (!(I2C_SR1(I2C1) & I2C_SR1_ADDR)) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1006;
-    }
-    
-    i2c_disable_ack(I2C1);
-    reg = I2C_SR2(I2C1);
-    (void) reg;
     i2c_send_stop(I2C1);
-    
-    timer = 0;
-    while (!(I2C_SR1(I2C1) & I2C_SR1_RxNE)) { 
-        timer++;
-        if (timer > I2C_TIMEOUT) return 0x1007;
-    }
-    
-    result = i2c_get_data(I2C1);
-	i2c_enable_ack(I2C1);
-	I2C_SR1(I2C1) &= ~I2C_SR1_AF;
-    
-	return result;
+    i2c_disable_dma(I2C1);
+
+    dma1_i2c1_tx_complete = 1;
+    //debug_print("dma1_stream6_isr");
 }
 
 void start_leds(void) {

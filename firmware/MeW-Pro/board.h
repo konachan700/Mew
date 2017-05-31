@@ -20,9 +20,17 @@ typedef unsigned long u32;
 #define SPI_RX_DUMMY_BUF_SIZE 16
 #define I2C_TIMEOUT (1024 * 1024)
 
-#define EEPROM_READ  1
-#define EEPROM_WRITE 2
+struct dma1_i2c1_transaction {
+    u8  dev_addr;
+    u8  read_write;
+    u16 buffer_count;
+    u8* buffer;
+    u32 last_error;
+    u32 i2c_sr1;
+    u32 i2c_sr2;
+};
 
+/*
 struct i2c_eeprom_transaction {
     u8  type;
     u8  device_addr;
@@ -34,7 +42,7 @@ struct i2c_eeprom_transaction {
     u8  error;
     void (*on_rw_ok)(struct i2c_eeprom_transaction* me);
     void (*on_error)(struct i2c_eeprom_transaction* me);
-};
+};*/
 
 int _write(int file, char *ptr, int len);
 
@@ -42,6 +50,7 @@ int _write(int file, char *ptr, int len);
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #include "ui.h"
 #include "ILI9341.h"
@@ -55,10 +64,12 @@ extern void start_buttons(void);
 extern void start_leds(void);
 
 extern void start_i2c1(void);
-extern u32 mew_i2c_read(u8 da, u8 ra);
-extern u32 i2c_read_eeprom_dma(u8 da, u8 ra, u8 page, u8* buf, u16 count);
-extern u32 i2c_read_dma(u8 da, u8* rc_buf, u16 rc_buf_count, u8* buf, u16 count);
+extern void i2c_dma_req(struct dma1_i2c1_transaction* i2c_tr);
 extern void i2c_read_dma_wait(void);
+extern void i2c_write_dma_wait(void);
+
+extern u32 i2c_fram_read_dma(u8 page, u8 start_byte, u8* buffer, u16 count);
+extern u32 i2c_fram_write_dma(u8 page, u8 start_byte, u8* buffer, u16 count);
 
 extern void start_spi_2_dma(void);
 extern void start_spi_2_non_dma(void);
