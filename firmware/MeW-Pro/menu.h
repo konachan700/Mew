@@ -12,6 +12,7 @@
 
 #include "ui.h"
 #include "ILI9341.h"
+#include "font_icons_gmd.h"
 
 #include <stdio.h>
 #include <stdlib.h>

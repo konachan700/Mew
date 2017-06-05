@@ -14,6 +14,7 @@ struct menu_ui_element root_menu[4]= {{
     0,
     "Passwords",
     "My passwords wallet (HID-KB)",
+    icon_E32A,
     0,
     0,
     1,
@@ -23,14 +24,15 @@ struct menu_ui_element root_menu[4]= {{
 }, {
     0,
     "Config mode",
-    "For change MeW settings (CDC ACM)",
+    "Change MeW settings (CDC ACM)",
+    icon_E1E0,
     0,
     1,
     1,
     NULL,
     NULL,
     NULL
-}, {
+}, /*{
     0,
     "Disk mode",
     "For use internal secure uSD (MSD)",
@@ -40,10 +42,11 @@ struct menu_ui_element root_menu[4]= {{
     NULL,
     NULL,
     NULL
-}, {
+},*/ {
     0,
     "About MeW",
     "Display information about MeW",
+    icon_E02F,
     0,
     0,
     1,

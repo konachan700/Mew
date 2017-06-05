@@ -81,6 +81,7 @@ int main(void) {
     start_timer_2();
     start_buttons();
     start_i2c1();
+    start_sdio();
     
     start_spi_2_non_dma();
     display_setup();
@@ -89,19 +90,10 @@ int main(void) {
     statusbar_paint();
     draw_root_menu();
     
-    u32 ret;
-    u8 data[64];
-    
-    ret = i2c_fram_write_dma(0, 0x10, (u8[]){1,2,3,4}, 4);
-    debug_print("RD I2C: ");
-    debug_print_hex((u8[]) {ret >> 8, ret}, 2);
-    
-    ret = i2c_fram_read_dma(0, 0x00, data, 64);
-    debug_print_hex(data, 64);
-    debug_print("RD I2C: ");
-    debug_print_hex((u8[]) {ret >> 8, ret}, 2);
-    
-
+    u8 data[512];
+    memset(data, 0, 512);
+    sdio_read_b512(0, (u32*) data);
+    debug_print_hex(data, 512);
 
     mew_hid_usb_init();
 

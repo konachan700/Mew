@@ -1,5 +1,4 @@
 #include "ILI9341.h"
-#include "font_ru.h"
 
 u8 item_framebuffer[ELEMENT_BUF_SIZE];
 u8 stbar_framebuffer[STATUSBAR_BUF_SIZE];
@@ -237,6 +236,25 @@ void direct_draw_string_ml(u8* ascii, u16 x, u16 y, u16 frame_w, u16 frame_h, u1
     
     free(char_buf);
 }
+
+#ifdef __FONT_STM32_MEW_ICONS__
+void g_draw_icon(u8 buf_id, const u8* icon, u16 xn, u16 yn, u16 r, u16 g, u16 b) {
+    u8 x, y, bit = 0, icon_byte = 0;
+    for (y=0; y<MEW_ICONS_FONT_HEIGHT; y++) {
+        for (x=0; x<MEW_ICONS_FONT_WIDTH; x++) {
+            if (bit > 7) {
+                bit = 0;
+                icon_byte++;
+            }
+            
+            if ((icon[icon_byte] & (1 << bit)) != 0)
+                g_set_pixel(buf_id, x + xn, y + yn, r, g, b);
+            
+            bit++;
+        }
+    }
+}
+#endif
 
 // WARNING: modes FONT_180_DEG and FONT_270_DEG is not tested!
 void g_draw_char(u8 buf_id, u8 ascii, u16 x, u16 y, u16 size, u16 r, u16 g, u16 b, u8 dir) {

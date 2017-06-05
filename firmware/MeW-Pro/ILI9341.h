@@ -15,6 +15,8 @@
 
 #include "utf8_to_cp1251.h"
 #include "board.h"
+#include "font_ru.h"
+#include "font_icons_gmd.h"
 
 #define STATUSBAR_BUF               1
 #define MENU_ELEMENT_BUF            2
@@ -76,5 +78,8 @@ extern void g_draw_vline(u8 buf_id, u16 x1, u16 y1, u16 y2, u16 r, u16 g, u16 b)
 extern void g_draw_hline(u8 buf_id, u16 x1, u16 x2, u16 y1, u16 r, u16 g, u16 b);
 extern void g_clear_buf(u8 buf_id, u16 r, u16 g, u16 b);
 extern void g_draw_string(u8 buf_id, u8* ascii, u16 x, u16 y, u16 size, u16 r, u16 g, u16 b, u8 dir);
+#ifdef __FONT_STM32_MEW_ICONS__
+extern void g_draw_icon(u8 buf_id, const u8* icon, u16 xn, u16 yn, u16 r, u16 g, u16 b);
+#endif
 
 #endif

@@ -6,16 +6,27 @@
 #include <math.h>
 
 #include "ILI9341.h"
+#include "font_icons_gmd.h"
 
 #include <libopencm3/stm32/gpio.h>
 
-#define COLOR_R_1 255
-#define COLOR_G_1 255
-#define COLOR_B_1 0
+#ifndef LIGHT_UI_THEME
+    #define COLOR_R_1 255
+    #define COLOR_G_1 255
+    #define COLOR_B_1 0
 
-#define COLOR_R_0 0
-#define COLOR_G_0 0
-#define COLOR_B_0 0
+    #define COLOR_R_0 0
+    #define COLOR_G_0 0
+    #define COLOR_B_0 0
+#else
+    #define COLOR_R_1 0
+    #define COLOR_G_1 0
+    #define COLOR_B_1 0
+
+    #define COLOR_R_0 255
+    #define COLOR_G_0 255
+    #define COLOR_B_0 255
+#endif
 
 #define MENU_ITEM_PADDING_TOP       4
 #define MENU_ITEM_PADDING_LEFT      7
@@ -50,6 +61,7 @@ struct menu_ui_element {
     u32 id;
     u8* name;
     u8* text;
+    const u8* icon;
     u8 disp_number;
     u8 selected;
     u8 visible;

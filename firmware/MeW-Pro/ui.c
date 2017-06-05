@@ -6,7 +6,7 @@ struct menu_ui_element* selected_menu = NULL;
 signed int menu_local_sel_index = 0;
 
 void statusbar_paint(void) {
-    g_clear_buf(STATUSBAR_BUF, COLOR_R_0, COLOR_G_0, COLOR_B_0);
+    g_clear_buf(STATUSBAR_BUF, 180, 200, 180);
     g_draw_vline(STATUSBAR_BUF, STATUSBAR_W - 1, 0, 319, COLOR_R_1, COLOR_G_1, COLOR_B_1);
     
     g_draw_string(STATUSBAR_BUF, "ok", 1, STATUSBAR_OK_POS, 2, COLOR_R_1, COLOR_G_1, COLOR_B_1, FONT_90_DEG);
@@ -20,14 +20,19 @@ void statusbar_paint(void) {
 void menu_item_paint(struct menu_ui_element* element) {
     if (element->selected == 0) { 
         g_clear_buf(MENU_ELEMENT_BUF, COLOR_R_0, COLOR_G_0, COLOR_B_0);
-        g_draw_hline(MENU_ELEMENT_BUF, MENU_ITEM_PADDING_LEFT, ELEMENT_W-1, ELEMENT_H-1, COLOR_R_1, COLOR_G_1, COLOR_B_1);
-        g_draw_string(MENU_ELEMENT_BUF, element->name, MENU_ITEM_PADDING_LEFT, MENU_ITEM_PADDING_TOP, MENU_ITEM_HEADER_SIZE, COLOR_R_1, COLOR_G_1, COLOR_B_1, FONT_0_DEG);
-        g_draw_string(MENU_ELEMENT_BUF, element->text, MENU_ITEM_PADDING_LEFT, MENU_ITEM_PADDING_TOP + LINE_SPACE + (FONT_H*MENU_ITEM_HEADER_SIZE), MENU_ITEM_TEXT_SIZE, COLOR_R_1, COLOR_G_1, COLOR_B_1, FONT_0_DEG);
+        g_draw_hline(MENU_ELEMENT_BUF, MENU_ITEM_PADDING_LEFT, ELEMENT_W-1, ELEMENT_H-1, 150, 150, 150);
+        if (element->icon != NULL)
+            g_draw_icon(MENU_ELEMENT_BUF, element->icon, 2, 4, COLOR_R_1, COLOR_G_1, COLOR_B_1);
+        g_draw_string(MENU_ELEMENT_BUF, element->name, MENU_ITEM_PADDING_LEFT+MEW_ICONS_FONT_WIDTH, MENU_ITEM_PADDING_TOP, MENU_ITEM_HEADER_SIZE, COLOR_R_1, COLOR_G_1, COLOR_B_1, FONT_0_DEG);
+        g_draw_string(MENU_ELEMENT_BUF, element->text, MENU_ITEM_PADDING_LEFT+MEW_ICONS_FONT_WIDTH, MENU_ITEM_PADDING_TOP + LINE_SPACE + (FONT_H*MENU_ITEM_HEADER_SIZE), MENU_ITEM_TEXT_SIZE, COLOR_R_1, COLOR_G_1, COLOR_B_1, FONT_0_DEG);
     } else {
-        g_clear_buf(MENU_ELEMENT_BUF, COLOR_R_1, COLOR_G_1, COLOR_B_1);
-        g_draw_hline(MENU_ELEMENT_BUF, 0, ELEMENT_W, 0, COLOR_R_0, COLOR_G_0, COLOR_B_0);
-        g_draw_string(MENU_ELEMENT_BUF, element->name, MENU_ITEM_PADDING_LEFT, MENU_ITEM_PADDING_TOP, MENU_ITEM_HEADER_SIZE, COLOR_R_0, COLOR_G_0, COLOR_B_0, FONT_0_DEG);
-        g_draw_string(MENU_ELEMENT_BUF, element->text, MENU_ITEM_PADDING_LEFT, MENU_ITEM_PADDING_TOP + LINE_SPACE + (FONT_H*MENU_ITEM_HEADER_SIZE), MENU_ITEM_TEXT_SIZE, COLOR_R_0, COLOR_G_0, COLOR_B_0, FONT_0_DEG);
+        g_clear_buf(MENU_ELEMENT_BUF, 0, 150, 0);
+        if (element->disp_number > 0)
+            g_draw_hline(MENU_ELEMENT_BUF, 0, ELEMENT_W, 0, COLOR_R_0, COLOR_G_0, COLOR_B_0);
+        if (element->icon != NULL)
+            g_draw_icon(MENU_ELEMENT_BUF, element->icon, 2, 4, COLOR_R_0, COLOR_G_0, COLOR_B_0);
+        g_draw_string(MENU_ELEMENT_BUF, element->name, MENU_ITEM_PADDING_LEFT+MEW_ICONS_FONT_WIDTH, MENU_ITEM_PADDING_TOP, MENU_ITEM_HEADER_SIZE, COLOR_R_0, COLOR_G_0, COLOR_B_0, FONT_0_DEG);
+        g_draw_string(MENU_ELEMENT_BUF, element->text, MENU_ITEM_PADDING_LEFT+MEW_ICONS_FONT_WIDTH, MENU_ITEM_PADDING_TOP + LINE_SPACE + (FONT_H*MENU_ITEM_HEADER_SIZE), MENU_ITEM_TEXT_SIZE, COLOR_R_0, COLOR_G_0, COLOR_B_0, FONT_0_DEG);
     }
     g_commit(MENU_ELEMENT_BUF, element->disp_number);
 }

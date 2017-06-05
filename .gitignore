@@ -31,3 +31,4 @@
 # Debug files
 *.dSYM/
 *.su
+/support package/STM32IconFontGen/target/
