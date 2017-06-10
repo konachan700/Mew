@@ -30,14 +30,20 @@ typedef uint64_t u64;
 #define SPI_RX_DUMMY_BUF_SIZE 16
 #define I2C_TIMEOUT (1024 * 1024)
 
+#define I2C_TR_TYPE_ADDR 1
+#define I2C_TR_TYPE_DATA 2
+
+#define I2C_NO_DMA (1 << 1)
+
 struct dma1_i2c1_transaction {
     u8  dev_addr;
     u8  read_write;
-    u16 buffer_count;
-    u8* buffer;
+    u16 main_buffer_count;
+    u8* main_buffer;  
     u32 last_error;
     u32 i2c_sr1;
     u32 i2c_sr2;
+    u32 flags;
 };
 
 #include "ui.h"
@@ -56,9 +62,9 @@ extern void start_buttons(void);
 extern void start_leds(void);
 
 extern void start_i2c1(void);
-extern void i2c_dma_req(struct dma1_i2c1_transaction* i2c_tr);
-extern void i2c_read_dma_wait(void);
-extern void i2c_write_dma_wait(void);
+//extern void i2c_dma_req(struct dma1_i2c1_transaction* i2c_tr);
+//extern void i2c_read_dma_wait(void);
+//extern void i2c_write_dma_wait(void);
 
 extern u32 i2c_fram_read_dma(u8 page, u8 start_byte, u8* buffer, u16 count);
 extern u32 i2c_fram_write_dma(u8 page, u8 start_byte, u8* buffer, u16 count);

@@ -5,8 +5,8 @@ u8 stbar_framebuffer[STATUSBAR_BUF_SIZE];
 u8* char_buf;
 u16 char_buf_size;
 
-void __wait(u16 delay) { 
-    u16 i;
+void __wait(u32 delay) { 
+    u32 i;
     for (i=0; i<delay; i++) __asm__("NOP");
 }
 

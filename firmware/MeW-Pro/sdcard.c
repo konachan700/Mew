@@ -248,7 +248,7 @@ u32 sdio_rw512(u8 rw, u32 address, u32 *buffer) {
     dma_set_peripheral_flow_control(DMA2, DMA_STREAM3);
     dma_set_fifo_threshold(DMA2, DMA_STREAM3, DMA_SxFCR_FTH_4_4_FULL);
     dma_set_memory_burst(DMA2, DMA_STREAM3, DMA_SxCR_MBURST_INCR4);
-    dma_set_peripheral_burst(DMA2, DMA_STREAM3, DMA_SxCR_PBURST_INCR4);
+    dma_set_peripheral_burst(DMA2, DMA_STREAM3, DMA_SxCR_PBURST_INCR4); 
     
     dma_disable_fifo_error_interrupt(DMA2, DMA_STREAM3);
     dma_disable_half_transfer_interrupt(DMA2, DMA_STREAM3);

@@ -46,8 +46,8 @@
 #define BG_COLOR                    0x00
 
 #define SMALL_WAIT                  10
-#define PIN_SET_CLEAR_WAIT          10000
-#define RESET_WAIT                  70000
+#define PIN_SET_CLEAR_WAIT          10000L
+#define RESET_WAIT                  70000L
 
 #define DC_PIN                      GPIO0
 #define DC_PORT                     GPIOC

@@ -1,12 +1,12 @@
 #include "board.h" 
 
-volatile u8 dma1_spi2_tx_complete = 1;
+static volatile u8 dma1_spi2_tx_complete = 1;
 
-volatile u8 dma1_i2c1_rx_complete = 1;
-volatile u8 dma1_i2c1_tx_complete = 1;
-volatile u8 dma1_i2c1_last_error = 0;
+static volatile u8 dma1_i2c1_rx_complete = 1;
+static volatile u8 dma1_i2c1_tx_complete = 1;
+static volatile u8 dma1_i2c1_last_error = 0;
 
-volatile u32 last_random_value = 0;
+static volatile u32 last_random_value = 0;
 
 struct dma1_i2c1_transaction* i2c_current_tr;
 
@@ -64,12 +64,11 @@ void start_i2c1(void) {
     
 	i2c_peripheral_disable(I2C1);
 	i2c_reset(I2C1);
-	i2c_set_standard_mode(I2C1);
-	i2c_enable_ack(I2C1);
+    i2c_set_fast_mode(I2C1);
 	i2c_set_dutycycle(I2C1, I2C_CCR_DUTY_DIV2);
 	i2c_set_clock_frequency(I2C1, I2C_CR2_FREQ_24MHZ);
-	i2c_set_ccr(I2C1, 210);
-	i2c_set_trise(I2C1, 43);
+	i2c_set_ccr(I2C1, 120);
+	i2c_set_trise(I2C1, 24);
     i2c_enable_interrupt(I2C1, I2C_CR2_ITERREN | I2C_CR2_ITEVTEN);
     i2c_peripheral_enable(I2C1);
     
@@ -81,6 +80,7 @@ void start_i2c1(void) {
 
 void i2c1_ev_isr(void) {
     u32 sr1 = I2C_SR1(I2C1), sr2;
+    
     if (sr1 & I2C_SR1_SB) {
         i2c_send_7bit_address(I2C1, i2c_current_tr->dev_addr, i2c_current_tr->read_write);
         I2C_SR1(I2C1) &= !I2C_SR1_SB;
@@ -91,7 +91,20 @@ void i2c1_ev_isr(void) {
         sr2 = I2C_SR2(I2C1);
         if (sr2 == 0) __asm__("NOP"); // prevent optimize
         I2C_SR1(I2C1) &= !I2C_SR1_ADDR;
+        
+        if (i2c_current_tr->read_write == I2C_READ) i2c_enable_ack(I2C1);
+            
         //debug_print("I2C EV: I2C_SR1_ADDR");
+    }
+    
+    if (sr1 & I2C_SR1_BTF) {
+        I2C_SR1(I2C1) &= !I2C_SR1_BTF;
+        //debug_print("I2C EV: I2C_SR1_BTF");
+    }
+    
+    if (sr1 & I2C_SR1_STOPF) {
+        I2C_SR1(I2C1) &= !I2C_SR1_STOPF;
+        //debug_print("I2C EV: I2C_SR1_STOPF");
     }
 }
 
@@ -123,143 +136,188 @@ void i2c1_er_isr(void) {
         I2C_SR1(I2C1) &= !I2C_SR1_OVR;
     }
     
-    dma1_i2c1_tx_complete = 1;
-    dma1_i2c1_rx_complete = 1;
     dma1_i2c1_last_error == 1;
-    
-    dma_stream_reset(DMA1, DMA_STREAM0);
-    dma_disable_stream(DMA1, DMA_STREAM0);
-    dma_stream_reset(DMA1, DMA_STREAM6);
-    dma_disable_stream(DMA1, DMA_STREAM6);
-    
-    i2c_send_stop(I2C1);
-    i2c_disable_dma(I2C1);
 }
 
-void i2c_dma_req(struct dma1_i2c1_transaction* i2c_tr) {
-    u8 dma_ch = (i2c_tr->read_write == I2C_READ) ? DMA_STREAM0 : DMA_STREAM6;
+u32 i2c_fram_write_dma(u8 page, u8 start_byte, u8* buffer, u16 count) {
+    struct dma1_i2c1_transaction i2c_tr;
+    i2c_current_tr = &i2c_tr;
     
-    if (i2c_tr->read_write == I2C_READ)
-        while (dma1_i2c1_rx_complete == 0) __asm__("NOP");
-    else
-        while (dma1_i2c1_tx_complete == 0) __asm__("NOP");
-        
-    i2c_current_tr = i2c_tr;
+    if (dma1_i2c1_last_error == 1) {
+        start_i2c1();
+        dma1_i2c1_last_error == 0;
+    }
+
+    i2c_tr.dev_addr          = (0xA0 >> 1) | (page & 0x07);
+    i2c_tr.read_write        = I2C_WRITE;
+    i2c_tr.main_buffer_count = 1;
+    i2c_tr.main_buffer       = (u8[]) {start_byte};
+    i2c_tr.last_error        = 0;
+
+    dma_stream_reset(DMA1, DMA_STREAM6);
+    dma_disable_stream(DMA1, DMA_STREAM6);
+    dma_set_transfer_mode(DMA1, DMA_STREAM6, DMA_SxCR_DIR_MEM_TO_PERIPHERAL);
+    dma_set_priority(DMA1, DMA_STREAM6, DMA_SxCR_PL_HIGH);
+    dma_set_memory_size(DMA1, DMA_STREAM6, DMA_SxCR_MSIZE_8BIT);
+    dma_set_peripheral_size(DMA1, DMA_STREAM6, DMA_SxCR_PSIZE_8BIT);
+    dma_enable_memory_increment_mode(DMA1, DMA_STREAM6);;
+    dma_set_peripheral_address(DMA1, DMA_STREAM6, (uint32_t) &I2C1_DR);
+    dma_channel_select(DMA1, DMA_STREAM6, DMA_SxCR_CHSEL_1);
+    dma_set_memory_address(DMA1, DMA_STREAM6, (u32) (i2c_tr.main_buffer));
+    dma_set_number_of_data(DMA1, DMA_STREAM6, (u16) (i2c_tr.main_buffer_count));
+    dma_set_memory_burst(DMA1, DMA_STREAM6, DMA_SxCR_MBURST_INCR4);
+    dma_set_peripheral_burst(DMA1, DMA_STREAM6, DMA_SxCR_PBURST_INCR4);
+    dma_disable_fifo_error_interrupt(DMA1, DMA_STREAM6);
+    dma_disable_half_transfer_interrupt(DMA1, DMA_STREAM6);
+    dma_enable_transfer_complete_interrupt(DMA1, DMA_STREAM6);
+    dma_enable_transfer_error_interrupt(DMA1, DMA_STREAM6);
+    dma_enable_stream(DMA1, DMA_STREAM6);
+    
+    dma1_i2c1_tx_complete = 0;
+    
+    i2c_disable_ack(I2C1);
+    i2c_clear_dma_last_transfer(I2C1);
+    i2c_enable_dma(I2C1);
+    i2c_send_start(I2C1);    
+    
+    while (dma1_i2c1_tx_complete == 0) __asm__("NOP");
+    
+    //dma1_i2c1_btf_complete = 0;
+    dma1_i2c1_tx_complete = 0;
+    
+    i2c_tr.dev_addr          = (0xA0 >> 1) | (page & 0x07);
+    i2c_tr.read_write        = I2C_WRITE;
+    i2c_tr.main_buffer_count = count;
+    i2c_tr.main_buffer       = buffer;
+    i2c_tr.last_error        = 0;
+    
+    dma_stream_reset(DMA1, DMA_STREAM6);
+    dma_disable_stream(DMA1, DMA_STREAM6);
+    dma_set_transfer_mode(DMA1, DMA_STREAM6, DMA_SxCR_DIR_MEM_TO_PERIPHERAL);
+    dma_set_priority(DMA1, DMA_STREAM6, DMA_SxCR_PL_HIGH);
+    dma_set_memory_size(DMA1, DMA_STREAM6, DMA_SxCR_MSIZE_8BIT);
+    dma_set_peripheral_size(DMA1, DMA_STREAM6, DMA_SxCR_PSIZE_8BIT);
+    dma_enable_memory_increment_mode(DMA1, DMA_STREAM6);;
+    dma_set_peripheral_address(DMA1, DMA_STREAM6, (uint32_t) &I2C1_DR);
+    dma_channel_select(DMA1, DMA_STREAM6, DMA_SxCR_CHSEL_1);
+    dma_set_memory_address(DMA1, DMA_STREAM6, (u32) (i2c_tr.main_buffer));
+    dma_set_number_of_data(DMA1, DMA_STREAM6, (u16) (i2c_tr.main_buffer_count));
+    dma_set_memory_burst(DMA1, DMA_STREAM6, DMA_SxCR_MBURST_INCR4);
+    dma_set_peripheral_burst(DMA1, DMA_STREAM6, DMA_SxCR_PBURST_INCR4);
+    dma_disable_fifo_error_interrupt(DMA1, DMA_STREAM6);
+    dma_disable_half_transfer_interrupt(DMA1, DMA_STREAM6);
+    dma_enable_transfer_complete_interrupt(DMA1, DMA_STREAM6);
+    dma_enable_transfer_error_interrupt(DMA1, DMA_STREAM6);
+    dma_enable_stream(DMA1, DMA_STREAM6);
+    
+    while (dma1_i2c1_tx_complete == 0) __asm__("NOP"); 
+    for (u16 i=0; i<1500; i++) __asm__("NOP"); // wait for last byte written. Without this delay last byte will be lost.
+
+    i2c_send_stop(I2C1);
+
+    for (u16 i=0; i<0xFFFF; i++) __asm__("NOP"); // wait for bus stopped. 
+
+    i2c_disable_dma(I2C1);
+    i2c_peripheral_disable(I2C1); // bug in eeprom fm24cl16 - can't set correct reading address after a write operation.
+                                  // i2c reset operation (high SDA on some short time) is needed.
+    gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_MODE_OUTPUT, GPIO8 | GPIO9);
+    gpio_set_output_options(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO8 | GPIO9);
+    gpio_set(GPIOB, GPIO8 | GPIO9);
+    
+    for (u16 i=0; i<5000; i++) __asm__("NOP");
+    
+    start_i2c1();
+    
+    return i2c_tr.last_error;
+}
+
+u32 i2c_fram_read_dma(u8 page, u8 start_byte, u8* buffer, u16 count) {
+    struct dma1_i2c1_transaction i2c_tr;
+    i2c_current_tr = &i2c_tr;
+    
     if (dma1_i2c1_last_error == 1) {
         start_i2c1();
         dma1_i2c1_last_error == 0;
     }
     
-    dma_stream_reset(DMA1, dma_ch);
+    i2c_tr.dev_addr          = (0xA0 >> 1) | (page & 0x07);
+    i2c_tr.read_write        = I2C_WRITE;
+    i2c_tr.main_buffer_count = 1;
+    i2c_tr.main_buffer       = (u8[]) {start_byte};
+    i2c_tr.last_error        = 0;
     
-    if (i2c_tr->read_write == I2C_WRITE)    
-        dma_set_transfer_mode(DMA1, dma_ch, DMA_SxCR_DIR_MEM_TO_PERIPHERAL);
-    else 
-        dma_set_transfer_mode(DMA1, dma_ch, DMA_SxCR_DIR_PERIPHERAL_TO_MEM);
+    dma_stream_reset(DMA1, DMA_STREAM6);
+    dma_disable_stream(DMA1, DMA_STREAM6);
+    dma_set_transfer_mode(DMA1, DMA_STREAM6, DMA_SxCR_DIR_MEM_TO_PERIPHERAL);
+    dma_set_priority(DMA1, DMA_STREAM6, DMA_SxCR_PL_HIGH);
+    dma_set_memory_size(DMA1, DMA_STREAM6, DMA_SxCR_MSIZE_8BIT);
+    dma_set_peripheral_size(DMA1, DMA_STREAM6, DMA_SxCR_PSIZE_8BIT);
+    dma_enable_memory_increment_mode(DMA1, DMA_STREAM6);;
+    dma_set_peripheral_address(DMA1, DMA_STREAM6, (uint32_t) &I2C1_DR);
+    dma_channel_select(DMA1, DMA_STREAM6, DMA_SxCR_CHSEL_1);
+    dma_set_memory_address(DMA1, DMA_STREAM6, (u32) (i2c_tr.main_buffer));
+    dma_set_number_of_data(DMA1, DMA_STREAM6, (uint16_t) (i2c_tr.main_buffer_count));
+    dma_disable_fifo_error_interrupt(DMA1, DMA_STREAM6);
+    dma_disable_half_transfer_interrupt(DMA1, DMA_STREAM6);
+    dma_enable_transfer_complete_interrupt(DMA1, DMA_STREAM6);
+    dma_enable_transfer_error_interrupt(DMA1, DMA_STREAM6);
+    dma_enable_stream(DMA1, DMA_STREAM6);
     
-    dma_set_priority(DMA1,  dma_ch, DMA_SxCR_PL_HIGH);
-    dma_set_memory_size(DMA1, dma_ch, DMA_SxCR_MSIZE_8BIT);
-    dma_set_peripheral_size(DMA1, dma_ch, DMA_SxCR_PSIZE_8BIT);
-    dma_enable_memory_increment_mode(DMA1, dma_ch);;
-    dma_set_peripheral_address(DMA1, dma_ch, (uint32_t) &I2C1_DR);
-    dma_channel_select(DMA1, dma_ch, DMA_SxCR_CHSEL_1);
-    dma_set_memory_address(DMA1, dma_ch, (uint32_t) i2c_tr->buffer);
-    dma_set_number_of_data(DMA1, dma_ch, i2c_tr->buffer_count);
-    dma_disable_fifo_error_interrupt(DMA1, dma_ch);
-    dma_disable_half_transfer_interrupt(DMA1, dma_ch);
+    dma1_i2c1_tx_complete = 0;
     
-    dma_enable_transfer_complete_interrupt(DMA1, dma_ch);
-    dma_enable_transfer_error_interrupt(DMA1, dma_ch);
-    dma_enable_transfer_complete_interrupt(DMA1, dma_ch);
-    dma_enable_stream(DMA1, dma_ch);
-    
+    i2c_disable_ack(I2C1);
+    i2c_clear_dma_last_transfer(I2C1);
     i2c_enable_dma(I2C1);
-    
-    if (i2c_tr->read_write == I2C_READ) {
-        i2c_set_dma_last_transfer(I2C1);
-        i2c_enable_ack(I2C1);
-        dma1_i2c1_rx_complete = 0;
-    } else 
-        dma1_i2c1_tx_complete = 0;
-    
     i2c_send_start(I2C1);    
-}
-
-u32 i2c_fram_write_dma(u8 page, u8 start_byte, u8* buffer, u16 count) {
-    struct dma1_i2c1_transaction i2c_tr;
     
-    u8 buffer_z[count+1];
-    memcpy(buffer_z+1, buffer, count);
-    buffer_z[0] = start_byte;
-    
-    i2c_tr.dev_addr     = (0xA0 >> 1) | (page & 0x07);
-    i2c_tr.read_write   = I2C_WRITE;
-    i2c_tr.buffer_count = count+1;
-    i2c_tr.buffer       = buffer_z;
-    i2c_tr.last_error   = 0;
-    i2c_dma_req(&i2c_tr);
-    i2c_write_dma_wait();
-    
-    if (i2c_tr.last_error != 0) return i2c_tr.last_error;
-    
-    return 0;
-}
-
-u32 i2c_fram_read_dma(u8 page, u8 start_byte, u8* buffer, u16 count) {
-    struct dma1_i2c1_transaction i2c_tr;
-    u8 wr_buf[1] = {start_byte};
-    
-    i2c_tr.dev_addr     = (0xA0 >> 1) | (page & 0x07);
-    i2c_tr.read_write   = I2C_WRITE;
-    i2c_tr.buffer_count = 1;
-    i2c_tr.buffer       = wr_buf;
-    i2c_tr.last_error   = 0;
-    i2c_dma_req(&i2c_tr);
-    i2c_write_dma_wait();
-    
-    if (i2c_tr.last_error != 0) return i2c_tr.last_error;
-    
-    i2c_tr.dev_addr     = (0xA0 >> 1) | (page & 0x07);
-    i2c_tr.read_write   = I2C_READ;
-    i2c_tr.buffer_count = count;
-    i2c_tr.buffer       = buffer;
-    i2c_tr.last_error   = 0;
-    i2c_dma_req(&i2c_tr);
-    i2c_read_dma_wait();
-    
-    if (i2c_tr.last_error != 0) return i2c_tr.last_error;
-    
-    return 0;
-}
-
-void i2c_read_dma_wait(void) {
-    while (dma1_i2c1_rx_complete == 0) __asm__("NOP");
-}
-
-void i2c_write_dma_wait(void) {
     while (dma1_i2c1_tx_complete == 0) __asm__("NOP");
+    
+    i2c_tr.dev_addr          = (0xA0 >> 1) | (page & 0x07);
+    i2c_tr.read_write        = I2C_READ;
+    i2c_tr.main_buffer_count = count;
+    i2c_tr.main_buffer       = buffer;
+    i2c_tr.last_error        = 0;
+    
+    dma_stream_reset(DMA1, DMA_STREAM0);
+    dma_disable_stream(DMA1, DMA_STREAM0);
+    dma_set_transfer_mode(DMA1, DMA_STREAM0, DMA_SxCR_DIR_PERIPHERAL_TO_MEM);
+    dma_set_priority(DMA1, DMA_STREAM0, DMA_SxCR_PL_HIGH);
+    dma_set_memory_size(DMA1, DMA_STREAM0, DMA_SxCR_MSIZE_8BIT);
+    dma_set_peripheral_size(DMA1, DMA_STREAM0, DMA_SxCR_PSIZE_8BIT);
+    dma_enable_memory_increment_mode(DMA1, DMA_STREAM0);
+    dma_set_peripheral_address(DMA1, DMA_STREAM0, (uint32_t) &I2C1_DR);
+    dma_channel_select(DMA1, DMA_STREAM0, DMA_SxCR_CHSEL_1);
+    dma_set_memory_address(DMA1, DMA_STREAM0, (u32) (i2c_tr.main_buffer));
+    dma_set_number_of_data(DMA1, DMA_STREAM0, (u16) (i2c_tr.main_buffer_count));
+    dma_disable_fifo_error_interrupt(DMA1, DMA_STREAM0);
+    dma_disable_half_transfer_interrupt(DMA1, DMA_STREAM0);
+    dma_enable_transfer_complete_interrupt(DMA1, DMA_STREAM0);
+    dma_enable_transfer_error_interrupt(DMA1, DMA_STREAM0);
+    dma_enable_stream(DMA1, DMA_STREAM0);
+    
+    dma1_i2c1_rx_complete = 0;
+    
+    i2c_set_dma_last_transfer(I2C1);
+    i2c_send_start(I2C1);
+    
+    while (dma1_i2c1_rx_complete == 0) __asm__("NOP");
+    
+    i2c_send_stop(I2C1);
+    i2c_disable_dma(I2C1);
+
+    return i2c_tr.last_error;
 }
 
 void dma1_stream0_isr(void) {
     dma_stream_reset(DMA1, DMA_STREAM0);
     dma_disable_stream(DMA1, DMA_STREAM0);
-    
-    i2c_send_stop(I2C1);
-    i2c_disable_dma(I2C1);
-    
     dma1_i2c1_rx_complete = 1;
-    //debug_print("dma1_stream0_isr");
 }
 
 void dma1_stream6_isr(void) {
     dma_stream_reset(DMA1, DMA_STREAM6);
     dma_disable_stream(DMA1, DMA_STREAM6);
-    
-    i2c_send_stop(I2C1);
-    i2c_disable_dma(I2C1);
-
     dma1_i2c1_tx_complete = 1;
-    //debug_print("dma1_stream6_isr");
 }
 
 void start_leds(void) {
@@ -450,10 +508,18 @@ u8 __to_hex(u8 in) {
 }
 
 void debug_print_hex(u8* blob, u16 len) {
-    u16 i = 0;
+    u16 i = 0, nl = 0;
     for (i=0; i<len; i++) {
         usart_send_blocking(USART2, __to_hex(blob[i] >> 4));
         usart_send_blocking(USART2, __to_hex(blob[i]));
+        usart_send_blocking(USART2, ' ');
+        
+        nl++;
+        if (nl >= 16) {
+            nl = 0;
+            usart_send_blocking(USART2, '\r');
+            usart_send_blocking(USART2, '\n');
+        }
     }
         
     usart_send_blocking(USART2, '\r');

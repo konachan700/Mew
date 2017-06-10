@@ -77,7 +77,8 @@ int main(void) {
     start_all_clock();
     start_random();
     start_debug_usart();
-    debug_print("usart started.");
+    debug_print("Debug usart started.");
+    mewcrypt_aes256_gen_keys();
     
     start_leds();
     start_backlight();
@@ -93,34 +94,24 @@ int main(void) {
     statusbar_paint();
     draw_root_menu();
     
-    u32 data[128], cdata[128], edata[128];
-    memset(cdata, 0, 512);
-    memset(edata, 0, 512);
-    memset(data, 0x11, 512);
     
-    //memset_random_u32(data, 128);
-    debug_print("original");
-    debug_print_hex((u8*) data, 512);
+    /** TEST, TBD ***/
+    u8 datain[256]; u8 dataout[0x7ff];
+    int i;
     
-    mewcrypt_aes256_gen_testkeys();
-    mewcrypt_aes256(MEW_ENCRYPT, data, cdata, 128);
+    memset(dataout, 0x55, 0x7ff);
+    memset(datain, 0x00, 256);
     
-    debug_print("encrypted");
-    debug_print_hex((u8*) cdata, 512);
+    if (i2c_fram_write_dma(0, 0, dataout, 0x100) != 0) debug_print("mewcrypt_fram_page_write fail!");
+    if (i2c_fram_read_dma(0, 0, datain, 0x100) != 0) debug_print("mewcrypt_fram_page_write fail!");
+    if (i2c_fram_write_dma(1, 0, dataout, 0x100) != 0) debug_print("mewcrypt_fram_page_write fail!");
+    if (i2c_fram_read_dma(0, 0, datain, 0x100) != 0) debug_print("mewcrypt_fram_page_write fail!");
     
-    //mewcrypt_aes256_gen_testkeys();
-    mewcrypt_aes256(MEW_DECRYPT, cdata, edata, 128);
+    debug_print("mewcrypt_fram_page_read");
+    debug_print_hex(datain, 256);
     
-    debug_print("decrypted");
-    debug_print_hex((u8*) edata, 512);
-    /*
-    
-    sdio_rw512(SDIO_WRITE, 0, data);
-    
-    memset(data, 0x00, 512);
-    
-    sdio_rw512(SDIO_READ, 0, data);
-    debug_print_hex((u8*) data, 512);*/
+    /** END TEST ***/
+
 
     mew_hid_usb_init();
 
