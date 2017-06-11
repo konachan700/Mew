@@ -9,6 +9,8 @@
 #include <libopencm3/usb/hid.h>
 #include <libopencm3/cm3/nvic.h>
 
+#include "board.h" 
+
 #define USB_DEVICE_DESCRIPTOR_TYPE              0x01
 #define USB_CONFIGURATION_DESCRIPTOR_TYPE       0x02
 #define USB_STRING_DESCRIPTOR_TYPE              0x03

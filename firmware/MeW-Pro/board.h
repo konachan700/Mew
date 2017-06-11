@@ -13,6 +13,8 @@
 #include <libopencm3/stm32/dma.h>
 #include <libopencm3/stm32/i2c.h>
 #include <libopencm3/stm32/sdio.h>
+#include <libopencm3/stm32/crc.h>
+#include <libopencm3/stm32/spi.h>
 
 #include <errno.h>
 #include <stdio.h>
@@ -25,15 +27,13 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
+typedef signed int s16;
+
 #define LIGHT_UI_THEME
 
+#define CREATE_DEMO_PASSWORDS
+
 #define SPI_RX_DUMMY_BUF_SIZE 16
-#define I2C_TIMEOUT (1024 * 1024)
-
-#define I2C_TR_TYPE_ADDR 1
-#define I2C_TR_TYPE_DATA 2
-
-#define I2C_NO_DMA (1 << 1)
 
 struct dma1_i2c1_transaction {
     u8  dev_addr;
@@ -46,13 +46,12 @@ struct dma1_i2c1_transaction {
     u32 flags;
 };
 
-#include "ui.h"
-#include "ILI9341.h"
-#include "menu.h"
+#include "font_icons_gmd.h"
 
 extern void start_random(void);
 extern u32 random_u32(void);
 extern void memset_random_u32(u32* data, u16 len);
+extern u32 crc_gen(u32* data, u16 len);
 
 extern void start_debug_usart(void);
 extern void start_all_clock(void);
@@ -60,11 +59,7 @@ extern void start_timer_2(void);
 extern void start_backlight(void);
 extern void start_buttons(void);
 extern void start_leds(void);
-
 extern void start_i2c1(void);
-//extern void i2c_dma_req(struct dma1_i2c1_transaction* i2c_tr);
-//extern void i2c_read_dma_wait(void);
-//extern void i2c_write_dma_wait(void);
 
 extern u32 i2c_fram_read_dma(u8 page, u8 start_byte, u8* buffer, u16 count);
 extern u32 i2c_fram_write_dma(u8 page, u8 start_byte, u8* buffer, u16 count);

@@ -11,7 +11,6 @@
 
 #include "ui.h"
 #include "ILI9341.h"
-#include "menu.h"
 #include "board.h" 
 #include "usb_hid.h"
 #include "sdcard.h" 
@@ -75,10 +74,10 @@ void tim2_isr(void) {
 
 int main(void) {   
     start_all_clock();
+    
     start_random();
     start_debug_usart();
-    debug_print("Debug usart started.");
-    mewcrypt_aes256_gen_keys();
+    debug_print("\r\n\r\n ************* Debug usart started *************");
     
     start_leds();
     start_backlight();
@@ -87,34 +86,18 @@ int main(void) {
     start_i2c1();
     start_sdio();
     
+    mewcrypt_aes256_gen_keys();
+    
     start_spi_2_non_dma();
     display_setup();
     start_spi_2_dma();
-    display_fill(0, 0, 0);
     statusbar_paint();
-    draw_root_menu();
+    menu_init();
     
-    
-    /** TEST, TBD ***/
-    u8 datain[256]; u8 dataout[0x7ff];
-    int i;
-    
-    memset(dataout, 0x55, 0x7ff);
-    memset(datain, 0x00, 256);
-    
-    if (i2c_fram_write_dma(0, 0, dataout, 0x100) != 0) debug_print("mewcrypt_fram_page_write fail!");
-    if (i2c_fram_read_dma(0, 0, datain, 0x100) != 0) debug_print("mewcrypt_fram_page_write fail!");
-    if (i2c_fram_write_dma(1, 0, dataout, 0x100) != 0) debug_print("mewcrypt_fram_page_write fail!");
-    if (i2c_fram_read_dma(0, 0, datain, 0x100) != 0) debug_print("mewcrypt_fram_page_write fail!");
-    
-    debug_print("mewcrypt_fram_page_read");
-    debug_print_hex(datain, 256);
-    
-    /** END TEST ***/
-
-
     mew_hid_usb_init();
-
+    
+    debug_print("MeW started!");
+    
 	while(1) {
         if (is_any_button_pressed != 0) {
             button_pressed(is_any_button_pressed);

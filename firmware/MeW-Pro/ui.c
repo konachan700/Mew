@@ -1,9 +1,202 @@
 #include "ui.h"
 
-struct menu_ui_element menu[MENU_ELEMENTS_COUNT];
-struct menu_ui_element* current_menu_page = NULL;
-struct menu_ui_element* selected_menu = NULL;
-signed int menu_local_sel_index = 0;
+#define ERROR_MESSAGE_NO_SD_CARD "Can't reading root password record. Memory card is not present or corrupted."
+
+struct menu_ui_element root_menu[MENU_ITEMS_IN_ROOT]= {{
+    0,
+    "Passwords", "My passwords wallet",
+    icon_E32A,
+    0, 0, 1,
+    __menu_enter_hanler,
+    __menu_exit_hanler,
+    NULL
+}, {
+    0,
+    "Config mode", "Change MeW settings from PC",
+    icon_E1E0,
+    0, 1, 1,
+    NULL,
+    NULL,
+    NULL
+}, /*{
+    0,
+    "Disk mode", "For use internal secure uSD",
+    0, 0, 1,
+    NULL,
+    NULL,
+    NULL
+},*/ {
+    0,
+    "About MeW", "Display information about MeW",
+    icon_E02F,
+    0, 0, 1,
+    NULL,
+    NULL,
+    NULL
+}};
+
+volatile u32 menu_type          = MENU_TYPE_MAIN;
+volatile u32 current_menu_id    = 0;
+volatile u32 selected_menu_id   = 0;
+s16 menu_local_sel_index        = 0;
+s16 menu_local_sel_page         = 0;
+s16 menu_items_count            = MENU_ITEMS_IN_ROOT;
+
+u32 menu_id_list[MEW_PASSWORD_EXTRA_SIZE];
+
+struct menu_ui_element passwords_displayed_menu[MENU_ELEMENTS_COUNT];
+struct password_record passwords_temp_pwd_record;
+
+
+//struct menu_ui_element* selected_menu           = NULL;
+//struct menu_ui_element* current_menu_page       = root_menu;
+//struct menu_ui_element* current_menu            = NULL;
+
+void __fatal_error(u8* title, u8* text) {
+    display_fill(255, 255, 255);
+    direct_draw_string_ml(title, 10, 10, 200, 300, 3, 255, 0, 0);
+    direct_draw_string_ml(text, 10, 40, 200, 300, 2, 0, 0, 0);
+    while (1) __asm__("NOP");
+}
+
+void mem_manage_handler(void) {
+    debug_print("mem_manage_handler");
+    while(1) gpio_toggle(GPIOC, GPIO3);
+}
+
+void hard_fault_handler(void) {
+    debug_print("hard_fault_handler");
+    while(1) gpio_toggle(GPIOC, GPIO3);
+}
+
+void usage_fault_handler(void) {
+    debug_print("usage_fault_handler");
+    while(1) gpio_toggle(GPIOC, GPIO3);
+}
+
+void bus_fault_handler(void) {
+    debug_print("bus_fault_handler");
+    while(1) gpio_toggle(GPIOC, GPIO3);
+}
+
+void __message_info(u8* title) {
+    __menu_paint_all();
+    direct_draw_string_ml(title, STATUSBAR_W + MENU_ITEM_PADDING_LEFT, 20, 200, 300, 2, 122, 122, 122);
+}
+
+u16 __passwords_get_list_size(u32* e) {
+    u16 k=0;
+    for (u16 i=0; i<64; i++)
+        if (e[i] != 0) k++;
+    return k;
+}
+
+void __gen_passwords_menu_id_list(void) {
+    if (mewcrypt_get_pwd_record(&passwords_temp_pwd_record, current_menu_id) != MEW_CRYPT_OK)
+        __fatal_error("Error #90", ERROR_MESSAGE_NO_SD_CARD);
+    memcpy(menu_id_list, passwords_temp_pwd_record.extra, MEW_PASSWORD_EXTRA_SIZE * sizeof(u32));
+}
+
+u32 __passwords_get_parent(u32 child_id) {
+    if (child_id == 0) return MEW_PASSWORD_RECORD_NO_PARENT;
+    if (mewcrypt_get_pwd_record(&passwords_temp_pwd_record, child_id) != MEW_CRYPT_OK) 
+        __fatal_error("Error #92", ERROR_MESSAGE_NO_SD_CARD);
+    return passwords_temp_pwd_record.parent_id;
+}
+
+void __passwords_extras_to_menu(void) {
+    u32 elements_count = __passwords_get_list_size(menu_id_list);
+    u32 menu_id;
+    
+    for (u16 i=0; i<MENU_ELEMENTS_COUNT; i++) {
+        menu_id = menu_id_list[i + (MENU_ELEMENTS_COUNT * menu_local_sel_page)];
+        if (menu_id > 0) {
+            if (mewcrypt_get_pwd_record(&passwords_temp_pwd_record, menu_id) != MEW_CRYPT_OK) 
+                __fatal_error("Error #91", ERROR_MESSAGE_NO_SD_CARD);
+            
+            if (passwords_temp_pwd_record.magic != MEW_PASSWORD_RECORD_MAGIC)
+                __fatal_error("Error #93", ERROR_MESSAGE_NO_SD_CARD);
+            
+            passwords_displayed_menu[i].id = passwords_temp_pwd_record.id;
+            passwords_displayed_menu[i].visible = 1;
+            passwords_displayed_menu[i].disp_number = i;
+            passwords_displayed_menu[i].icon = ((passwords_temp_pwd_record.flags & PASSWORD_FLAG_DIRECTORY) != 0) ? icon_E2C7 : icon_E0DA;
+            passwords_displayed_menu[i].selected = 0;
+
+            memcpy(&passwords_displayed_menu[i].name, &passwords_temp_pwd_record.title, MEW_PASSWORD_RECORD_TITLE_LEN);
+            memcpy(&passwords_displayed_menu[i].text, &passwords_temp_pwd_record.text, MEW_PASSWORD_RECORD_TEXT_LEN);
+        } else {
+            passwords_displayed_menu[i].id = 0;
+            passwords_displayed_menu[i].visible = 0;
+        }
+        
+        passwords_displayed_menu[menu_local_sel_index + (MENU_ELEMENTS_COUNT * menu_local_sel_page)].selected = 1;
+    }
+}
+
+void __menu_enter_hanler(u32 id, u32 type) {
+    switch (type) {
+        case MENU_TYPE_MAIN:
+            switch (id) {
+                case 0:
+                    menu_type = MENU_TYPE_PASSWORDS;
+                    current_menu_id = 0;
+                    __gen_passwords_menu_id_list();
+                    __passwords_extras_to_menu();
+                    __menu_paint_all();
+                    break;
+                case 1:
+                    
+                    break;
+                case 2:
+                    
+                    break;
+                case 3:
+                    
+                    break;
+            }
+            break;
+        case MENU_TYPE_PASSWORDS:
+                current_menu_id = menu_id_list[id + (MENU_ELEMENTS_COUNT * menu_local_sel_page)];
+                __gen_passwords_menu_id_list();
+                __passwords_extras_to_menu();
+                __menu_paint_all();
+            break;
+    }
+}
+
+void __menu_exit_hanler(u32 id, u32 type) {
+    switch (type) {
+        case MENU_TYPE_MAIN:
+            
+            break;
+        case MENU_TYPE_PASSWORDS:
+
+            break;
+    }
+}
+
+void __go_to_main_menu(void) {
+    menu_type        = MENU_TYPE_MAIN;
+    current_menu_id  = 0;
+    menu_items_count = MENU_ITEMS_IN_ROOT;
+    selected_menu_id = 0;
+    
+    for (u16 i=0; i<MENU_ELEMENTS_COUNT; i++) {
+        if (i < MENU_ITEMS_IN_ROOT) {
+            memcpy(&passwords_displayed_menu[i], &root_menu[i], sizeof(struct menu_ui_element));
+            passwords_displayed_menu[i].visible = 1;
+            passwords_displayed_menu[i].disp_number = i;
+        } else {
+            passwords_displayed_menu[i].id = 0;
+            passwords_displayed_menu[i].visible = 0;
+        }
+        passwords_displayed_menu[i].selected = 0;
+    }
+    passwords_displayed_menu[0].selected = 1;
+    
+    __menu_paint_all();
+}
 
 void statusbar_paint(void) {
     g_clear_buf(STATUSBAR_BUF, 180, 200, 180);
@@ -37,29 +230,16 @@ void menu_item_paint(struct menu_ui_element* element) {
     g_commit(MENU_ELEMENT_BUF, element->disp_number);
 }
 
-void menu_reset_selection(void) {
-    u16 i;
-    for (i=0; i<MENU_ELEMENTS_COUNT; i++) menu[i].selected = 0;
-    if (MENU_ELEMENTS_COUNT > 0) {
-        menu[0].selected = 1;
-        selected_menu = &menu[0];
-    }
-}
-
-void menu_add_all(struct menu_ui_element* element, u16 count) {
-    u16 i;
-    for (i=0; i<count; i++) {
-        if (i >= MENU_ELEMENTS_COUNT) return;
-        menu[i] = element[i];
-    }
-}
-
-void menu_paint_all(void) {
-    u16 i;
-    for (i=0; i<MENU_ELEMENTS_COUNT; i++) {
-        if (menu[i].visible == 1) {
-            menu[i].disp_number = i;
-            menu_item_paint(&menu[i]);
+void __menu_paint_all(void) {   
+    for (u16 i=0; i<MENU_ELEMENTS_COUNT; i++) {
+        if (menu_items_count > i) {
+            if (passwords_displayed_menu[i].visible == 1) {
+                passwords_displayed_menu[i].disp_number = i;
+                menu_item_paint(&passwords_displayed_menu[i]);
+            } else {
+                g_clear_buf(MENU_ELEMENT_BUF, COLOR_R_0, COLOR_G_0, COLOR_B_0);
+                g_commit(MENU_ELEMENT_BUF, i);
+            }
         } else {
             g_clear_buf(MENU_ELEMENT_BUF, COLOR_R_0, COLOR_G_0, COLOR_B_0);
             g_commit(MENU_ELEMENT_BUF, i);
@@ -67,49 +247,64 @@ void menu_paint_all(void) {
     }
 }
 
-u16 __get_menu_count(void) {
-    u16 i;
-    for (i=0; i<MENU_ELEMENTS_COUNT; i++) 
-        if (menu[i].visible == 0) return i;
-    return MENU_ELEMENTS_COUNT;
+void __select_mi(u16 count_total) {
+    for (u16 i=0; i<count_total; i++) 
+        passwords_displayed_menu[i].selected = 0;
+    
+    selected_menu_id = (menu_local_sel_page * MENU_ELEMENTS_COUNT) + menu_local_sel_index;
+    passwords_displayed_menu[selected_menu_id].selected = 1;
+    //selected_menu = &passwords_displayed_menu[selected_menu_id];
 }
 
 void __menu_down(void) {
-    u16 count = __get_menu_count();
+    if (menu_items_count == 0) return;
+    
+    u16 count_page = (menu_items_count > MENU_ELEMENTS_COUNT) ? MENU_ELEMENTS_COUNT : menu_items_count;
+    u16 curr_index = 0;
+
     menu_local_sel_index++;
-    if (menu_local_sel_index >= count) {
+    if (menu_local_sel_index >= count_page) {
         menu_local_sel_index = 0;
-        menu[0].selected = 1;
-        menu[count - 1].selected = 0;
-        menu_item_paint(&menu[0]);
-        menu_item_paint(&menu[count - 1]);
-        selected_menu = &menu[0];
-    } else {
-        menu[menu_local_sel_index].selected = 1;
-        menu[menu_local_sel_index - 1].selected = 0;
-        menu_item_paint(&menu[menu_local_sel_index]);
-        menu_item_paint(&menu[menu_local_sel_index - 1]);
-        selected_menu = &menu[menu_local_sel_index];
+        menu_local_sel_page++;
+        
+        if ((menu_local_sel_page * MENU_ELEMENTS_COUNT) >= menu_items_count) {
+            menu_local_sel_page = 0;
+        }
+        
+        //__passwords_extras_to_menu();
     }
+    
+    __select_mi(menu_items_count);
+    __menu_paint_all();
 }
 
 void __menu_up(void) {
+    if (menu_items_count == 0) return;
+    
+    u16 count_page = (menu_items_count > MENU_ELEMENTS_COUNT) ? MENU_ELEMENTS_COUNT : menu_items_count;
+    u16 curr_index = 0;
+
     menu_local_sel_index--;
     if (menu_local_sel_index < 0) {
-        u16 count = __get_menu_count();
-        menu_local_sel_index = count - 1;
-        menu[0].selected = 0;
-        menu[count - 1].selected = 1;
-        menu_item_paint(&menu[0]);
-        menu_item_paint(&menu[count - 1]);
-        selected_menu = &menu[count - 1];
-    } else {
-        menu[menu_local_sel_index].selected = 1;
-        menu[menu_local_sel_index + 1].selected = 0;
-        menu_item_paint(&menu[menu_local_sel_index]);
-        menu_item_paint(&menu[menu_local_sel_index + 1]);
-        selected_menu = &menu[menu_local_sel_index];
+        menu_local_sel_index = (count_page - 1);
+        menu_local_sel_page--;
+        
+        if (menu_local_sel_page < 0) {
+            menu_local_sel_page = menu_items_count / MENU_ELEMENTS_COUNT;
+        }
+        
+        //__passwords_extras_to_menu();
     }
+
+    __select_mi(menu_items_count);
+    __menu_paint_all();
+}
+
+void menu_init(void) {
+    menu_local_sel_index = 0;
+    menu_local_sel_page = 0;
+    
+    __go_to_main_menu();
 }
 
 void button_pressed(u8 button) {
@@ -121,14 +316,13 @@ void button_pressed(u8 button) {
             __menu_down();
             break;
         case BUTTON_OK:
-            if (selected_menu != NULL)
+            __menu_enter_hanler(current_menu_id, menu_type);
+            /*if (selected_menu != NULL)
                 if (selected_menu->on_enter != NULL)
-                    selected_menu->on_enter(selected_menu);
+                    selected_menu->on_enter(selected_menu_id, menu_type);*/
             break;
         case BUTTON_BACK:
-            if (current_menu_page != NULL)
-                if (current_menu_page->on_leave != NULL)
-                    current_menu_page->on_leave(current_menu_page);
+            __menu_exit_hanler(current_menu_id, menu_type);
             break;
     }
 }

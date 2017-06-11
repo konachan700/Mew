@@ -7,6 +7,8 @@
 
 #include "ILI9341.h"
 #include "font_icons_gmd.h"
+#include "crypt.h"
+#include "usb_hid.h"
 
 #include <libopencm3/stm32/gpio.h>
 
@@ -27,6 +29,11 @@
     #define COLOR_G_0 255
     #define COLOR_B_0 255
 #endif
+
+#define MENU_TYPE_MAIN 1
+#define MENU_TYPE_PASSWORDS 2
+
+#define MENU_ITEMS_IN_ROOT          3
 
 #define MENU_ITEM_PADDING_TOP       4
 #define MENU_ITEM_PADDING_LEFT      7
@@ -53,27 +60,36 @@ struct menu_ui_window {
     u8* title;
     u8* text;
     u8 type;
-    void (*on_enter)(struct menu_ui_window* this_window);
-    void (*on_leave)(struct menu_ui_window* this_window);
+    void (*on_enter)(u32 id, u32 type);
+    void (*on_leave)(u32 id, u32 type);
 };
 
-struct menu_ui_element {
+struct menu_ui_element { //119
     u32 id;
-    u8* name;
-    u8* text;
+    u8 name[MEW_PASSWORD_RECORD_TITLE_LEN];
+    u8 text[MEW_PASSWORD_RECORD_TEXT_LEN];
     const u8* icon;
     u8 disp_number;
     u8 selected;
     u8 visible;
-    void (*on_enter)(struct menu_ui_element* this_menu);
-    void (*on_leave)(struct menu_ui_element* this_menu);
+    void (*on_enter)(u32 id, u32 type);
+    void (*on_leave)(u32 id, u32 type);
     struct menu_ui_element* parent;
 };
 
+u16 __passwords_get_list_size(u32* e);
+void __gen_passwords_menu_id_list(void);
+u32 __passwords_get_parent(u32 child_id);
+void __passwords_extras_to_menu(void);
+void __go_to_main_menu(void);
+void __menu_paint_all(void);
+void __select_mi(u16 count_total);
+
+void __menu_enter_hanler(u32 id, u32 type);
+void __menu_exit_hanler(u32 id, u32 type);
+
 extern void button_pressed(u8 button);
 extern void statusbar_paint(void);
-extern void menu_paint_all(void);
-extern void menu_reset_selection(void);
-extern void menu_add_all(struct menu_ui_element* element, u16 count);
+extern void menu_init(void);
 
 #endif

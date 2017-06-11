@@ -167,7 +167,7 @@ void __direct_draw_char(u8 ascii, u16 x, u16 y, u16 size, u16 r, u16 g, u16 b, u
     u16 a, n, z, e;
 
     if (char_buf == NULL) return;
-    for (a=0; a<buf_size; a++) char_buf[a] = 0x00;
+    for (a=0; a<buf_size; a++) char_buf[a] = 0xFF;
     
     for (a=0; a<FONT_W; a++) {
         c = font_ru[(ascii * FONT_W) + a];
@@ -201,6 +201,7 @@ void direct_draw_string(u8* ascii, u16 x, u16 y, u16 size, u16 r, u16 g, u16 b) 
     
     char_buf_size = (size * FONT_W) * (FONT_H * size) * 2;
     char_buf = (u8*) malloc(char_buf_size);
+    memset(char_buf, 0xFF, char_buf_size);
     
     for (i=0; i<len; i++) {
         __direct_draw_char(text_buf[i], x + (FONT_SPACE * size * i) + (FONT_W * size * i), y, size, r, g, b, char_buf_size);
@@ -219,6 +220,7 @@ void direct_draw_string_ml(u8* ascii, u16 x, u16 y, u16 frame_w, u16 frame_h, u1
     
     char_buf_size = (size * FONT_W) * (FONT_H * size) * 2;
     char_buf = (u8*) malloc(char_buf_size);
+    memset(char_buf, 0xFF, char_buf_size);
     
     for (i=0; i<len; i++) {
         x_pos = ((FONT_SPACE * size * curr_char) + (FONT_W * size * curr_char));

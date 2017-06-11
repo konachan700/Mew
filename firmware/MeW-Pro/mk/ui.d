@@ -83,9 +83,20 @@ mk/ui.o: ui.c ui.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/i2c_common_f24.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/i2c_common_all.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/sdio.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/crc.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/crc.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/crc_common_all.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/errno.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/errno.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/string.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_locale.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/string.h \
- menu.h font_icons_gmd.h font_ru.h
+ font_icons_gmd.h font_ru.h crypt.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/crypto.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/crypto.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/crypto_common_f24.h \
+ sdcard.h usb_hid.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/cm3/systick.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/usb/usbd.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/usb/usbstd.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/usb/hid.h

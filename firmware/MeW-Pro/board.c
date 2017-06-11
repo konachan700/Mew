@@ -35,6 +35,11 @@ const struct rcc_clock_scale rcc_hse_8mhz_3v3_96MHz = {
 static inline void __disable_irq(void)  { asm volatile("cpsid i"); }
 static inline void __enable_irq(void)   { asm volatile("cpsie i"); }
 
+u32 crc_gen(u32* data, u16 len) {
+    crc_reset();
+    return crc_calculate_block(data, len);
+}
+
 void start_random(void) {
     RNG_CR |= RNG_CR_IE;
     RNG_CR |= RNG_CR_RNGEN;
@@ -51,11 +56,8 @@ u32 random_u32(void) {
 }
 
 void memset_random_u32(u32* data, u16 len) {
-    u16 i;
-    for (i=0; i<len; i++) data[i] = random_u32();
+    for (u16 i=0; i<len; i++) data[i] = random_u32();
 }
-
-
 
 void start_i2c1(void) {
     gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO8 | GPIO9);
@@ -546,13 +548,14 @@ void start_all_clock(void) {
     rcc_periph_clock_enable(RCC_SDIO);
     rcc_periph_clock_enable(RCC_RNG);
     rcc_periph_clock_enable(RCC_CRYP);
+    rcc_periph_clock_enable(RCC_CRC);
 }
 
 void start_timer_2(void) {
 	nvic_enable_irq(NVIC_TIM2_IRQ);
 	nvic_set_priority(NVIC_TIM2_IRQ, 4);
 	timer_set_mode(TIM2, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-	timer_set_prescaler(TIM2, 2400);
+	timer_set_prescaler(TIM2, 1200);
 	timer_disable_preload(TIM2);
 	timer_continuous_mode(TIM2);
 	timer_set_period(TIM2, 1000);

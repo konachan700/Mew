@@ -62,7 +62,7 @@ CPPFLAGS	+= -I$(INCLUDE_DIR) $(DEFS)
 
 ###############################################################################
 # Linker flags
-LDFLAGS		+= --static -nostartfiles -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group 
+LDFLAGS		+= --static -nostartfiles -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group -Wl,-Map=mew.map
 LDFLAGS		+= -L$(LIB_DIR)
 LDFLAGS		+= -T$(LDSCRIPT)
 LDFLAGS		+= -Wl,-Map=$(*).map
@@ -104,6 +104,11 @@ $(SRC) : %.c : %.h $(INDEPENDENT_HEADERS)
 $(BIN): $(ELF)
 	@printf "  OBJCOPY $(BIN)\n"
 	$(OBJCOPY) -Obinary $(ELF) $(BIN)
+	@echo ""
+	@echo ""
+	@arm-none-eabi-size mk/mew.elf
+	@echo ""
+	@echo ""
 
 $(HEX): $(ELF)
 	@printf "  OBJCOPY $(HEX)\n"

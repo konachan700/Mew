@@ -82,9 +82,12 @@ mk/ILI9341.o: ILI9341.c ILI9341.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/i2c_common_f24.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/i2c_common_all.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/sdio.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/crc.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/crc.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/crc_common_all.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/errno.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/errno.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/string.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_locale.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/string.h \
- ui.h font_icons_gmd.h menu.h font_ru.h
+ font_icons_gmd.h font_ru.h

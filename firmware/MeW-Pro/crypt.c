@@ -5,11 +5,11 @@ struct security_information* sec_info;
 volatile u8 dma2_crypt_in_complete = 1;
 volatile u8 dma2_crypt_out_complete = 1;
 
+u32 temporary_sector[128];
+
 static inline struct security_information* crypt_get_security_information(void) {
 	return (struct security_information*)(FLASH_SI_GLOBAL_OFFSET);
 }
-
-
 
 u32 mewcrypt_aes256_gen_keys(void) {
     sec_info = crypt_get_security_information();
@@ -17,8 +17,8 @@ u32 mewcrypt_aes256_gen_keys(void) {
         struct security_information sec_info_temp;
         sec_info_temp.magic = MEW_SECURITY_INFO_MAGIC;
         sec_info_temp.uid = random_u32();
-        memset_random_u32((u32*) sec_info_temp.key, 32);
-        memset_random_u32((u32*) sec_info_temp.iv, 16);
+        memset_random_u32((u32*) sec_info_temp.key, 8);
+        memset_random_u32((u32*) sec_info_temp.iv, 4);
         
         flash_unlock();
         flash_erase_sector(7, 2);
@@ -138,68 +138,216 @@ void dma2_stream6_isr(void) {
 }
 
 u32 mewcrypt_sd_block_read(u32 block, u32* data) {
-    u32 crypted[128];
-    u32 state = sdio_rw512(SDIO_READ, block, crypted);
+    u32 state = sdio_rw512(SDIO_READ, block, temporary_sector);
     if (state == SDIO_OK) {
-        mewcrypt_aes256(MEW_DECRYPT, crypted, data, 128);
+        mewcrypt_aes256(MEW_DECRYPT, temporary_sector, data, 128);
         return MEW_CRYPT_OK;
     }
     return MEW_CRYPT_ERROR;
 }
 
 u32 mewcrypt_sd_block_write(u32 block, u32* data) {
-    u32 crypted[128];
-    mewcrypt_aes256(MEW_ENCRYPT, data, crypted, 128);
-    if (sdio_rw512(SDIO_WRITE, block, crypted) == SDIO_OK) return MEW_CRYPT_OK;
+    mewcrypt_aes256(MEW_ENCRYPT, data, temporary_sector, 128);
+    if (sdio_rw512(SDIO_WRITE, block, temporary_sector) == SDIO_OK) return MEW_CRYPT_OK;
     return MEW_CRYPT_ERROR;
 }
 
 u32 mewcrypt_fram_page_read(u8 page, u32* data) {
     if (page >= FRAM_PAGES_COUNT) return MEW_CRYPT_ERROR;
-    
-    u32 crypted[64];
-    
-    
-    if (i2c_fram_read_dma(page, 0, (u8*) crypted, 256) != 0) return MEW_CRYPT_ERROR;
-    debug_print("mewcrypt_fram_page_read 1");
-    debug_print_hex((u8*)crypted, 256);
-    //if (i2c_fram_read_dma(2, 128, (u8*) (crypted+128), 128) != 0) return MEW_CRYPT_ERROR;
-    
-    mewcrypt_aes256(MEW_DECRYPT, crypted, data, 64);
+    if (i2c_fram_read_dma(page, 0, (u8*) temporary_sector, 256) != 0) return MEW_CRYPT_ERROR;
+    mewcrypt_aes256(MEW_DECRYPT, temporary_sector, data, 64);
     return MEW_CRYPT_OK;
 }
 
 u32 mewcrypt_fram_page_write(u8 page, u32* data) {
     if (page >= FRAM_PAGES_COUNT) return MEW_CRYPT_ERROR;
+    mewcrypt_aes256(MEW_ENCRYPT, data, temporary_sector, 64);
+    if (i2c_fram_write_dma(page, 0, (u8*) temporary_sector, 256) != 0) return MEW_CRYPT_ERROR;
+    return MEW_CRYPT_OK;
+}
+
+u32 mewcrypt_get_root_password_dir(struct password_record* pr) {   
+    struct password_sector* ps = (struct password_sector*) temporary_sector;
     
-    //struct dma1_i2c1_transaction i2c_tr;
+    if (mewcrypt_sd_block_read(0, temporary_sector) == MEW_CRYPT_ERROR) 
+        return MEW_CRYPT_ERROR;
     
-    u32 crypted[64];
-    mewcrypt_aes256(MEW_ENCRYPT, data, crypted, 64);
+    if (ps->crc32 != crc_gen((u32*) (&ps->password), sizeof(struct password_record) / sizeof(u32))) {
+        struct password_record ps_new;
+        ps_new.magic = MEW_PASSWORD_RECORD_MAGIC;
+        ps_new.id = 0;
+        ps_new.parent_id = MEW_PASSWORD_RECORD_NO_PARENT;
+        ps_new.display_number = 0;
+        memset(ps_new.title, 0xFF, MEW_PASSWORD_RECORD_TITLE_LEN);
+        memset(ps_new.text, 0xFF, MEW_PASSWORD_RECORD_TEXT_LEN);
+        memset(ps_new.login, 0xFF, MEW_PASSWORD_RECORD_LOGIN_LEN);
+        ps_new.icon = icon_E0DA;
+        ps_new.flags = 0;
+        memset(ps_new.extra, 0x00, 256);
+        
+        #ifdef CREATE_DEMO_PASSWORDS
+        ps_new.extra[0] = 0x01;
+        ps_new.extra[1] = 0x02;
+        ps_new.extra[2] = 0x03;        
+        #endif
+        
+        memset(temporary_sector, 0x00, 512);
+        
+        ps->crc32 = crc_gen((u32*) &ps_new, sizeof(struct password_record) / sizeof(u32));
+        memcpy(&ps->password, &ps_new, sizeof(struct password_record));
+
+        if (mewcrypt_sd_block_write(0, temporary_sector) == MEW_CRYPT_ERROR) 
+            return MEW_CRYPT_ERROR;
+        
+        #ifdef CREATE_DEMO_PASSWORDS
+        
+        ps_new.id = 1;
+        ps_new.parent_id = 0;
+        strncpy(ps_new.title, "DEMO 01", MEW_PASSWORD_RECORD_TITLE_LEN);
+        strncpy(ps_new.text, "Test password MeW 01", MEW_PASSWORD_RECORD_TEXT_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        ps_new.icon = NULL;
+        ps_new.flags = PASSWORD_FLAG_DIRECTORY;
+        ps_new.extra[0] = 0x04;
+        ps_new.extra[1] = 0x05;
+        ps_new.extra[2] = 0x00;
+        mewcrypt_write_pr(&ps_new, ps_new.id);
+
+        ps_new.id = 2;
+        ps_new.parent_id = 0;
+        strncpy(ps_new.title, "DEMO 02", MEW_PASSWORD_RECORD_TITLE_LEN);
+        strncpy(ps_new.text, "Test password MeW 02", MEW_PASSWORD_RECORD_TEXT_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        ps_new.icon = NULL;
+        ps_new.flags = PASSWORD_FLAG_DIRECTORY;
+        ps_new.extra[0] = 0x00;
+        ps_new.extra[1] = 0x00;
+        ps_new.extra[2] = 0x00;
+        mewcrypt_write_pr(&ps_new, ps_new.id);
+        
+        ps_new.id = 3;
+        ps_new.parent_id = 0;
+        strncpy(ps_new.title, "DEMO 03", MEW_PASSWORD_RECORD_TITLE_LEN);
+        strncpy(ps_new.text, "Test password MeW 03", MEW_PASSWORD_RECORD_TEXT_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        ps_new.icon = NULL;
+        ps_new.flags = 0;
+        mewcrypt_write_pr(&ps_new, ps_new.id);
+        
+        ps_new.id = 4;
+        ps_new.parent_id = 1;
+        strncpy(ps_new.title, "DEMO 04", MEW_PASSWORD_RECORD_TITLE_LEN);
+        strncpy(ps_new.text, "Test password MeW 04", MEW_PASSWORD_RECORD_TEXT_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        ps_new.icon = NULL;
+        ps_new.flags = PASSWORD_FLAG_DIRECTORY;
+        ps_new.extra[0] = 0x06;
+        ps_new.extra[1] = 0x07;
+        ps_new.extra[2] = 0x00;
+        mewcrypt_write_pr(&ps_new, ps_new.id);
+        
+        ps_new.id = 5;
+        ps_new.parent_id = 1;
+        strncpy(ps_new.title, "DEMO 05", MEW_PASSWORD_RECORD_TITLE_LEN);
+        strncpy(ps_new.text, "Test password MeW 05", MEW_PASSWORD_RECORD_TEXT_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        ps_new.icon = NULL;
+        ps_new.flags = 0;
+        ps_new.extra[0] = 0x00;
+        ps_new.extra[1] = 0x00;
+        ps_new.extra[2] = 0x00;
+        mewcrypt_write_pr(&ps_new, ps_new.id);
+        
+        ps_new.id = 6;
+        ps_new.parent_id = 4;
+        strncpy(ps_new.title, "DEMO 06", MEW_PASSWORD_RECORD_TITLE_LEN);
+        strncpy(ps_new.text, "Test password MeW 06", MEW_PASSWORD_RECORD_TEXT_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        ps_new.icon = NULL;
+        ps_new.flags = 0;
+        mewcrypt_write_pr(&ps_new, ps_new.id);
+        
+        ps_new.id = 7;
+        ps_new.parent_id = 4;
+        strncpy(ps_new.title, "DEMO 07", MEW_PASSWORD_RECORD_TITLE_LEN);
+        strncpy(ps_new.text, "Test password MeW 07", MEW_PASSWORD_RECORD_TEXT_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        ps_new.icon = NULL;
+        ps_new.flags = 0;
+        mewcrypt_write_pr(&ps_new, ps_new.id);
+        
+        #endif
+
+        debug_print("Root record corrupted or not exist!");
+        debug_print("New root record was created.");
+    }
     
-    /*
-    u8 crypted8[257];
-    crypted8[0] = 0;
-    memcpy(crypted8+1, crypted, 256);
+    memcpy(pr, &ps->password, sizeof(struct password_record));
+    return MEW_CRYPT_OK;
+}
+
+u32 mewcrypt_get_pwd_record(struct password_record* pr, u32 index) {
+    //if (index == 0) return MEW_CRYPT_ERROR;
+    struct password_sector* ps = (struct password_sector*) temporary_sector;
     
-    debug_print("mewcrypt_fram_page_write 1");
-    debug_print_hex((u8*)crypted8, 257);
+    if (mewcrypt_sd_block_read(index, temporary_sector) == MEW_CRYPT_ERROR) 
+        return MEW_CRYPT_ERROR;
     
-    i2c_tr.dev_addr     = (0xA0 >> 1) | (page & 0x07);
-    i2c_tr.read_write   = I2C_WRITE;
-    i2c_tr.buffer_count = 257;
-    i2c_tr.buffer       = crypted8;
-    i2c_tr.last_error   = 0;
-    i2c_dma_req(&i2c_tr);
-    //i2c_read_dma_wait();
+    if (ps->crc32 != crc_gen((u32*) (&ps->password), sizeof(struct password_record) / sizeof(u32))) 
+        return MEW_CRYPT_ERROR;
     
-    if (i2c_tr.last_error != 0) return MEW_CRYPT_ERROR;*/
-    
-    if (i2c_fram_write_dma(page, 0, (u8*) crypted, 256) != 0) return MEW_CRYPT_ERROR;
-    //if (i2c_fram_write_dma(page, 128, (u8*) (crypted+128), 128) != 0) return MEW_CRYPT_ERROR;
+    memcpy(pr, &ps->password, sizeof(struct password_record));
     
     return MEW_CRYPT_OK;
 }
+
+u32 mewcrypt_write_pr(struct password_record* pr, u32 index) {
+    //if (index == 0) return MEW_CRYPT_ERROR;
+    memset(temporary_sector, 0x00, 512);
+    
+    struct password_sector* ps = (struct password_sector*) temporary_sector;
+    ps->crc32 = crc_gen((u32*) (pr), sizeof(struct password_record) / sizeof(u32));
+    memcpy(&ps->password, pr, sizeof(struct password_record));
+    
+    if (mewcrypt_sd_block_write(index, temporary_sector) == MEW_CRYPT_ERROR) 
+        return MEW_CRYPT_ERROR;
+
+    return MEW_CRYPT_OK;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

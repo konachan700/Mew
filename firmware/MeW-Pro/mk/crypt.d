@@ -53,6 +53,14 @@ mk/crypt.o: crypt.c crypt.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/crypto.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/crypto_common_f24.h \
  board.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/crc.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/crc.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/crc_common_all.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/spi.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/spi.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/spi_common_f24.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/spi_common_l1f124.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/spi_common_all.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/errno.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/errno.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/reent.h \
@@ -85,10 +93,4 @@ mk/crypt.o: crypt.c crypt.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/string.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_locale.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/string.h \
- ui.h ILI9341.h \
- /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/spi.h \
- /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/spi.h \
- /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/spi_common_f24.h \
- /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/spi_common_l1f124.h \
- /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/spi_common_all.h \
- utf8_to_cp1251.h font_ru.h font_icons_gmd.h menu.h sdcard.h
+ font_icons_gmd.h sdcard.h
