@@ -8,7 +8,7 @@
 #include "ILI9341.h"
 #include "font_icons_gmd.h"
 #include "crypt.h"
-#include "usb_hid.h"
+#include "mew_usb_hid.h"
 
 #include <libopencm3/stm32/gpio.h>
 
@@ -30,10 +30,12 @@
     #define COLOR_B_0 255
 #endif
 
-#define MENU_TYPE_MAIN 1
-#define MENU_TYPE_PASSWORDS 2
+#define MENU_TYPE_MAIN              1
+#define MENU_TYPE_PASSWORDS         2
+#define MENU_TYPE_SINGLE_PASSWORD   3
 
 #define MENU_ITEMS_IN_ROOT          3
+#define PASSWORD_MENU_ITEMS_COUNT   4
 
 #define MENU_ITEM_PADDING_TOP       4
 #define MENU_ITEM_PADDING_LEFT      7
@@ -72,9 +74,7 @@ struct menu_ui_element { //119
     u8 disp_number;
     u8 selected;
     u8 visible;
-    void (*on_enter)(u32 id, u32 type);
-    void (*on_leave)(u32 id, u32 type);
-    struct menu_ui_element* parent;
+    u32 flags;
 };
 
 u16 __passwords_get_list_size(u32* e);
@@ -84,6 +84,8 @@ void __passwords_extras_to_menu(void);
 void __go_to_main_menu(void);
 void __menu_paint_all(void);
 void __select_mi(u16 count_total);
+void __gen_one_password_menu(void);
+void __menu_down(void);
 
 void __menu_enter_hanler(u32 id, u32 type);
 void __menu_exit_hanler(u32 id, u32 type);

@@ -58,6 +58,7 @@ mk/sdcard.o: sdcard.c sdcard.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/spi_common_f24.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/spi_common_l1f124.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/spi_common_all.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/cm3/scb.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/errno.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/errno.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/reent.h \

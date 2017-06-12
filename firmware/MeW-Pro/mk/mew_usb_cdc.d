@@ -1,4 +1,4 @@
-mk/usb_hid.o: usb_hid.c usb_hid.h \
+mk/mew_usb_cdc.o: mew_usb_cdc.c mew_usb_cdc.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/stdlib.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/machine/ieeefp.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/_ansi.h \
@@ -33,14 +33,10 @@ mk/usb_hid.o: usb_hid.c usb_hid.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/gpio_common_f24.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/gpio_common_f234.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/gpio_common_all.h \
- /home/misaki/devel/stm32/libopencm3/include/libopencm3/cm3/systick.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/usb/usbd.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/usb/usbstd.h \
- /home/misaki/devel/stm32/libopencm3/include/libopencm3/usb/hid.h \
- /home/misaki/devel/stm32/libopencm3/include/libopencm3/cm3/nvic.h \
- /home/misaki/devel/stm32/libopencm3/include/libopencm3/dispatch/nvic.h \
- /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/nvic.h \
- board.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/usb/cdc.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/cm3/scb.h board.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/cm3/assert.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/flash.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/flash.h \
@@ -48,6 +44,9 @@ mk/usb_hid.o: usb_hid.c usb_hid.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/flash_common_f234.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/rng.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/rng_common_f24.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/cm3/nvic.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/dispatch/nvic.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/nvic.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/exti.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/exti.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/exti_common_all.h \

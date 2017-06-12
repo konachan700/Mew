@@ -39,8 +39,9 @@
 #define FONT_H                      7
 #define FONT_SPACE                  1
 #define LINE_SPACE                  4
+#define FONT_MAX_ALLOWED_SIZE       4
 
-#define MAX_CHARS_ON_LINE           (SCREEN_W / (FONT_W + FONT_SPACE))
+#define MAX_CHARS_IN_DO             768 //(SCREEN_W / (FONT_W + FONT_SPACE))
 #define MAX_CHARS_LINES             5
 
 #define BG_COLOR                    0x00

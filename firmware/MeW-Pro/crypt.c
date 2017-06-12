@@ -166,12 +166,7 @@ u32 mewcrypt_fram_page_write(u8 page, u32* data) {
     return MEW_CRYPT_OK;
 }
 
-u32 mewcrypt_get_root_password_dir(struct password_record* pr) {   
-    struct password_sector* ps = (struct password_sector*) temporary_sector;
-    
-    if (mewcrypt_sd_block_read(0, temporary_sector) == MEW_CRYPT_ERROR) 
-        return MEW_CRYPT_ERROR;
-    
+u32 __mewcrypt_generate_root_password_dir(struct password_sector* ps) {   
     if (ps->crc32 != crc_gen((u32*) (&ps->password), sizeof(struct password_record) / sizeof(u32))) {
         struct password_record ps_new;
         ps_new.magic = MEW_PASSWORD_RECORD_MAGIC;
@@ -180,7 +175,7 @@ u32 mewcrypt_get_root_password_dir(struct password_record* pr) {
         ps_new.display_number = 0;
         memset(ps_new.title, 0xFF, MEW_PASSWORD_RECORD_TITLE_LEN);
         memset(ps_new.text, 0xFF, MEW_PASSWORD_RECORD_TEXT_LEN);
-        memset(ps_new.login, 0xFF, MEW_PASSWORD_RECORD_LOGIN_LEN);
+        memset(ps_new.login, 0xFF, MEW_PASSWORD_RECORD_TEXT_LEN);
         ps_new.icon = icon_E0DA;
         ps_new.flags = 0;
         memset(ps_new.extra, 0x00, 256);
@@ -205,7 +200,7 @@ u32 mewcrypt_get_root_password_dir(struct password_record* pr) {
         ps_new.parent_id = 0;
         strncpy(ps_new.title, "DEMO 01", MEW_PASSWORD_RECORD_TITLE_LEN);
         strncpy(ps_new.text, "Test password MeW 01", MEW_PASSWORD_RECORD_TEXT_LEN);
-        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_TEXT_LEN);
         ps_new.icon = NULL;
         ps_new.flags = PASSWORD_FLAG_DIRECTORY;
         ps_new.extra[0] = 0x04;
@@ -217,7 +212,7 @@ u32 mewcrypt_get_root_password_dir(struct password_record* pr) {
         ps_new.parent_id = 0;
         strncpy(ps_new.title, "DEMO 02", MEW_PASSWORD_RECORD_TITLE_LEN);
         strncpy(ps_new.text, "Test password MeW 02", MEW_PASSWORD_RECORD_TEXT_LEN);
-        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_TEXT_LEN);
         ps_new.icon = NULL;
         ps_new.flags = PASSWORD_FLAG_DIRECTORY;
         ps_new.extra[0] = 0x00;
@@ -229,7 +224,7 @@ u32 mewcrypt_get_root_password_dir(struct password_record* pr) {
         ps_new.parent_id = 0;
         strncpy(ps_new.title, "DEMO 03", MEW_PASSWORD_RECORD_TITLE_LEN);
         strncpy(ps_new.text, "Test password MeW 03", MEW_PASSWORD_RECORD_TEXT_LEN);
-        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_TEXT_LEN);
         ps_new.icon = NULL;
         ps_new.flags = 0;
         mewcrypt_write_pr(&ps_new, ps_new.id);
@@ -238,7 +233,7 @@ u32 mewcrypt_get_root_password_dir(struct password_record* pr) {
         ps_new.parent_id = 1;
         strncpy(ps_new.title, "DEMO 04", MEW_PASSWORD_RECORD_TITLE_LEN);
         strncpy(ps_new.text, "Test password MeW 04", MEW_PASSWORD_RECORD_TEXT_LEN);
-        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_TEXT_LEN);
         ps_new.icon = NULL;
         ps_new.flags = PASSWORD_FLAG_DIRECTORY;
         ps_new.extra[0] = 0x06;
@@ -250,7 +245,7 @@ u32 mewcrypt_get_root_password_dir(struct password_record* pr) {
         ps_new.parent_id = 1;
         strncpy(ps_new.title, "DEMO 05", MEW_PASSWORD_RECORD_TITLE_LEN);
         strncpy(ps_new.text, "Test password MeW 05", MEW_PASSWORD_RECORD_TEXT_LEN);
-        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_TEXT_LEN);
         ps_new.icon = NULL;
         ps_new.flags = 0;
         ps_new.extra[0] = 0x00;
@@ -262,7 +257,7 @@ u32 mewcrypt_get_root_password_dir(struct password_record* pr) {
         ps_new.parent_id = 4;
         strncpy(ps_new.title, "DEMO 06", MEW_PASSWORD_RECORD_TITLE_LEN);
         strncpy(ps_new.text, "Test password MeW 06", MEW_PASSWORD_RECORD_TEXT_LEN);
-        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_TEXT_LEN);
         ps_new.icon = NULL;
         ps_new.flags = 0;
         mewcrypt_write_pr(&ps_new, ps_new.id);
@@ -271,7 +266,7 @@ u32 mewcrypt_get_root_password_dir(struct password_record* pr) {
         ps_new.parent_id = 4;
         strncpy(ps_new.title, "DEMO 07", MEW_PASSWORD_RECORD_TITLE_LEN);
         strncpy(ps_new.text, "Test password MeW 07", MEW_PASSWORD_RECORD_TEXT_LEN);
-        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_LOGIN_LEN);
+        strncpy(ps_new.login, "MeWLoginX1", MEW_PASSWORD_RECORD_TEXT_LEN);
         ps_new.icon = NULL;
         ps_new.flags = 0;
         mewcrypt_write_pr(&ps_new, ps_new.id);
@@ -280,18 +275,24 @@ u32 mewcrypt_get_root_password_dir(struct password_record* pr) {
 
         debug_print("Root record corrupted or not exist!");
         debug_print("New root record was created.");
+        
+        return MEW_CRYPT_ERROR;
     }
-    
-    memcpy(pr, &ps->password, sizeof(struct password_record));
     return MEW_CRYPT_OK;
 }
 
 u32 mewcrypt_get_pwd_record(struct password_record* pr, u32 index) {
-    //if (index == 0) return MEW_CRYPT_ERROR;
     struct password_sector* ps = (struct password_sector*) temporary_sector;
     
     if (mewcrypt_sd_block_read(index, temporary_sector) == MEW_CRYPT_ERROR) 
         return MEW_CRYPT_ERROR;
+    
+    if (index == 0) {
+        if (__mewcrypt_generate_root_password_dir(ps) != MEW_CRYPT_OK) {
+            if (mewcrypt_sd_block_read(index, temporary_sector) == MEW_CRYPT_ERROR) 
+                return MEW_CRYPT_ERROR;
+        }
+    }
     
     if (ps->crc32 != crc_gen((u32*) (&ps->password), sizeof(struct password_record) / sizeof(u32))) 
         return MEW_CRYPT_ERROR;
@@ -315,11 +316,50 @@ u32 mewcrypt_write_pr(struct password_record* pr, u32 index) {
     return MEW_CRYPT_OK;
 }
 
+u32 mewcrypt_read_settings(struct settings_record* sr, u8 index) {
+    memset(temporary_sector, 0x00, 512);
+    
+    if (mewcrypt_fram_page_read(index, temporary_sector) == MEW_CRYPT_ERROR)
+        return MEW_CRYPT_ERROR;
+        
+    struct settings_eeprom_sector* sc = (struct settings_eeprom_sector*) temporary_sector;
+    if (sc->crc32 != crc_gen((u32*) (&sc->settings), sizeof(struct settings_record) / sizeof(u32))) {
+        memset(temporary_sector, 0x00, 512);
+        
+        struct settings_record tmp;
+        memset(&tmp, 0x00, sizeof(struct settings_record));
+        tmp.magic = MEW_SETTING_MAGIC;
+        tmp.global_mode = MEW_GLOBAL_MODE_HID;
+        mewcrypt_write_settings(&tmp, index);
+        
+        if (mewcrypt_fram_page_read(index, temporary_sector) == MEW_CRYPT_ERROR)
+            return MEW_CRYPT_ERROR;
+        
+        if (sc->crc32 != crc_gen((u32*) (&sc->settings), sizeof(struct settings_record) / sizeof(u32)))
+            MEW_CRYPT_ERROR;
+        
+        debug_print("Eeprom settings record corrupted or not exist!");
+        debug_print("New settings record was created.");
+    }
+    
+    memcpy(sr, &sc->settings, sizeof(struct settings_record));
+    
+    return MEW_CRYPT_OK;
+}
 
-
-
-
-
+u32 mewcrypt_write_settings(struct settings_record* sr, u8 index) {
+    memset(temporary_sector, 0x00, 512);
+    struct settings_eeprom_sector* sc = (struct settings_eeprom_sector*) temporary_sector;
+    memcpy(&sc->settings, sr, sizeof(struct settings_record));
+    
+    sc->crc32 = crc_gen((u32*) sr, sizeof(struct settings_record) / sizeof(u32));
+    if (mewcrypt_fram_page_write(index, temporary_sector) == MEW_CRYPT_ERROR)
+        return MEW_CRYPT_ERROR;
+    
+    
+    
+    return MEW_CRYPT_OK;
+}
 
 
 

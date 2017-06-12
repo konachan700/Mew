@@ -85,6 +85,7 @@ mk/ILI9341.o: ILI9341.c ILI9341.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/crc.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/crc.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/crc_common_all.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/cm3/scb.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/errno.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/errno.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/string.h \

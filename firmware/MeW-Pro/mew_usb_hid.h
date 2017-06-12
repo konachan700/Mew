@@ -27,7 +27,7 @@
 
 extern void mew_hid_usb_disable(void);
 extern void mew_hid_usb_init(void);
-extern void mew_hid_usb_poll(void);
+//extern void mew_hid_usb_poll(void);
 extern void mew_hid_send(char* buf, int len);
 extern void mew_hid_send_char(char ch, char char_case);
 

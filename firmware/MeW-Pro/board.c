@@ -555,7 +555,7 @@ void start_timer_2(void) {
 	nvic_enable_irq(NVIC_TIM2_IRQ);
 	nvic_set_priority(NVIC_TIM2_IRQ, 4);
 	timer_set_mode(TIM2, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-	timer_set_prescaler(TIM2, 1200);
+	timer_set_prescaler(TIM2, 2400);
 	timer_disable_preload(TIM2);
 	timer_continuous_mode(TIM2);
 	timer_set_period(TIM2, 1000);

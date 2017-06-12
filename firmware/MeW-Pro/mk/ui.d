@@ -86,6 +86,7 @@ mk/ui.o: ui.c ui.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/crc.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/crc.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/crc_common_all.h \
+ /home/misaki/devel/stm32/libopencm3/include/libopencm3/cm3/scb.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/errno.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/errno.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/string.h \
@@ -95,7 +96,7 @@ mk/ui.o: ui.c ui.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/crypto.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/f2/crypto.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/stm32/common/crypto_common_f24.h \
- sdcard.h usb_hid.h \
+ sdcard.h mew_usb_hid.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/cm3/systick.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/usb/usbd.h \
  /home/misaki/devel/stm32/libopencm3/include/libopencm3/usb/usbstd.h \

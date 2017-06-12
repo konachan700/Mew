@@ -2,8 +2,11 @@
 
 u8 item_framebuffer[ELEMENT_BUF_SIZE];
 u8 stbar_framebuffer[STATUSBAR_BUF_SIZE];
-u8* char_buf;
-u16 char_buf_size;
+u8 char_buffer[FONT_W * FONT_H * FONT_MAX_ALLOWED_SIZE * 2];
+u8 x_text_buf[MAX_CHARS_IN_DO];
+
+//u8* char_buf;
+//u16 char_buf_size;
 
 void __wait(u32 delay) { 
     u32 i;
@@ -162,23 +165,24 @@ void __direct_set_pixel_for_char(u8* buf, u16 buf_sz, u16 x, u16 y, u16 r, u16 g
 
 // WARNING: its too slowly
 void __direct_draw_char(u8 ascii, u16 x, u16 y, u16 size, u16 r, u16 g, u16 b, u16 buf_size) {
+    if (size > FONT_MAX_ALLOWED_SIZE) return;
+    
     u16 color565 = ((u16) (((r >> 3 ) << 11) | ((g >> 2 ) << 5) | (b  >> 3)));
     u8 c;
     u16 a, n, z, e;
 
-    if (char_buf == NULL) return;
-    for (a=0; a<buf_size; a++) char_buf[a] = 0xFF;
+    memset(char_buffer, 0xFF, buf_size);
     
     for (a=0; a<FONT_W; a++) {
         c = font_ru[(ascii * FONT_W) + a];
         for (n=0; n<FONT_H; n++) {
             if ((c >> n) & 0x01) {
                 if (size <= 1) {
-                    __direct_set_pixel_for_char(char_buf, buf_size, a, n, r, g, b, size * FONT_W);
+                    __direct_set_pixel_for_char(char_buffer, buf_size, a, n, r, g, b, size * FONT_W);
                 } else {
                     for (z=0; z<size; z++) { 
                         for (e=0; e<size; e++) {
-                            __direct_set_pixel_for_char(char_buf, buf_size, (a * size) + z, (n * size) + e, r, g, b, size * FONT_W);
+                            __direct_set_pixel_for_char(char_buffer, buf_size, (a * size) + z, (n * size) + e, r, g, b, size * FONT_W);
                         }
                     }
                 }
@@ -186,57 +190,51 @@ void __direct_draw_char(u8 ascii, u16 x, u16 y, u16 size, u16 r, u16 g, u16 b, u
         }
     }
 
-    //display_write_page(x, y, (FONT_W * size), (FONT_H * size), char_buf, buf_size);
-    display_write_page(x, y, (FONT_W * size), (FONT_H * size), char_buf, buf_size);
-    //free(char_buf);
+    display_write_page(x, y, (FONT_W * size), (FONT_H * size), char_buffer, buf_size);
 }
 
 void direct_draw_string(u8* ascii, u16 x, u16 y, u16 size, u16 r, u16 g, u16 b) {
+    if (size > FONT_MAX_ALLOWED_SIZE) return;
+    
     u16 i;
     int len;
-    u8 text_buf[MAX_CHARS_ON_LINE];
+    memset(x_text_buf, 0, MAX_CHARS_IN_DO);
     
-    len = convertUtf8ToCp1251(ascii, text_buf);
+    len = convertUtf8ToCp1251(ascii, x_text_buf);
     if (len == -1) return;
     
-    char_buf_size = (size * FONT_W) * (FONT_H * size) * 2;
-    char_buf = (u8*) malloc(char_buf_size);
-    memset(char_buf, 0xFF, char_buf_size);
+    u16 char_buf_size = (size * FONT_W) * (FONT_H * size) * 2;
     
     for (i=0; i<len; i++) {
-        __direct_draw_char(text_buf[i], x + (FONT_SPACE * size * i) + (FONT_W * size * i), y, size, r, g, b, char_buf_size);
+        __direct_draw_char(x_text_buf[i], x + (FONT_SPACE * size * i) + (FONT_W * size * i), y, size, r, g, b, char_buf_size);
     }
-    
-    free(char_buf);
 }
 
 void direct_draw_string_ml(u8* ascii, u16 x, u16 y, u16 frame_w, u16 frame_h, u16 size, u16 r, u16 g, u16 b) {
+    if (size > FONT_MAX_ALLOWED_SIZE) return;
+    
     u16 i, x_pos, curr_line = 0, curr_char = 0;
     int len;
-    u8 text_buf[MAX_CHARS_ON_LINE];
+    memset(x_text_buf, 0, MAX_CHARS_IN_DO);
     
-    len = convertUtf8ToCp1251(ascii, text_buf);
+    len = convertUtf8ToCp1251(ascii, x_text_buf);
     if (len == -1) return;
     
-    char_buf_size = (size * FONT_W) * (FONT_H * size) * 2;
-    char_buf = (u8*) malloc(char_buf_size);
-    memset(char_buf, 0xFF, char_buf_size);
+    u16 char_buf_size = (size * FONT_W) * (FONT_H * size) * 2;
     
     for (i=0; i<len; i++) {
         x_pos = ((FONT_SPACE * size * curr_char) + (FONT_W * size * curr_char));
-        if ((text_buf[i] == '\n') || (x_pos >= frame_w)) {
+        if ((x_text_buf[i] == '\n') || (x_pos >= frame_w)) {
             curr_line++;
             curr_char = 0;
             x_pos = ((FONT_SPACE * size * curr_char) + (FONT_W * size * curr_char));
         }
 
-        if (text_buf[i] != '\n') {
-            __direct_draw_char(text_buf[i], x + x_pos, y + (LINE_SPACE * size * curr_line) + (FONT_H * size * curr_line), size, r, g, b, char_buf_size);
+        if (x_text_buf[i] != '\n') {
+            __direct_draw_char(x_text_buf[i], x + x_pos, y + (LINE_SPACE * size * curr_line) + (FONT_H * size * curr_line), size, r, g, b, char_buf_size);
             curr_char++;
         }
     }
-    
-    free(char_buf);
 }
 
 #ifdef __FONT_STM32_MEW_ICONS__
@@ -309,24 +307,24 @@ void g_draw_char(u8 buf_id, u8 ascii, u16 x, u16 y, u16 size, u16 r, u16 g, u16 
 void g_draw_string(u8 buf_id, u8* ascii, u16 x, u16 y, u16 size, u16 r, u16 g, u16 b, u8 dir) {
     u16 i;
     int len;
-    u8 text_buf[MAX_CHARS_ON_LINE];
+    memset(x_text_buf, 0, MAX_CHARS_IN_DO);
     
-    len = convertUtf8ToCp1251(ascii, text_buf);
+    len = convertUtf8ToCp1251(ascii, x_text_buf);
     if (len == -1) return;
     
     for (i=0; i<len; i++) {
         switch (dir) {
             case FONT_0_DEG:
-                g_draw_char(buf_id, text_buf[i], x + (FONT_SPACE * size * i) + (FONT_W * size * i), y, size, r, g, b, dir);
+                g_draw_char(buf_id, x_text_buf[i], x + (FONT_SPACE * size * i) + (FONT_W * size * i), y, size, r, g, b, dir);
                 break;
             case FONT_90_DEG:
-                g_draw_char(buf_id, text_buf[i], x, y + (FONT_SPACE * size *  i) + (FONT_W * size * i), size, r, g, b, dir);
+                g_draw_char(buf_id, x_text_buf[i], x, y + (FONT_SPACE * size *  i) + (FONT_W * size * i), size, r, g, b, dir);
                 break;
             case FONT_180_DEG:
-                g_draw_char(buf_id, text_buf[i], x + (FONT_SPACE * (len - i - 1)) + (FONT_W * (len - i - 1)), y, size, r, g, b, dir);
+                g_draw_char(buf_id, x_text_buf[i], x + (FONT_SPACE * (len - i - 1)) + (FONT_W * (len - i - 1)), y, size, r, g, b, dir);
                 break;
             case FONT_270_DEG:
-                g_draw_char(buf_id, text_buf[i], x, y + (FONT_SPACE * size * (len - i - 1)) + (FONT_W * size * (len - i - 1)), size, r, g, b, dir);
+                g_draw_char(buf_id, x_text_buf[i], x, y + (FONT_SPACE * size * (len - i - 1)) + (FONT_W * size * (len - i - 1)), size, r, g, b, dir);
                 break;
         }
     }

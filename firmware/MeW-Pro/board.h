@@ -15,6 +15,10 @@
 #include <libopencm3/stm32/sdio.h>
 #include <libopencm3/stm32/crc.h>
 #include <libopencm3/stm32/spi.h>
+#include <libopencm3/cm3/scb.h> 
+
+#include <libopencm3/stm32/memorymap.h>
+#include <libopencm3/cm3/common.h>
 
 #include <errno.h>
 #include <stdio.h>
@@ -29,11 +33,17 @@ typedef uint64_t u64;
 
 typedef signed int s16;
 
+#define MEW_GLOBAL_MODE_HID 0x00000000UL
+#define MEW_GLOBAL_MODE_CDC 0xFFFFFFFFUL
+#define MEW_GLOBAL_MODE_MSD 0x11111111UL
+
 #define LIGHT_UI_THEME
 
 #define CREATE_DEMO_PASSWORDS
 
 #define SPI_RX_DUMMY_BUF_SIZE 16
+
+#define MEW_SETTINGS_EEPROM_PAGE_OFFSET 0
 
 struct dma1_i2c1_transaction {
     u8  dev_addr;

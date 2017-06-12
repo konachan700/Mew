@@ -1,6 +1,6 @@
-#include "usb_hid.h"
+#include "mew_usb_hid.h"
 
-usbd_device *mew_usbd_dev;
+usbd_device *mew_hid_usbd_dev;
 
 uint8_t usbd_control_buffer[128];
 volatile u8 usb_hid_disable = 1;
@@ -164,7 +164,7 @@ static void hid_set_config(usbd_device *usbd_dev, uint16_t wValue) {
 void mew_hid_usb_disable(void) {
     if (usb_hid_disable == 1) return;
     usb_hid_disable = 1;
-    usbd_disconnect(mew_usbd_dev, true);
+    usbd_disconnect(mew_hid_usbd_dev, true);
     gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO10 | GPIO11 | GPIO12);
     gpio_clear(GPIOA, GPIO10 | GPIO11 | GPIO12);
 }
@@ -172,20 +172,26 @@ void mew_hid_usb_disable(void) {
 void mew_hid_usb_init(void) {
     gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO10 | GPIO11 | GPIO12);
     gpio_set_af(GPIOA, GPIO_AF10, GPIO10 | GPIO11 | GPIO12);
-	mew_usbd_dev = usbd_init(&otgfs_usb_driver, &dev, &config, usb_strings, 3, usbd_control_buffer, sizeof(usbd_control_buffer));
-	usbd_register_set_config_callback(mew_usbd_dev, hid_set_config);
+	mew_hid_usbd_dev = usbd_init(&otgfs_usb_driver, &dev, &config, usb_strings, 3, usbd_control_buffer, sizeof(usbd_control_buffer));
+	usbd_register_set_config_callback(mew_hid_usbd_dev, hid_set_config);
+    nvic_enable_irq(NVIC_OTG_FS_IRQ);
     usb_hid_disable = 0;
+}
+
+/*
+void otg_fs_isr(void) {
+	usbd_poll(mew_hid_usbd_dev);
 }
 
 void mew_hid_usb_poll(void) {
     if (usb_hid_disable == 1) return;
-	usbd_poll(mew_usbd_dev);
-}
+	usbd_poll(mew_hid_usbd_dev);
+}*/
 
 void mew_hid_send(char* buf, int len) {
     if (usb_hid_disable == 1) return;
 	if (len != 8) return;
-	usbd_ep_write_packet(mew_usbd_dev, 0x81, buf, len);
+	usbd_ep_write_packet(mew_hid_usbd_dev, 0x81, buf, len);
 }
 
 void mew_hid_send_char(char ch, char char_case) {
@@ -193,6 +199,6 @@ void mew_hid_send_char(char ch, char char_case) {
 	unsigned const char null_buf[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 	unsigned const char buf[8] = { char_case, 0, ch, 0, 0, 0, 0, 0 };
 	if ((ch <= 0x03) || (ch >= 0x29)) return;
-	while (usbd_ep_write_packet(mew_usbd_dev, 0x81, buf, 8) == 0);
-	while (usbd_ep_write_packet(mew_usbd_dev, 0x81, null_buf, 8) == 0);
+	while (usbd_ep_write_packet(mew_hid_usbd_dev, 0x81, buf, 8) == 0);
+	while (usbd_ep_write_packet(mew_hid_usbd_dev, 0x81, null_buf, 8) == 0);
 }

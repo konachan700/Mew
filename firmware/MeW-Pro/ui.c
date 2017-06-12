@@ -6,38 +6,49 @@ struct menu_ui_element root_menu[MENU_ITEMS_IN_ROOT]= {{
     0,
     "Passwords", "My passwords wallet",
     icon_E32A,
-    0, 0, 1,
-    __menu_enter_hanler,
-    __menu_exit_hanler,
-    NULL
+    0, 0, 1, 0
 }, {
     0,
     "Config mode", "Change MeW settings from PC",
     icon_E1E0,
-    0, 1, 1,
-    NULL,
-    NULL,
-    NULL
+    0, 1, 1, 0
 }, /*{
     0,
     "Disk mode", "For use internal secure uSD",
-    0, 0, 1,
-    NULL,
-    NULL,
-    NULL
+    0, 0, 1, 0
 },*/ {
     0,
     "About MeW", "Display information about MeW",
     icon_E02F,
-    0, 0, 1,
-    NULL,
-    NULL,
-    NULL
+    0, 0, 1, 0
 }};
+
+struct menu_ui_element password_menu[PASSWORD_MENU_ITEMS_COUNT]= {{
+    0,
+    "Login", " ",
+    icon_E853,
+    0, 0, 1, 0
+}, {
+    0,
+    "Tab", "Send Tab key, go to next field",
+    icon_E8D4,
+    0, 1, 1, 0
+}, {
+    0,
+    "Password", "Password cannot be displayed.",
+    icon_E897,
+    0, 0, 1, 0
+}, {
+    0,
+    "Enter", "Send Enter key",
+    icon_E5D9,
+    0, 0, 1, 0
+}};
+
+extern struct settings_record mew_settings;
 
 volatile u32 menu_type          = MENU_TYPE_MAIN;
 volatile u32 current_menu_id    = 0;
-volatile u32 selected_menu_id   = 0;
 s16 menu_local_sel_index        = 0;
 s16 menu_local_sel_page         = 0;
 s16 menu_items_count            = MENU_ITEMS_IN_ROOT;
@@ -46,11 +57,6 @@ u32 menu_id_list[MEW_PASSWORD_EXTRA_SIZE];
 
 struct menu_ui_element passwords_displayed_menu[MENU_ELEMENTS_COUNT];
 struct password_record passwords_temp_pwd_record;
-
-
-//struct menu_ui_element* selected_menu           = NULL;
-//struct menu_ui_element* current_menu_page       = root_menu;
-//struct menu_ui_element* current_menu            = NULL;
 
 void __fatal_error(u8* title, u8* text) {
     display_fill(255, 255, 255);
@@ -105,7 +111,7 @@ u32 __passwords_get_parent(u32 child_id) {
 }
 
 void __passwords_extras_to_menu(void) {
-    u32 elements_count = __passwords_get_list_size(menu_id_list);
+    menu_items_count = __passwords_get_list_size(menu_id_list);
     u32 menu_id;
     
     for (u16 i=0; i<MENU_ELEMENTS_COUNT; i++) {
@@ -122,6 +128,7 @@ void __passwords_extras_to_menu(void) {
             passwords_displayed_menu[i].disp_number = i;
             passwords_displayed_menu[i].icon = ((passwords_temp_pwd_record.flags & PASSWORD_FLAG_DIRECTORY) != 0) ? icon_E2C7 : icon_E0DA;
             passwords_displayed_menu[i].selected = 0;
+            passwords_displayed_menu[i].flags = passwords_temp_pwd_record.flags;
 
             memcpy(&passwords_displayed_menu[i].name, &passwords_temp_pwd_record.title, MEW_PASSWORD_RECORD_TITLE_LEN);
             memcpy(&passwords_displayed_menu[i].text, &passwords_temp_pwd_record.text, MEW_PASSWORD_RECORD_TEXT_LEN);
@@ -134,19 +141,61 @@ void __passwords_extras_to_menu(void) {
     }
 }
 
+void __gen_one_password_menu(void) {
+    if (mewcrypt_get_pwd_record(&passwords_temp_pwd_record, current_menu_id) != MEW_CRYPT_OK) 
+        __fatal_error("Error #92", ERROR_MESSAGE_NO_SD_CARD);
+    
+    for (u16 i=0; i<MENU_ELEMENTS_COUNT; i++) {
+        if (i < PASSWORD_MENU_ITEMS_COUNT) {
+            memcpy(&passwords_displayed_menu[i], &password_menu[i], sizeof(struct menu_ui_element));
+            passwords_displayed_menu[i].visible = 1;
+            passwords_displayed_menu[i].selected = 0;
+            passwords_displayed_menu[i].disp_number = i;
+            passwords_displayed_menu[i].flags = 0;
+        } else {
+            passwords_displayed_menu[i].visible = 0;
+        }
+    }
+    
+    memcpy(passwords_displayed_menu[0].text, passwords_temp_pwd_record.login, MEW_PASSWORD_RECORD_TEXT_LEN);
+    passwords_displayed_menu[0].selected = 1;
+}
+
+void __switch_menu_type(u32 type) {
+    menu_local_sel_index = 0;
+    menu_local_sel_page = 0;
+    menu_type = type;
+    switch (type) {
+        case MENU_TYPE_MAIN:
+            __go_to_main_menu();
+            break;
+        case MENU_TYPE_PASSWORDS:
+            __gen_passwords_menu_id_list();
+            __passwords_extras_to_menu();
+            __menu_paint_all();
+            break;
+        case MENU_TYPE_SINGLE_PASSWORD:
+            menu_items_count = PASSWORD_MENU_ITEMS_COUNT;
+            __gen_one_password_menu();
+            __menu_paint_all();
+            break;
+    }
+}
+
 void __menu_enter_hanler(u32 id, u32 type) {
     switch (type) {
         case MENU_TYPE_MAIN:
-            switch (id) {
+            switch (menu_local_sel_index) {
                 case 0:
-                    menu_type = MENU_TYPE_PASSWORDS;
                     current_menu_id = 0;
-                    __gen_passwords_menu_id_list();
-                    __passwords_extras_to_menu();
-                    __menu_paint_all();
+                    __switch_menu_type(MENU_TYPE_PASSWORDS);
                     break;
                 case 1:
-                    
+                    mew_settings.global_mode = MEW_GLOBAL_MODE_CDC;
+                    mewcrypt_write_settings(&mew_settings, MEW_SETTINGS_EEPROM_PAGE_OFFSET);
+                    display_fill(255, 255, 255);
+                    scb_reset_system();
+                    while(1) __asm__("NOP");
                     break;
                 case 2:
                     
@@ -157,21 +206,41 @@ void __menu_enter_hanler(u32 id, u32 type) {
             }
             break;
         case MENU_TYPE_PASSWORDS:
-                current_menu_id = menu_id_list[id + (MENU_ELEMENTS_COUNT * menu_local_sel_page)];
-                __gen_passwords_menu_id_list();
-                __passwords_extras_to_menu();
-                __menu_paint_all();
+            current_menu_id = menu_id_list[menu_local_sel_index + (MENU_ELEMENTS_COUNT * menu_local_sel_page)];
+            if ((passwords_displayed_menu[menu_local_sel_index].flags & PASSWORD_FLAG_DIRECTORY) != 0) {
+                __switch_menu_type(MENU_TYPE_PASSWORDS);
+            } else {
+                __switch_menu_type(MENU_TYPE_SINGLE_PASSWORD);
+            }
+            break;
+        case MENU_TYPE_SINGLE_PASSWORD:
+            
+            
+            
+            __menu_down();
             break;
     }
 }
 
 void __menu_exit_hanler(u32 id, u32 type) {
+    u32 cm_id;
     switch (type) {
         case MENU_TYPE_MAIN:
             
             break;
         case MENU_TYPE_PASSWORDS:
-
+            cm_id = __passwords_get_parent(current_menu_id);
+            if (cm_id == MEW_PASSWORD_RECORD_NO_PARENT) {
+                __switch_menu_type(MENU_TYPE_MAIN);
+            } else {
+                current_menu_id = cm_id;
+                __switch_menu_type(MENU_TYPE_PASSWORDS);
+            }
+            break;
+        case MENU_TYPE_SINGLE_PASSWORD:
+            cm_id = __passwords_get_parent(current_menu_id);
+            current_menu_id = cm_id;
+            __switch_menu_type(MENU_TYPE_PASSWORDS);
             break;
     }
 }
@@ -180,7 +249,9 @@ void __go_to_main_menu(void) {
     menu_type        = MENU_TYPE_MAIN;
     current_menu_id  = 0;
     menu_items_count = MENU_ITEMS_IN_ROOT;
-    selected_menu_id = 0;
+    menu_local_sel_index = 0;
+    menu_local_sel_page = 0;
+    //selected_menu_id = 0;
     
     for (u16 i=0; i<MENU_ELEMENTS_COUNT; i++) {
         if (i < MENU_ITEMS_IN_ROOT) {
@@ -199,8 +270,8 @@ void __go_to_main_menu(void) {
 }
 
 void statusbar_paint(void) {
-    g_clear_buf(STATUSBAR_BUF, 180, 200, 180);
-    g_draw_vline(STATUSBAR_BUF, STATUSBAR_W - 1, 0, 319, COLOR_R_1, COLOR_G_1, COLOR_B_1);
+    g_clear_buf(STATUSBAR_BUF, 200, 200, 200);
+    g_draw_vline(STATUSBAR_BUF, STATUSBAR_W - 1, 0, 319, 170, 170, 170);
     
     g_draw_string(STATUSBAR_BUF, "ok", 1, STATUSBAR_OK_POS, 2, COLOR_R_1, COLOR_G_1, COLOR_B_1, FONT_90_DEG);
     g_draw_string(STATUSBAR_BUF, "back", 1, STATUSBAR_BACK_POS, 2, COLOR_R_1, COLOR_G_1, COLOR_B_1, FONT_90_DEG);
@@ -250,10 +321,7 @@ void __menu_paint_all(void) {
 void __select_mi(u16 count_total) {
     for (u16 i=0; i<count_total; i++) 
         passwords_displayed_menu[i].selected = 0;
-    
-    selected_menu_id = (menu_local_sel_page * MENU_ELEMENTS_COUNT) + menu_local_sel_index;
-    passwords_displayed_menu[selected_menu_id].selected = 1;
-    //selected_menu = &passwords_displayed_menu[selected_menu_id];
+    passwords_displayed_menu[menu_local_sel_index].selected = 1;
 }
 
 void __menu_down(void) {
