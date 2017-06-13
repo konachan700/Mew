@@ -203,12 +203,14 @@ static void cdcacm_data_rx_cb(usbd_device *usbd_dev, uint8_t ep)
 {
 	(void)ep;
 
-	char buf[64];
+	u8 buf[64];
+    memset(buf, 0, 64);
+    
 	int len = usbd_ep_read_packet(mew_cdc_usbd_dev, 0x01, buf, 64);
-
-	if (len) {
-		while (usbd_ep_write_packet(mew_cdc_usbd_dev, 0x82, buf, len) == 0);
-	}
+    
+    if (len > 0) {
+        mew_cm_push_raw(buf, len);
+    }
 }
 
 static void cdcacm_set_config(usbd_device *usbd_dev, uint16_t wValue)
@@ -225,6 +227,10 @@ static void cdcacm_set_config(usbd_device *usbd_dev, uint16_t wValue)
 				USB_REQ_TYPE_CLASS | USB_REQ_TYPE_INTERFACE,
 				USB_REQ_TYPE_TYPE | USB_REQ_TYPE_RECIPIENT,
 				cdcacm_control_request);
+}
+
+void cdcacm_send_chars(u8* data, u16 len) {
+    while (usbd_ep_write_packet(mew_cdc_usbd_dev, 0x82, data, len) == 0);
 }
 
 void cdc_acm_start(void) {

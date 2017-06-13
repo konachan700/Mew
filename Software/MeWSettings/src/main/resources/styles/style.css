@@ -1,0 +1,20 @@
+
+.iconTest01 {
+    -fx-icon-code: "Material Icons:E877";
+}
+
+.iconCompileProfile {
+    -fx-icon-code: "Material Icons:E169";
+}
+
+.iconRefresh {
+    -fx-icon-code: "Material Icons:E86A";
+}
+
+.iconFind {
+    -fx-icon-code: "Material Icons:E8B6";
+}
+
+.iconSave {
+    -fx-icon-code: "Material Icons:E623";
+}

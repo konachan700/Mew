@@ -93,4 +93,4 @@ mk/mew_usb_cdc.o: mew_usb_cdc.c mew_usb_cdc.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/string.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_locale.h \
  /home/misaki/devel/stm32/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/string.h \
- font_icons_gmd.h
+ font_icons_gmd.h config_mode.h

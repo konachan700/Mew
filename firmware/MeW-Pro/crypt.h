@@ -57,12 +57,12 @@ struct settings_record {
     u32 magic;
     u32 global_mode;
     u32 flags;
-};
+} __attribute__((aligned(4),packed));
 
 struct settings_eeprom_sector {
     u32 crc32;
     struct settings_record settings;
-};
+} __attribute__((aligned(4),packed));
 
 struct password_record {
     u32 magic;                                // 4b
@@ -75,17 +75,17 @@ struct password_record {
     const u8* icon;                           // 4b
     u32 flags;                                // 4b
     u32 extra[MEW_PASSWORD_EXTRA_SIZE];       // 256b
-}; // MAX (512 - 4) bytes
+} __attribute__((aligned(4),packed)); // MAX (512 - 4) bytes
 
 struct password_sector {
     u32 crc32;
     struct password_record password;
-};
+} __attribute__((aligned(4),packed));
 
 struct fram_information {
     u32 magic;
     
-}; // MAX 256 bytes
+} __attribute__((aligned(4),packed)); // MAX 256 bytes
 
 struct security_information {
     u32 magic;

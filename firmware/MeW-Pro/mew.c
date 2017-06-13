@@ -16,6 +16,7 @@
 #include "mew_usb_cdc.h"
 #include "sdcard.h" 
 #include "crypt.h"  
+#include "config_mode.h"  
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +24,6 @@
 
 volatile u8 button = BUTTON_NONE;
 volatile u8 is_any_button_pressed = 0;
-//volatile u8 mew_global_mode = MEW_MODE_CDC;
 
 struct settings_record mew_settings;
 
@@ -83,13 +83,16 @@ void exti15_10_isr(void) {
 
 void tim2_isr(void) {
 	if (timer_get_flag(TIM2, TIM_SR_CC1IF)) {
-		timer_clear_flag(TIM2, TIM_SR_CC1IF);
-        gpio_toggle(GPIOC, GPIO3);
-        
-        if (button != BUTTON_NONE) {
-            if (__read_buttons() == button) is_any_button_pressed = button;
-            button = BUTTON_NONE;
-        }
+            timer_clear_flag(TIM2, TIM_SR_CC1IF);
+            gpio_toggle(GPIOC, GPIO3);
+            
+            if (mew_settings.global_mode == MEW_GLOBAL_MODE_CDC) 
+                cm_timer_proc();
+            
+            if (button != BUTTON_NONE) {
+                if (__read_buttons() == button) is_any_button_pressed = button;
+                button = BUTTON_NONE;
+            }
 	}
 }
 

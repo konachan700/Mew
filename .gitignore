@@ -3,6 +3,15 @@
 *.ko
 *.obj
 *.elf
+*.bin
+*.d
+*.elf
+
+/mk/
+.desktop
+*.tmp
+*.bak
+*.backup
 
 # Precompiled Headers
 *.gch
@@ -33,3 +42,4 @@
 *.su
 /support package/STM32IconFontGen/target/
 /support package/UIFontGen/target/
+/Software/MeWSettings/target/

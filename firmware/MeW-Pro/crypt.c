@@ -317,6 +317,8 @@ u32 mewcrypt_write_pr(struct password_record* pr, u32 index) {
 }
 
 u32 mewcrypt_read_settings(struct settings_record* sr, u8 index) {
+    if (index >= FRAM_PAGES_COUNT) return MEW_CRYPT_ERROR;
+    
     memset(temporary_sector, 0x00, 512);
     
     if (mewcrypt_fram_page_read(index, temporary_sector) == MEW_CRYPT_ERROR)
@@ -348,6 +350,8 @@ u32 mewcrypt_read_settings(struct settings_record* sr, u8 index) {
 }
 
 u32 mewcrypt_write_settings(struct settings_record* sr, u8 index) {
+    if (index >= FRAM_PAGES_COUNT) return MEW_CRYPT_ERROR;
+    
     memset(temporary_sector, 0x00, 512);
     struct settings_eeprom_sector* sc = (struct settings_eeprom_sector*) temporary_sector;
     memcpy(&sc->settings, sr, sizeof(struct settings_record));

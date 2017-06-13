@@ -1,5 +1,6 @@
 #ifndef __BOARD_MEW_BSP__
 #define __BOARD_MEW_BSP__
+//#define STM32F2
 
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
@@ -32,6 +33,7 @@ typedef uint32_t u32;
 typedef uint64_t u64;
 
 typedef signed int s16;
+typedef signed long s32;
 
 #define MEW_GLOBAL_MODE_HID 0x00000000UL
 #define MEW_GLOBAL_MODE_CDC 0xFFFFFFFFUL
