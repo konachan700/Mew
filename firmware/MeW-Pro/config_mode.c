@@ -8,12 +8,13 @@ u8* data_field = (u8*) (mew_conf_mode_buffer + sizeof(struct mew_cm_command_head
 struct mew_cm_command_header command_ret;
 
 volatile u32 cm_timer_counter = 0;
+struct settings_record sett_r;
 
 void cm_timer_proc(void) {
     cm_timer_counter++;
     if (cm_timer_counter > MEW_CM_CLEANER_TIMER) {
         cm_timer_counter = 0;
-        __cm_buf_reset();
+        mew_conf_mode_buffer_counter = 0;
     }
 }
 
@@ -81,9 +82,15 @@ u32 mew_cm_push_raw(u8* raw, u8 len) {
     memcpy(mew_conf_mode_buffer + mew_conf_mode_buffer_counter, raw, len);
     mew_conf_mode_buffer_counter += len;
     
-    if (mew_conf_mode_buffer_counter > sizeof(struct mew_cm_command_header)) {
+    return MEW_CM_OK;
+}
+
+void mew_cm_poll(void) {
+    if (mew_conf_mode_buffer_counter >= sizeof(struct mew_cm_command_header)) {
+        debug_print_hex(mew_conf_mode_buffer, mew_conf_mode_buffer_counter);
         switch (command_field->command) {
             case MEW_CM_PING:
+                debug_print("PING RECEIVE");
                 __ping_send();
                 break;
             case MEW_CM_IDENT:
@@ -96,12 +103,11 @@ u32 mew_cm_push_raw(u8* raw, u8 len) {
                 
                 break;
             case MEW_CM_CONFIG_READ:
-                if (__get_data_len() > 4) {                    
+                if (__get_data_len() >= sizeof(u32)) {                    
                     if (check_crc(command_field->data_crc32, (u32*) data_field, sizeof(u32)) == MEW_CRC_RET_FAIL) {
                         __data_send(MEW_CM_RET_CRC_FAIL, NULL, 0);
                     } else {
-                        struct settings_record sett_r;
-                        if (mewcrypt_read_settings(&sett_r, (u32) *data_field) == MEW_CRYPT_OK) {
+                        if (mewcrypt_read_settings(&sett_r, *((u32*)data_field)) == MEW_CRYPT_OK) {
                             __data_send(MEW_CM_RET_OK, (u8*) &sett_r, sizeof(struct settings_record));
                         } else {
                             __data_send(MEW_CM_RET_DATA_ACCESS_FAIL, NULL, 0);
@@ -114,11 +120,11 @@ u32 mew_cm_push_raw(u8* raw, u8 len) {
                 
                 break;
             default:
+                debug_print("DATA ERROR");
+                //debug_print_hex(mew_conf_mode_buffer, mew_conf_mode_buffer_counter);
                 __error_send();
         }
     }
-
-    return MEW_CM_OK;
 }
 
 

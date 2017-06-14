@@ -320,10 +320,10 @@ u32 mewcrypt_read_settings(struct settings_record* sr, u8 index) {
     if (index >= FRAM_PAGES_COUNT) return MEW_CRYPT_ERROR;
     
     memset(temporary_sector, 0x00, 512);
-    
+
     if (mewcrypt_fram_page_read(index, temporary_sector) == MEW_CRYPT_ERROR)
         return MEW_CRYPT_ERROR;
-        
+
     struct settings_eeprom_sector* sc = (struct settings_eeprom_sector*) temporary_sector;
     if (sc->crc32 != crc_gen((u32*) (&sc->settings), sizeof(struct settings_record) / sizeof(u32))) {
         memset(temporary_sector, 0x00, 512);
@@ -343,7 +343,7 @@ u32 mewcrypt_read_settings(struct settings_record* sr, u8 index) {
         debug_print("Eeprom settings record corrupted or not exist!");
         debug_print("New settings record was created.");
     }
-    
+
     memcpy(sr, &sc->settings, sizeof(struct settings_record));
     
     return MEW_CRYPT_OK;
@@ -359,9 +359,7 @@ u32 mewcrypt_write_settings(struct settings_record* sr, u8 index) {
     sc->crc32 = crc_gen((u32*) sr, sizeof(struct settings_record) / sizeof(u32));
     if (mewcrypt_fram_page_write(index, temporary_sector) == MEW_CRYPT_ERROR)
         return MEW_CRYPT_ERROR;
-    
-    
-    
+
     return MEW_CRYPT_OK;
 }
 

@@ -46,6 +46,7 @@ void __cm_buf_reset(void);
 
 
 extern u32 mew_cm_push_raw(u8* raw, u8 len);
+extern void mew_cm_poll(void);
 
 extern u32 check_crc(u32 crc32, u32* data, u16 len);
 extern void cm_timer_proc(void);

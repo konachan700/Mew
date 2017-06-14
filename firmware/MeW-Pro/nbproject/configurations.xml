@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
-    <logicalFolder name="f1"
-                   displayName="C files"
-                   projectFiles="true"
-                   kind="ROOT"
-                   root=".">
+    <logicalFolder name="f1" displayName="C files" projectFiles="true" root=".">
       <itemPath>ILI9341.c</itemPath>
       <itemPath>board.c</itemPath>
       <itemPath>config_mode.c</itemPath>
@@ -17,11 +13,7 @@
       <itemPath>ui.c</itemPath>
       <itemPath>utf8_to_cp1251.c</itemPath>
     </logicalFolder>
-    <logicalFolder name="f2"
-                   displayName="Headers"
-                   projectFiles="true"
-                   kind="ROOT"
-                   root=".">
+    <logicalFolder name="f2" displayName="Headers" projectFiles="true" root=".">
       <itemPath>ILI9341.h</itemPath>
       <itemPath>bit.h</itemPath>
       <itemPath>board.h</itemPath>
@@ -35,9 +27,9 @@
       <itemPath>ui.h</itemPath>
       <itemPath>utf8_to_cp1251.h</itemPath>
     </logicalFolder>
-    <df root="../../../stm32/libopencm3/include" name="1">
+    <df root="../../../stm32/libopencm3/include" name="0">
     </df>
-    <df root="." name="0">
+    <df root="." name="1">
     </df>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

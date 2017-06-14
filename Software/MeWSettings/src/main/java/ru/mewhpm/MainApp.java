@@ -35,12 +35,13 @@ public class MainApp extends Application {
             port_changed = true,
             mew_not_detected = false;
     
+    private SerialPort serialPort = null;
+    
     private final Runnable serial_port_thread = () -> {
-        SerialPort serialPort = null;
         while (true) {
             try{
                 if (app_exit) {
-                    if (serialPort != null) serialPort.closePort();
+                    if ((serialPort != null) && (serialPort.isOpened())) serialPort.closePort();
                     return;
                 }
 
@@ -51,24 +52,34 @@ public class MainApp extends Application {
                 if (port_changed) {
                     port_changed = false;
                     serialPort = new SerialPort(mewConf.getLastSerialPort());
+                    serialPort.openPort();
                     serialPort.setParams(SerialPort.BAUDRATE_115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
                     serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
                     serialPort.addEventListener((event) -> {
 
                         
-                        
+                        if (event.isRXCHAR() && (event.getEventValue() > 0)) {
+                            try{
+                                System.err.println(serialPort.readHexString(" ")); 
+                            } catch (SerialPortException ex) {
+                                
+                            }
+                        }
                         
                         
 
                     }, SerialPort.MASK_RXCHAR);
                     
-                    
-                    
+                    MeWCommands.sendCmdPing(serialPort);
+                    Thread.sleep(300);
+                    MeWCommands.sendCmdPing(serialPort);
+                    Thread.sleep(300);
+                    MeWCommands.sendCmdConfigRead(serialPort, 0); 
                     
                     
                 }
-            } catch (SerialPortException ex) {
-                
+            } catch (SerialPortException | IOException | InterruptedException ex) {
+                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     };
@@ -191,8 +202,12 @@ public class MainApp extends Application {
             Platform.exit();
         }
         
+        new Thread(serial_port_thread).start();
+        
         
         uWin.showAndWait();
+        
+        app_exit = true;
         HibernateUtil.dispose();
     }
 

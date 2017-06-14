@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
-    <df root="../../../stm32/libopencm3/include" name="1">
+    <df root="../../../stm32/libopencm3/include" name="0">
       <df name="libopencm3">
         <df name="cm3">
           <in>assert.h</in>
@@ -599,7 +599,7 @@
         <in>core_cm3.h</in>
       </df>
     </df>
-    <df root="." name="0">
+    <df root="." name="1">
       <df name=".settings">
       </df>
       <df name="mk">

@@ -7,4 +7,15 @@
         <activeConfTypeElem>0</activeConfTypeElem>
         <activeConfIndexElem>0</activeConfIndexElem>
     </data>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/home/misaki/devel/Mew/firmware/MeW-Pro/config_mode.c</file>
+            <file>file:/home/misaki/devel/Mew/firmware/MeW-Pro/mew.c</file>
+            <file>file:/home/misaki/devel/Mew/firmware/MeW-Pro/board.h</file>
+            <file>file:/home/misaki/devel/Mew/firmware/MeW-Pro/config_mode.h</file>
+            <file>file:/home/misaki/devel/Mew/firmware/MeW-Pro/crypt.h</file>
+            <file>file:/home/misaki/devel/Mew/firmware/MeW-Pro/board.c</file>
+        </group>
+    </open-files>
 </project-private>

@@ -163,6 +163,8 @@ int main(void) {
             };
             is_any_button_pressed = 0;
         }
+        
+        if (mew_settings.global_mode == MEW_GLOBAL_MODE_CDC) mew_cm_poll();
     }
     
 	return 1;
