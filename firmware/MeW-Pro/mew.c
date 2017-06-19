@@ -126,7 +126,7 @@ int main(void) {
             statusbar_paint();
             menu_init();
             mew_hid_usb_init();
-            debug_print("MeW started in USB HID mode!");
+            debug_print("MeW started in USB HID mode!");//  8 495 668 07 88
             break;
         case MEW_GLOBAL_MODE_CNF:
             start_usb_msd_config();
