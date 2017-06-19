@@ -27,7 +27,7 @@ const struct rcc_clock_scale rcc_hse_8mhz_3v3_96MHz = {
     .hpre = RCC_CFGR_HPRE_DIV_NONE,
     .ppre1 = RCC_CFGR_PPRE_DIV_2,
     .ppre2 = RCC_CFGR_PPRE_DIV_NONE,
-    .flash_config = FLASH_ACR_ICE | FLASH_ACR_DCE | FLASH_ACR_LATENCY_3WS,
+    .flash_config = /*FLASH_ACR_ICE | FLASH_ACR_DCE | */FLASH_ACR_LATENCY_3WS,
     .apb1_frequency = 24000000,
     .apb2_frequency = 48000000,
 };

@@ -191,7 +191,7 @@ void __menu_enter_hanler(u32 id, u32 type) {
                     __switch_menu_type(MENU_TYPE_PASSWORDS);
                     break;
                 case 1:
-                    mew_settings.global_mode = MEW_GLOBAL_MODE_CDC;
+                    mew_settings.global_mode = MEW_GLOBAL_MODE_CNF;
                     mewcrypt_write_settings(&mew_settings, MEW_SETTINGS_EEPROM_PAGE_OFFSET);
                     display_fill(255, 255, 255);
                     scb_reset_system();

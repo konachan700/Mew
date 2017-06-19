@@ -4,10 +4,8 @@
     <logicalFolder name="f1" displayName="C files" projectFiles="true" root=".">
       <itemPath>ILI9341.c</itemPath>
       <itemPath>board.c</itemPath>
-      <itemPath>config_mode.c</itemPath>
       <itemPath>crypt.c</itemPath>
       <itemPath>mew.c</itemPath>
-      <itemPath>mew_usb_cdc.c</itemPath>
       <itemPath>mew_usb_hid.c</itemPath>
       <itemPath>sdcard.c</itemPath>
       <itemPath>ui.c</itemPath>
@@ -17,11 +15,9 @@
       <itemPath>ILI9341.h</itemPath>
       <itemPath>bit.h</itemPath>
       <itemPath>board.h</itemPath>
-      <itemPath>config_mode.h</itemPath>
       <itemPath>crypt.h</itemPath>
       <itemPath>font_icons_gmd.h</itemPath>
       <itemPath>font_ru.h</itemPath>
-      <itemPath>mew_usb_cdc.h</itemPath>
       <itemPath>mew_usb_hid.h</itemPath>
       <itemPath>sdcard.h</itemPath>
       <itemPath>ui.h</itemPath>
@@ -54,7 +50,6 @@
       </toolsSet>
       <flagsDictionary>
         <element flagsID="0" commonFlags="-Os -g -msoft-float"/>
-        <element flagsID="1" commonFlags="-g -Os"/>
       </flagsDictionary>
       <codeAssistance>
       </codeAssistance>
@@ -65,6 +60,9 @@
           <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
           <executablePath></executablePath>
           <cTool>
+            <incDir>
+              <pElem>../../support_package/libopencm3/include</pElem>
+            </incDir>
             <preprocessorList>
               <Elem>STM32F2</Elem>
             </preprocessorList>
@@ -76,100 +74,35 @@
         </preBuild>
       </makefileType>
       <item path="ILI9341.c" ex="false" tool="0" flavor2="3">
-        <cTool flags="1">
-          <incDir>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/stm32/common</pElem>
-            <pElem>.</pElem>
-            <pElem>../../../stm32/libopencm3/include</pElem>
-          </incDir>
+        <cTool flags="0">
         </cTool>
       </item>
       <item path="board.c" ex="false" tool="0" flavor2="3">
-        <cTool flags="1">
-          <incDir>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/stm32/f2</pElem>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/stm32/common</pElem>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/cm3</pElem>
-            <pElem>.</pElem>
-            <pElem>../../../stm32/libopencm3/include</pElem>
-          </incDir>
-        </cTool>
-      </item>
-      <item path="config_mode.c" ex="false" tool="0" flavor2="3">
         <cTool flags="0">
-          <incDir>
-            <pElem>../../../stm32/libopencm3/include</pElem>
-          </incDir>
         </cTool>
       </item>
       <item path="crypt.c" ex="false" tool="0" flavor2="3">
-        <cTool flags="1">
-          <incDir>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/stm32/common</pElem>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/cm3</pElem>
-            <pElem>.</pElem>
-            <pElem>../../../stm32/libopencm3/include</pElem>
-          </incDir>
+        <cTool flags="0">
         </cTool>
       </item>
       <item path="mew.c" ex="false" tool="0" flavor2="3">
-        <cTool flags="1">
-          <incDir>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/usb</pElem>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/stm32/common</pElem>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/cm3</pElem>
-            <pElem>.</pElem>
-            <pElem>../../../stm32/libopencm3/include</pElem>
-          </incDir>
-        </cTool>
-      </item>
-      <item path="mew_usb_cdc.c" ex="false" tool="0" flavor2="3">
-        <cTool flags="1">
-          <incDir>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/usb</pElem>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/stm32/common</pElem>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/cm3</pElem>
-            <pElem>.</pElem>
-            <pElem>../../../stm32/libopencm3/include</pElem>
-          </incDir>
+        <cTool flags="0">
         </cTool>
       </item>
       <item path="mew_usb_hid.c" ex="false" tool="0" flavor2="3">
-        <cTool flags="1">
-          <incDir>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/usb</pElem>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/stm32/common</pElem>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/cm3</pElem>
-            <pElem>.</pElem>
-            <pElem>../../../stm32/libopencm3/include</pElem>
-          </incDir>
+        <cTool flags="0">
         </cTool>
       </item>
       <item path="sdcard.c" ex="false" tool="0" flavor2="3">
-        <cTool flags="1">
-          <incDir>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/stm32/common</pElem>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/cm3</pElem>
-            <pElem>.</pElem>
-            <pElem>../../../stm32/libopencm3/include</pElem>
-          </incDir>
+        <cTool flags="0">
         </cTool>
       </item>
       <item path="ui.c" ex="false" tool="0" flavor2="3">
-        <cTool flags="1">
-          <incDir>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/stm32/common</pElem>
-            <pElem>../../../stm32/libopencm3/include/libopencm3/cm3</pElem>
-            <pElem>.</pElem>
-            <pElem>../../../stm32/libopencm3/include</pElem>
-          </incDir>
+        <cTool flags="0">
         </cTool>
       </item>
       <item path="utf8_to_cp1251.c" ex="false" tool="0" flavor2="3">
-        <cTool flags="1">
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
+        <cTool flags="0">
         </cTool>
       </item>
     </conf>

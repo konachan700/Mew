@@ -1,0 +1,10 @@
+ru/mewhpm/dao/MeWConfig.class
+ru/mewhpm/utils/MeWUtils.class
+ru/mewhpm/dao/MeWSerialPort.class
+ru/mewhpm/MeWHID.class
+ru/mewhpm/utils/HibernateUtil.class
+ru/mewhpm/utils/EthernetCRC32.class
+ru/mewhpm/MeWCommands.class
+ru/mewhpm/MainApp.class
+ru/mewhpm/MainApp$1.class
+ru/mewhpm/MeWRetCode.class

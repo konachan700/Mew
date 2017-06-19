@@ -13,14 +13,19 @@
 #include <libopencm3/stm32/dma.h>
 #include <libopencm3/stm32/i2c.h>
 #include <libopencm3/stm32/sdio.h>
+#include <libopencm3/usb/usbd.h>
+#include <libopencm3/usb/msc.h>
 
 #include "board.h" 
+#include "crypt.h"
 
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+
+#define CONFIG_DISK_SIZE ((2 * 1024) * 64)
 
 #define SDIO_R1_IDLE   0
 #define SDIO_R1_READY  1
@@ -74,5 +79,7 @@
 
 extern void start_sdio(void);
 extern u32 sdio_rw512(u8 rw, u32 address, u32 *buffer);
+
+extern void start_usb_msd_config(void);
 
 #endif

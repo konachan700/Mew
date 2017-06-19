@@ -39,7 +39,7 @@
 #define PASSWORD_FLAG_DIRECTORY     (1 << 1)
 #define PASSWORD_FLAG_DISABLED      (1 << 2)
 
-#define MEW_SETTING_MAGIC 0x12111100UL
+#define MEW_SETTING_MAGIC 0x12114300UL
 
 #define MEW_SECURITY_INFO_MAGIC 0x12701100UL
 #define FLASH_SI_GLOBAL_OFFSET  0x08060000UL // Sector 7 (last 128KByte of flash)
@@ -57,6 +57,7 @@ struct settings_record {
     u32 magic;
     u32 global_mode;
     u32 flags;
+    u8  device_name[16];
 } __attribute__((aligned(4),packed));
 
 struct settings_eeprom_sector {

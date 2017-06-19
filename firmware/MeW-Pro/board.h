@@ -36,7 +36,7 @@ typedef signed int s16;
 typedef signed long s32;
 
 #define MEW_GLOBAL_MODE_HID 0x00000000UL
-#define MEW_GLOBAL_MODE_CDC 0xFFFFFFFFUL
+#define MEW_GLOBAL_MODE_CNF 0xFFFFFFFFUL
 #define MEW_GLOBAL_MODE_MSD 0x11111111UL
 
 #define LIGHT_UI_THEME

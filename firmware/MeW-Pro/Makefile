@@ -37,7 +37,8 @@ SRC			= $(wildcard *.c)
 OBJS		= $(addprefix $(OBJDIR)/, $(SRC:%.c=%.o))
 
 ifeq ($(strip $(OPENCM3_DIR)),)
-OPENCM3_DIR := /home/misaki/devel/stm32/libopencm3
+OPENCM3_DIR := /home/misaki/devel/Mew/support_package/libopencm3
+###/home/misaki/devel/stm32/libopencm3
 $(info Using $(OPENCM3_DIR) path to library)
 endif
 

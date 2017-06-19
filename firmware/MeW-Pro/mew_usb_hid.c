@@ -41,36 +41,36 @@ const unsigned char keyboard_report_descriptor[MEW_KB_REPORT_SIZE] =
 };
 
 const struct usb_device_descriptor dev = {
-	.bLength 			= USB_DT_DEVICE_SIZE,
+	.bLength 		= USB_DT_DEVICE_SIZE,
 	.bDescriptorType 	= USB_DT_DEVICE,
-	.bcdUSB 			= 0x0200,
+	.bcdUSB 		= 0x0200,
 	.bDeviceClass 		= 0,
 	.bDeviceSubClass 	= 0,
 	.bDeviceProtocol 	= 0,
 	.bMaxPacketSize0 	= 64,
-	.idVendor 			= 0x1234,
-	.idProduct 			= 0x4321,
-	.bcdDevice 			= 0x0200,
+	.idVendor 		= 0x1234,
+	.idProduct 		= 0x4321,
+	.bcdDevice 		= 0x0200,
 	.iManufacturer 		= 1,
-	.iProduct 			= 2,
+	.iProduct 		= 2,
 	.iSerialNumber 		= 3,
-	.bNumConfigurations = 1,
+	.bNumConfigurations     = 1,
 };
 
 const struct usb_endpoint_descriptor hid_endpoints[] = {{
-	.bLength 			= USB_DT_ENDPOINT_SIZE,
+	.bLength 		= USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType 	= USB_DT_ENDPOINT,
 	.bEndpointAddress 	= 0x81,
 	.bmAttributes 		= USB_ENDPOINT_ATTR_INTERRUPT,
 	.wMaxPacketSize 	= 8,
-	.bInterval 			= 0x04,
+	.bInterval 		= 0x04,
 }, {
-	.bLength 			= USB_DT_ENDPOINT_SIZE,
+	.bLength 		= USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType 	= USB_DT_ENDPOINT,
 	.bEndpointAddress 	= 0x01,
 	.bmAttributes 		= USB_ENDPOINT_ATTR_INTERRUPT,
 	.wMaxPacketSize 	= 8,
-	.bInterval 			= 0x04,
+	.bInterval 		= 0x04,
 }};
 
 static const struct {
@@ -81,14 +81,14 @@ static const struct {
 	} __attribute__((packed)) hid_report;
 } __attribute__((packed)) hid_function = {
 	.hid_descriptor = {
-		.bLength = sizeof(hid_function),
+		.bLength                        = sizeof(hid_function),
 		.bDescriptorType 		= USB_DT_HID,
-		.bcdHID 				= 0x0100,
+		.bcdHID 			= 0x0100,
 		.bCountryCode 			= 0,
 		.bNumDescriptors 		= 1,
 	},
 	.hid_report = {
-		.bReportDescriptorType 	= USB_DT_REPORT,
+		.bReportDescriptorType          = USB_DT_REPORT,
 		.wDescriptorLength 		= sizeof(keyboard_report_descriptor),
 	},
 };
@@ -100,12 +100,12 @@ const struct usb_interface_descriptor hid_iface = {
 	.bAlternateSetting 		= 0,
 	.bNumEndpoints 			= 2,
 	.bInterfaceClass 		= USB_CLASS_HID,
-	.bInterfaceSubClass 	= 1,
-	.bInterfaceProtocol 	= 1,
+	.bInterfaceSubClass             = 1,
+	.bInterfaceProtocol             = 1,
 	.iInterface 			= 0,
-	.endpoint 				= hid_endpoints,
-	.extra 					= &hid_function,
-	.extralen 				= sizeof(hid_function),
+	.endpoint 			= hid_endpoints,
+	.extra 				= &hid_function,
+	.extralen 			= sizeof(hid_function),
 };
 
 const struct usb_interface ifaces[] = {{
@@ -114,15 +114,15 @@ const struct usb_interface ifaces[] = {{
 }};
 
 const struct usb_config_descriptor config = {
-	.bLength 				= USB_DT_CONFIGURATION_SIZE,
+	.bLength 			= USB_DT_CONFIGURATION_SIZE,
 	.bDescriptorType 		= USB_DT_CONFIGURATION,
 	.wTotalLength 			= 0,
 	.bNumInterfaces 		= 1,
-	.bConfigurationValue 	= 1,
+	.bConfigurationValue            = 1,
 	.iConfiguration 		= 0,
 	.bmAttributes 			= 0xC0,
-	.bMaxPower 				= 0x32,
-	.interface 				= ifaces,
+	.bMaxPower 			= 0x32,
+	.interface 			= ifaces,
 };
 
 static const char *usb_strings[] = {
@@ -177,16 +177,6 @@ void mew_hid_usb_init(void) {
     nvic_enable_irq(NVIC_OTG_FS_IRQ);
     usb_hid_disable = 0;
 }
-
-/*
-void otg_fs_isr(void) {
-	usbd_poll(mew_hid_usbd_dev);
-}
-
-void mew_hid_usb_poll(void) {
-    if (usb_hid_disable == 1) return;
-	usbd_poll(mew_hid_usbd_dev);
-}*/
 
 void mew_hid_send(char* buf, int len) {
     if (usb_hid_disable == 1) return;

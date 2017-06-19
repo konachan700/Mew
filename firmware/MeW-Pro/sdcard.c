@@ -6,6 +6,82 @@ volatile u32 sdio_status_ccs = 0;
 volatile u32 sdio_status_rca = 0;
 volatile u32 sdio_card_size  = 0;
 
+u32 conf_disk_temporary_sector[128];
+
+static const struct usb_device_descriptor dev_descr = {
+	.bLength = USB_DT_DEVICE_SIZE,
+	.bDescriptorType = USB_DT_DEVICE,
+	.bcdUSB = 0x0110,
+	.bDeviceClass = 0,
+	.bDeviceSubClass = 0,
+	.bDeviceProtocol = 0,
+	.bMaxPacketSize0 = 64,
+	.idVendor = 0x0483,
+	.idProduct = 0x5741,
+	.bcdDevice = 0x0200,
+	.iManufacturer = 1,
+	.iProduct = 2,
+	.iSerialNumber = 3,
+	.bNumConfigurations = 1,
+};
+
+static const struct usb_endpoint_descriptor msc_endp[] = {{
+	.bLength = USB_DT_ENDPOINT_SIZE,
+	.bDescriptorType = USB_DT_ENDPOINT,
+	.bEndpointAddress = 0x01,
+	.bmAttributes = USB_ENDPOINT_ATTR_BULK,
+	.wMaxPacketSize = 64,
+	.bInterval = 0,
+}, {
+	.bLength = USB_DT_ENDPOINT_SIZE,
+	.bDescriptorType = USB_DT_ENDPOINT,
+	.bEndpointAddress = 0x82,
+	.bmAttributes = USB_ENDPOINT_ATTR_BULK,
+	.wMaxPacketSize = 64,
+	.bInterval = 0,
+} };
+
+static const struct usb_interface_descriptor msc_iface[] = {{
+	.bLength = USB_DT_INTERFACE_SIZE,
+	.bDescriptorType = USB_DT_INTERFACE,
+	.bInterfaceNumber = 0,
+	.bAlternateSetting = 0,
+	.bNumEndpoints = 2,
+	.bInterfaceClass = USB_CLASS_MSC,
+	.bInterfaceSubClass = USB_MSC_SUBCLASS_SCSI,
+	.bInterfaceProtocol = USB_MSC_PROTOCOL_BBB,
+	.iInterface = 0,
+	.endpoint = msc_endp,
+	.extra = NULL,
+	.extralen = 0
+} };
+
+static const struct usb_interface ifaces[] = {{
+	.num_altsetting = 1,
+	.altsetting = msc_iface,
+} };
+
+static const struct usb_config_descriptor config_descr = {
+	.bLength = USB_DT_CONFIGURATION_SIZE,
+	.bDescriptorType = USB_DT_CONFIGURATION,
+	.wTotalLength = 0,
+	.bNumInterfaces = 1,
+	.bConfigurationValue = 1,
+	.iConfiguration = 0,
+	.bmAttributes = 0x80,
+	.bMaxPower = 0x32,
+	.interface = ifaces,
+};
+
+static const char *usb_strings[] = {
+	"JNeko MeW HPM config device",
+	"MeW Config flash drive",
+	"MeW-conf",
+};
+
+usbd_device *config_msc_dev;
+static uint8_t usbd_control_buffer[128];
+
 u32 __sdio_get_cmd_result(void) {
     u32 status = SDIO_STA & 0xFFF;
 
@@ -311,5 +387,35 @@ void dma2_stream3_isr(void) {
     
     dma2_sdio_complete = 1;
     //debug_print("dma2_stream3_isr");
+}
+
+int __sd_config_disk_read(uint32_t lba, uint8_t *copy_to) {
+    //debug_print("__sd_config_disk_read() reading...");
+    if (sdio_rw512(SDIO_READ, lba + MAX_PASSWORDS_COUNT, conf_disk_temporary_sector) != SDIO_OK) {
+        debug_print("__sd_config_disk_read() error!");
+        return 1;
+    }
+    memcpy(copy_to, conf_disk_temporary_sector, 512);
+    return 0;
+}
+
+int __sd_config_disk_write(uint32_t lba, const uint8_t *copy_from) {
+    //debug_print("__sd_config_disk_write() writing...");
+    memcpy(conf_disk_temporary_sector, copy_from, 512);
+    if (sdio_rw512(SDIO_WRITE, lba + MAX_PASSWORDS_COUNT, conf_disk_temporary_sector) != SDIO_OK) {
+        debug_print("__sd_config_disk_write() error!");
+        return 1;
+    }
+    return 0;
+}
+
+void start_usb_msd_config(void) {    
+    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO10 | GPIO11 | GPIO12);
+    gpio_set_af(GPIOA, GPIO_AF10, GPIO10 | GPIO11 | GPIO12);
+    
+    config_msc_dev = usbd_init(&otgfs_usb_driver, &dev_descr, &config_descr, usb_strings, 3, usbd_control_buffer, sizeof(usbd_control_buffer));
+    usb_msc_init(config_msc_dev, 0x82, 64, 0x01, 64, "JNeko", "MeW HPM","0.00", CONFIG_DISK_SIZE, __sd_config_disk_read, __sd_config_disk_write);
+    
+    //nvic_enable_irq(NVIC_OTG_FS_IRQ);
 }
 

@@ -19,15 +19,14 @@
 
 #define HID_DESCRIPTOR_TYPE                     0x21
 
-#define MEW_KB_REPORT_SIZE 						61
-#define MEW_CUSTOM_HID_REPORT_SIZE 				61
+#define MEW_KB_REPORT_SIZE 			61
+#define MEW_CUSTOM_HID_REPORT_SIZE 		64
 
-#define MEW_UPPER_CASE							0x02
-#define MEW_LOWER_CASE 							0x00
+#define MEW_UPPER_CASE				0x02
+#define MEW_LOWER_CASE 				0x00
 
 extern void mew_hid_usb_disable(void);
 extern void mew_hid_usb_init(void);
-//extern void mew_hid_usb_poll(void);
 extern void mew_hid_send(char* buf, int len);
 extern void mew_hid_send_char(char ch, char char_case);
 
