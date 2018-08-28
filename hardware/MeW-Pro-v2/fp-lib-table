@@ -1,8 +1,0 @@
-(fp_lib_table
-  (lib (name curr_01)(type KiCad)(uri "$(KIPRJMOD)/curr_01.pretty")(options "")(descr ""))
-  (lib (name v.0)(type KiCad)(uri /home/misaki/devel/__old/Mew/hardware/v.0.4)(options "")(descr ""))
-  (lib (name Buttons_Switches_SMD)(type KiCad)(uri /home/misaki/devel/kicad_libs/Buttons_Switches_SMD.pretty)(options "")(descr ""))
-  (lib (name Connectors_USB)(type KiCad)(uri /home/misaki/devel/kicad_libs/Connectors_USB.pretty)(options "")(descr ""))
-  (lib (name Housings_QFP)(type KiCad)(uri /home/misaki/devel/kicad_libs/Housings_QFP.pretty)(options "")(descr ""))
-  (lib (name JDY-08)(type KiCad)(uri /home/misaki/devel/JDY-08/KiCAD/JDY-08.pretty)(options "")(descr ""))
-)
