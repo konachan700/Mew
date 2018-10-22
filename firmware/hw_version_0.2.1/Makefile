@@ -54,7 +54,7 @@ SCRIPT_DIR	= $(OPENCM3_DIR)/scripts
 
 ###############################################################################
 # C flags
-CFLAGS		+= -Os -g
+CFLAGS		+= -O2 -g
 CFLAGS		+= -Wimplicit-function-declaration
 CFLAGS		+= -Wall -Wextra -Wshadow -Wimplicit-function-declaration
 CFLAGS		+= -Wredundant-decls -Wstrict-prototypes 

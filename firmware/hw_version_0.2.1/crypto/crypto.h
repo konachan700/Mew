@@ -19,9 +19,12 @@
 #define MEW_ENCRYPT         1
 #define MEW_DECRYPT         2
 
+#define MEW_MAGIC           0x01EF7743
+#define MEW_MAGIC_TSIZE     16
+
 typedef struct {
     uint64_t pointer;
-    uint8_t  table[16][16];
+    uint8_t  table[MEW_MAGIC_TSIZE][MEW_MAGIC_TSIZE];
 } mew_xor_key;
 
 typedef struct {
@@ -34,13 +37,37 @@ typedef struct {
   uint8_t  mod;
 } mew_keycode;
 
+
+
+
+typedef struct {
+    uint32_t crc32;
+    uint8_t  table[MEW_MAGIC_TSIZE][MEW_MAGIC_TSIZE];
+} mew_xor_key_rom;
+
+typedef struct {
+    uint32_t magic;
+    mew_xor_key_rom master_key;
+    mew_xor_key_rom passwords_key;
+    uint64_t system_encrypt_key[4];
+    uint64_t system_encrypt_iv[2];
+    
+} mew_unique_data;
+
+
+
+
+
 void mew_start_random(void);
+void mew_ss_init(void) ;
+
 uint32_t mew_random32(void);
+uint64_t mew_random64(void);
 
 void mew_hash32(uint32_t* data, uint32_t size, uint32_t* result);
 void mew_hash8(uint8_t* data, uint32_t size, uint8_t* result);
 
-void mew_xor_keygen(mew_xor_key *key);
+void mew_xor_keygen(uint8_t* buf, uint32_t size);
 uint8_t mew_xor_byte(uint8_t byte, mew_xor_key *key, uint32_t counter);
 void mew_xor(uint8_t* in_buf, uint8_t* out_buf, uint32_t size, mew_xor_key *key);
 

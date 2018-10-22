@@ -12,10 +12,6 @@
 #include "../lv_conf.h"
 #include "../lvgl/lvgl.h"
 
-extern const lv_img_t mew_logo;
-
-void mew_ui_show_pinpad(void);
-
 void mew_display_init(void);
 
 #define MEW_DISPLAY_W                       240

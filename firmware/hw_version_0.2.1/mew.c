@@ -8,6 +8,7 @@
 #include "lv_conf.h"
 #include "lvgl/lvgl.h"
 #include "i2c/i2c.h"
+#include "ui/ui.h"
 
 int main(void) {
     //uint32_t i;
@@ -19,6 +20,7 @@ int main(void) {
     mew_led_init();
     mew_start_debug_usart();
     mew_start_random();
+    mew_ss_init();
     
     mew_i2c_init();
     mew_spi_flash_init();
@@ -45,7 +47,7 @@ int main(void) {
     mew_integration_test();
     
     while(1) {
-        mew_delay_ms(22);
+        mew_delay_ms(15);
         //for (i=0; i<100000; i++) __asm__("NOP");
         
     	//if (mew_is_spi_dma_bisy() == 0) {

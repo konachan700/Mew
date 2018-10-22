@@ -23,11 +23,14 @@
 #include <libopencm3/stm32/rtc.h>
 #include <libopencm3/stm32/crypto.h>
 #include <libopencm3/stm32/hash.h>
+#include <libopencm3/stm32/crc.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h> 
+
+#define MEW_12BIT_SWAP(n)   (((n & 0xFF) << 4) | (n >> 12))
 
 //#define ZRAM __attribute__((section (".zram")))
 

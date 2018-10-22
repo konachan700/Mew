@@ -6,12 +6,6 @@
  *  This module is used for password generator and eeprom configuration scrambling.
 ****************************************************************************************************/
 
-static void __mew_xor_randomize_array(uint8_t* buf, uint32_t size);
-
-void mew_xor_keygen(mew_xor_key *key) {
-    __mew_xor_randomize_array((uint8_t*) key->table, 256);
-}
-
 void mew_xor(uint8_t* in_buf, uint8_t* out_buf, uint32_t size, mew_xor_key *key) {
     uint32_t i;
     for (i=0; i<size; i++) {
@@ -19,7 +13,7 @@ void mew_xor(uint8_t* in_buf, uint8_t* out_buf, uint32_t size, mew_xor_key *key)
     }
 }
 
-static void __mew_xor_randomize_array(uint8_t* buf, uint32_t size) {
+void mew_xor_keygen(uint8_t* buf, uint32_t size) {
     uint8_t random;
     uint32_t i, counter = 0;
     memset(buf, 0, size);

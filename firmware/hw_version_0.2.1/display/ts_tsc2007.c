@@ -47,7 +47,7 @@ static bool __mew_input_read(lv_indev_data_t *data) {
         mew_die_with_message("mew_touchscreen_init: cannot read Z");
     }
     
-    z = ((z & 0xFF) << 4) | (z >> 12);
+    z = MEW_12BIT_SWAP(z);
     if (z > 0x100) {
         res = mew_i2c_read_block_ts2007(0x48, MEW_TSC2007_READ_X, (uint8_t*) &x, 2);
         if (res == 0) {
@@ -59,10 +59,10 @@ static bool __mew_input_read(lv_indev_data_t *data) {
             mew_die_with_message("mew_touchscreen_init: cannot read Y");
         }
     
-        xf = ((x & 0xFF) << 4) | (x >> 12);
+        xf = MEW_12BIT_SWAP(x);
         xf = (xf / 0x1000) * MEW_DISPLAY_W;
 
-        yf = ((y & 0xFF) << 4) | (y >> 12);
+        yf = MEW_12BIT_SWAP(y);
         yf = (yf / 0x1000) * MEW_DISPLAY_H;
 
         data->state = LV_INDEV_STATE_PR;

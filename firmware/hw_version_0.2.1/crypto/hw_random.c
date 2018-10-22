@@ -18,3 +18,7 @@ uint32_t mew_random32(void) {
 	_mew_last_random_value = random;
     return _mew_last_random_value;
 }
+
+uint64_t mew_random64(void) {
+    return (((uint64_t) mew_random32()) << 32) | mew_random32();
+}

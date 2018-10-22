@@ -39,7 +39,6 @@ void mew_start_all_clock(void) {
     rcc_periph_clock_enable(RCC_SPI2);
     rcc_periph_clock_enable(RCC_OTGFS);
     rcc_periph_clock_enable(RCC_I2C3);
-    //rcc_periph_clock_enable(RCC_SDIO);
     rcc_periph_clock_enable(RCC_RNG);
     rcc_periph_clock_enable(RCC_CRYP);
     rcc_periph_clock_enable(RCC_CRC);
