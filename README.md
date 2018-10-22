@@ -1,4 +1,6 @@
 ## Mew - hardware password manager
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=3LJA6GYKRW6PU&lc=US&item_name=MeW%20HPM%20Donate&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+
 <img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/q2.png"> 
 
 *   [Forum](https://forum.mewhpm.com)
