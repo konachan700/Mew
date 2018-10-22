@@ -41,7 +41,7 @@ Your private keys and wallets, that was stored on the device, was encrypted by u
 
 When you are starting your MeW at first time with normal security level, device key will shown. Save device key at secure place. MeW has a cloud backup for encrypted master key. For recovery your passwords on new device you should be enter a device key in the application, and enter you PIN-code in MeW.
 
-In the high security level cloud backup will disabled, because encrypted master key in this level can't be extracted from device. If you lost you MeW or forget a PIN-code, you lost all you passwords.
+In the high security level cloud backup will disabled, because encrypted master key in this level can't be extracted from device. If you lost you MeW or forgot a PIN-code, you lost all you passwords.
 
 ##### • Gallery
 <img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/IMG_0865.JPG"> 
