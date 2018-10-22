@@ -42,6 +42,6 @@ When you are starting your MeW at first time with normal security level, device 
 In the high security level cloud backup will disabled, because encrypted master key in this level can't be extracted from device. If you was lost you MeW or forget a PIN-code, you lost all you passwords.
 
 ##### • Gallery
-<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/demo1.jpg">
-<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/board1.jpg"> 
+<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/IMG_0865.JPG"> 
+<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/IMG_0869.JPG">
 <img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/case1.jpg"> 
