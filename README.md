@@ -1,4 +1,6 @@
 ## Mew - hardware password manager
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=3LJA6GYKRW6PU&lc=US&item_name=MeW%20HPM%20Donate&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+
 <img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/q2.png"> 
 
 *   [Forum](https://forum.mewhpm.com)
@@ -42,6 +44,6 @@ When you are starting your MeW at first time with normal security level, device 
 In the high security level cloud backup will disabled, because encrypted master key in this level can't be extracted from device. If you was lost you MeW or forget a PIN-code, you lost all you passwords.
 
 ##### • Gallery
-<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/demo1.jpg">
-<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/board1.jpg"> 
+<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/IMG_0865.JPG"> 
+<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/IMG_0869.JPG">
 <img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/case1.jpg"> 
