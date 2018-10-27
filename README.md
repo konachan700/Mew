@@ -10,22 +10,22 @@
 *   [Hardware](https://easyeda.com/konachan.700/MeW_Pro_v2.1)
 
 ##### • What is it?
-It's a small USB device for hold your passwords, private keys and cryptowallets.
+It's a small USB device to hold your passwords, private keys and cryptowallets.
 
 *   Easy to use.
 *   Fully open sourced.
 *   No drivers or propietary software required.
-*   Highly protected for stolen critical data.
+*   Highly protected for critical data.
 
 <img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/q1.png"> 
 
-##### • How it's work?
+##### • How does it work?
 
-Connect MeW to PC or mobile device. Pair MeW with your smartphone via bluetooth. Install a MeW HPM app from Google Play or Appstore. Use it.  
+Connect MeW to a PC or mobile device. Pair MeW with your smartphone via bluetooth. Install the MeW HPM app from Google Play or Appstore. Use it.  
 
 _Demo video will be here a bit later :3_
 
-12 passwords, that you use more often, you can input directly from device. Other passwords could be entered by MeW HPM app.  
+12 passwords, those you use more often, can be entered directly on the device. Other passwords could be entered by MeW HPM app.  
 
 _Demo video will be here a bit later :3_
 
@@ -33,15 +33,15 @@ You can exchange public keys with your friends directly via bluetooth.
 
 Technically, it is a HID-keyboard.
 
-Passwords are not stored in device, all passwords was generate on-tne-fly in depends of entered PIN-code and internal master key. Nobody and nothing can't theft your passwords database, because it isn't exist. If anybody will theft the device, he can't bruteforce it - for each PIN-code device generate different passwords, and, if you set this option, fake logins will be show.  
+Passwords are not stored in the device, all passwords are generated on-the-fly depending on the entered PIN-code and internal master key. Nobody and nothing can steal your passwords database, because there is none. If anybody steals the device, he can't bruteforce it - for each PIN-code the device generate different passwords, and, if you set this option, fake logins will be shown.  
 
-Your private keys and wallets, that was stored on the device, was encrypted by use AES-256. Encryption key is generated from master key and pin-code on-the-fly. Master key has been stored internally and can't be extracted, of course, if you are set the maximum security level.
+Your private keys and wallets, that are stored on the device, are encrypted with AES-256. Encryption key is generated from master key and pin-code on-the-fly. Master key has been stored internally and can't be extracted, of course, if you set the maximum security level.
 
-##### • I was lost my MeW. How can I repair my passwords?
+##### • I lost my MeW. How can I get my passwords back?
 
-When you are starting your MeW at first time with normal security level, device key will shown. Save device key at secure place. MeW has a cloud backup for encrypted master key. For recovery your passwords on new device you should be enter a device key in the application, and enter you PIN-code in MeW.
+When you are starting your MeW for the first time with normal security level, the device key will shown. Save the device key at a secure place. MeW has a cloud backup for encrypted master keys. For recovery of your passwords on a new device you have to enter a device key in the application, and enter you PIN-code in MeW.
 
-In the high security level cloud backup will disabled, because encrypted master key in this level can't be extracted from device. If you lost you MeW or forgot a PIN-code, you lost all you passwords.
+In the high security mode cloud backup will disabled, because in this mode the encrypted master key i can't be extracted from the device. If you lose your MeW or forgot a PIN-code, you loose all you passwords.
 
 ##### • Gallery
 <img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/IMG_0865.JPG"> 
