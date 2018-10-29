@@ -6,7 +6,7 @@
 *   [Forum](https://forum.mewhpm.com)
 *   [Wiki](https://wiki.mewhpm.com)
 *   [Code repo (github)](https://github.com/konachan700/Mew)
-*   [Code repo (gitlab mirror)](https://gitlab.com/mewhpm/firmware)
+*   [Code repo (gitlab mirror)](https://gitlab.com/mewhpm/Mew)
 *   [Hardware](https://easyeda.com/konachan.700/MeW_Pro_v2.1)
 
 ##### • What is it?
