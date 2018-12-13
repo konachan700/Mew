@@ -7,6 +7,10 @@
         <in>bluetooth.h</in>
         <in>bt_usart.c</in>
       </df>
+      <df name="comm">
+        <in>comm.c</in>
+        <in>comm.h</in>
+      </df>
       <df name="crypto">
         <in>security_storage.c</in>
       </df>
@@ -102,6 +106,10 @@
       <item path="bluetooth/bluetooth.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="bluetooth/bt_usart.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="comm/comm.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="comm/comm.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="crypto/security_storage.c" ex="false" tool="0" flavor2="0">
       </item>

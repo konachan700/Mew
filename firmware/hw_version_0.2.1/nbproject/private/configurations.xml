@@ -7,6 +7,10 @@
         <in>bluetooth.h</in>
         <in>bt_usart.c</in>
       </df>
+      <df name="comm">
+        <in>comm.c</in>
+        <in>comm.h</in>
+      </df>
       <df name="crypto">
         <in>aes256.c</in>
         <in>crypto.h</in>
@@ -44,9 +48,11 @@
       <df name="lvgl">
       </df>
       <df name="ui">
+        <in>img_mew_logo.c</in>
         <in>main_window.c</in>
-        <in>mew_logo.c</in>
-        <in>pinpad.c</in>
+        <in>password_window.c</in>
+        <in>passwords_window.c</in>
+        <in>pinpad_window.c</in>
         <in>ui.c</in>
         <in>ui.h</in>
       </df>
@@ -65,7 +71,7 @@
     <conf name="Default" type="0">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
-        <platform>2</platform>
+        <platform>3</platform>
       </toolsSet>
       <compile>
         <compiledirpicklist>

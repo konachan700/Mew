@@ -32,6 +32,8 @@
 
 #define MEW_12BIT_SWAP(n)   (((n & 0xFF) << 4) | (n >> 12))
 
+#define MEW_SYSTICK_RELOAD_VALUE 168000
+
 //#define ZRAM __attribute__((section (".zram")))
 
 extern void mew_start_all_clock(void);

@@ -7,15 +7,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Ilia_Baldin/Documents/devel/C/firmware/system.c</file>
-            <file>file:/C:/Users/Ilia_Baldin/Documents/devel/C/firmware/mew.c</file>
-            <file>file:/C:/Users/Ilia_Baldin/Documents/devel/C/firmware/display/ts_tsc2007.c</file>
-            <file>file:/C:/Users/Ilia_Baldin/Documents/devel/C/firmware/crypto/mew_passgen.c</file>
-            <file>file:/C:/Users/Ilia_Baldin/Documents/devel/C/firmware/config.h</file>
-            <file>file:/C:/Users/Ilia_Baldin/Documents/devel/C/firmware/flash/flash.c</file>
-            <file>file:/C:/Users/Ilia_Baldin/Documents/devel/C/firmware/crypto/crypto.h</file>
-            <file>file:/C:/Users/Ilia_Baldin/Documents/devel/C/firmware/display/display.c</file>
-            <file>file:/C:/Users/Ilia_Baldin/Documents/devel/C/firmware/display/ts_adc.c</file>
+            <file>file:/C:/Users/Ilia_Baldin/Documents/GitHub/Mew/firmware/hw_version_0.2.1/comm/comm.h</file>
+            <file>file:/C:/Users/Ilia_Baldin/Documents/GitHub/Mew/firmware/hw_version_0.2.1/comm/comm.c</file>
+            <file>file:/C:/Users/Ilia_Baldin/Documents/GitHub/Mew/firmware/hw_version_0.2.1/ui/main_window.c</file>
         </group>
     </open-files>
 </project-private>

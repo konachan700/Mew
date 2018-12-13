@@ -12,6 +12,10 @@ void mew_delay_ms(uint32_t ms) {
     while (expected_time > systick_millis) __asm__("NOP");
 }
 
+uint32_t mew_get_cpu_clock(void) {
+    return rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_168MHZ].ahb_frequency;
+}
+
 void mew_start_all_clock(void) {
     rcc_clock_setup_hse_3v3(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_168MHZ]);
     
@@ -46,7 +50,7 @@ void mew_start_all_clock(void) {
 }
 
 void mew_systick_setup(void) {
-    systick_set_reload(168000);
+    systick_set_reload(MEW_SYSTICK_RELOAD_VALUE);
     systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
     systick_counter_enable();
     systick_interrupt_enable();
