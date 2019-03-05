@@ -43,7 +43,11 @@ When you are starting your MeW for the first time with normal security level, th
 
 In the high security mode cloud backup will disabled, because in this mode the encrypted master key i can't be extracted from the device. If you lose your MeW or forgot a PIN-code, you loose all you passwords.
 
-##### • Gallery
-<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/IMG_0865.JPG"> 
-<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/IMG_0869.JPG">
-<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/case1.jpg"> 
+##### • Where is an android application?
+I will add it to repo a bit later.
+
+## • Android application screenshots
+<img src="https://user-images.githubusercontent.com/8249779/53811803-341ee000-3f6b-11e9-9664-a812367296b8.png" alt="alt text" width="64px">&nbsp;&nbsp;<img src="https://user-images.githubusercontent.com/8249779/53811816-3a14c100-3f6b-11e9-9648-8dcae1f5d599.png" alt="alt text" width="64px">&nbsp;&nbsp;<img src="https://user-images.githubusercontent.com/8249779/53811817-3a14c100-3f6b-11e9-8a01-c77f2c37a011.png" alt="alt text" width="64px">&nbsp;&nbsp;<img src="https://user-images.githubusercontent.com/8249779/53811819-3aad5780-3f6b-11e9-9e16-c4cc3bf1ed34.png" alt="alt text" width="64px">&nbsp;&nbsp;<img src="https://user-images.githubusercontent.com/8249779/53811820-3b45ee00-3f6b-11e9-8d44-e073b428dcce.png" alt="alt text" width="64px">&nbsp;&nbsp;<img src="https://user-images.githubusercontent.com/8249779/53811821-3b45ee00-3f6b-11e9-8212-01b9531e6d3f.png" alt="alt text" width="64px">&nbsp;&nbsp;<img src="https://user-images.githubusercontent.com/8249779/53811823-3b45ee00-3f6b-11e9-9417-77fbeee70afd.png" alt="alt text" width="64px">
+
+## • Device photos
+<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/IMG_0865.JPG" height="160px">&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/IMG_0869.JPG" height="160px">&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/konachan700/konachan700.github.io/master/case1.jpg" height="160px"> 
