@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option java_outer_classname = "PassRecordDTO";
+option java_package = "com.mewhpm.mewsync.data.generated";
+
+message record {
+    int32 packageId             = 1;
+
+    bool hasDigit               = 2;
+    bool hasAlphaUppercase      = 3;
+    bool hasAlphaLowercase      = 4;
+    bool hasSymbols             = 5;
+
+    string displayName          = 6;
+    string login                = 7;
+    string url                  = 8;
+
+    int64 hwID                  = 9;
+    int32 maxLen                = 10;
+    int32 minLen                = 11;
+    int32 type                  = 12;
+}

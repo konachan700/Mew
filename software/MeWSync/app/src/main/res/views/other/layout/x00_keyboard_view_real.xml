@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.mewhpm.mewsync.ui.FixedHeightLinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@drawable/keyboard_root_bg_and_border"
+        android:id="@+id/containerForKeyboard"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="4dp"
+        android:layout_gravity="bottom">
+    <com.mewhpm.mewsync.ui.recyclerview.impl.RecyclerViewForPasswordsKeyboard
+            android:background="@drawable/keyboard_bg_and_border"
+            android:layout_weight="3"
+            android:id="@+id/listRVPasswordsKeyboard"
+            android:name="com.mewhpm.mewsync.services.MewIMEService"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".services.MewIMEService"
+            tools:listitem="@layout/x00_recyclerview_simple_element"
+            android:visibility="visible"/>
+    <LinearLayout
+            android:background="@drawable/keyboard_bg_and_border_dark"
+            android:layout_weight="6"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_weight="100"
+                android:layout_width="match_parent"
+                android:padding="5dp"
+                android:layout_height="0dp">
+            <TextView
+                    android:textColor="@color/colorBrandDark1"
+                    android:text="@string/click_for_enter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/textViewTitleKb" android:padding="3dp"
+                    android:textStyle="bold" android:textSize="14sp" android:visibility="gone"/>
+            <TextView
+                    android:textColor="@color/colorBrandDark2"
+                    android:text="Select item"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/textViewTitleNoItems" android:padding="3dp"
+                    android:textStyle="italic" android:textSize="14sp" android:visibility="visible"/>
+            <TextView
+                    android:textColor="@color/colorBrandDark1"
+                    android:text="@string/u_url_u"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/textViewURL" android:padding="3dp" android:paddingStart="7dp"
+                    android:textStyle="normal" android:textSize="16sp" android:visibility="gone"/>
+            <TextView
+                    android:textColor="@color/colorBrandDark1"
+                    android:text="@string/u_login_u"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/textViewLogin" android:padding="3dp" android:paddingStart="7dp"
+                    android:textStyle="normal" android:textSize="16sp" android:visibility="gone"/>
+            <TextView
+                    android:textColor="@color/colorBrandDark1"
+                    android:text="@string/u_password_u"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/textViewPassword" android:padding="3dp" android:paddingStart="7dp"
+                    android:textStyle="normal" android:textSize="16sp" android:visibility="gone"/>
+        </LinearLayout>
+        <LinearLayout
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:padding="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.Guideline
+                    android:orientation="horizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:id="@+id/guideline" android:layout_weight="100"/>
+            <ImageButton
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:id="@+id/langSwitchBtn1" android:layout_marginBottom="4dp"
+                    android:layout_marginStart="7dp" android:layout_marginTop="4dp" android:layout_marginEnd="7dp"/>
+            <ImageButton
+                    android:layout_weight="1"
+                    android:background="@null" android:layout_marginBottom="4dp"
+                    android:layout_marginStart="7dp" android:layout_marginTop="4dp" android:layout_marginEnd="7dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:id="@+id/deviceSelectBtn1" />
+        </LinearLayout>
+    </LinearLayout>
+</com.mewhpm.mewsync.ui.FixedHeightLinearLayout>

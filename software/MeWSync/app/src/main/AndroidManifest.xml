@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.mewhpm.mewsync">
+
+    <uses-feature
+            android:name="android.hardware.bluetooth_le"
+            android:required="true"/>
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="22"/>
+    <!--uses-permission android:name="android.permission.READ_PHONE_STATE"/-->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsRtl="true"
+            android:theme="@style/AppTheme"
+            tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <activity android:name=".DeviceActivity"
+                  android:theme="@style/DeviceActivityTheme"
+                  android:label="@string/app_name">
+        </activity>
+        <activity android:name=".InitialActivity"
+                  android:theme="@style/AppTheme.NoActionBar"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".MainActivity"
+                android:label="@string/app_name"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <!--service
+                android:name=".services.BleService"
+                android:enabled="true"
+                android:exported="false"/-->
+
+        <!-- MeW input method service -->
+        <service android:name=".services.MewIMEService"
+                 android:enabled="true"
+                 android:label="MeW Password Pad"
+                 android:permission="android.permission.BIND_INPUT_METHOD">
+            <meta-data android:name="android.view.im" android:resource="@xml/method"/>
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>

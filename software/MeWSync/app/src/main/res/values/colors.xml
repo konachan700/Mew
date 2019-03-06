@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#77dd55</color>
+    <color name="colorPrimaryDark">#338822</color>
+    <color name="colorAccent">#d81b60</color>
+
+    <color name="colorBrand">#77dd55</color>
+    <color name="colorBrandDark1">#000000</color>
+    <color name="colorBrandDark2">#333333</color>
+    <color name="colorBrandDark3">#000000</color>
+    <color name="colorBrandBlack">#000000</color>
+    <color name="colorBrandDefaultElement">#DD6600</color>
+    <color name="colorBrandDefaultElement2">#BB4400</color>
+    <color name="colorBrandYellow">#FFFF77</color>
+    <color name="colorBrandSelectedMenu">#D0D0D0</color>
+    <color name="colorBrandDarkGray">#999999</color>
+    <color name="colorBrandTransparent">#55000000</color>
+    <color name="colorBrandItemBorder">#E5E5E5</color>
+
+    <color name="colorBrandKeyboardBG">#FF8822</color>
+    <color name="colorBrandKeyboardBorders">#EE7711</color>
+
+    <color name="colorBrandWhite">#ffffff</color>
+    <color name="lightGray1">#BDBDBD</color>
+</resources>

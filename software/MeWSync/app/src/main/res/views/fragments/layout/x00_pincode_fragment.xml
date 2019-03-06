@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/colorBrandDark1"
+              android:orientation="vertical">
+
+    <TextView
+            android:text="Enter PIN-code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/pincodeFragmentTitle" android:layout_marginTop="32dp"
+            android:layout_marginLeft="12dp" android:layout_marginRight="12dp" android:textSize="24sp"
+            android:textColor="@color/colorBrandDefaultElement" android:gravity="center" android:textStyle="bold"
+            android:fontFamily="@font/brand"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <View
+                android:layout_height="match_parent"
+                android:layout_width="80dp"
+                android:layout_weight="0"/>
+        <EditText
+                android:layout_weight="100"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:ems="10"
+                android:id="@+id/pincodeBox1"
+                android:textStyle="bold" android:textSize="36sp"
+                android:gravity="center" android:layout_margin="8dp"
+                android:textIsSelectable="false" android:singleLine="true" android:enabled="false"
+                android:textAlignment="center" android:textColor="@color/colorBrandWhite"
+                android:background="@color/colorBrandDark2"/>
+        <ImageView
+                android:id="@+id/pincodeDeleteButton"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                tools:srcCompat="@android:drawable/ic_input_delete"
+                android:layout_weight="0"
+                android:alpha="0.5" android:layout_marginEnd="32dp"/>
+    </LinearLayout>
+    <TextView
+            android:text="@string/incorrect_pin_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/incorrectPinWarning"
+            android:layout_marginBottom="10dp"
+            android:visibility="invisible"
+            android:textStyle="bold"
+            android:textColor="@color/colorBrandDefaultElement"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="center" android:textSize="18sp" android:fontFamily="@font/brand"/>
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:padding="16dp" android:gravity="center">
+        <LinearLayout
+                android:layout_weight="100"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:gravity="center"
+                android:padding="1dp" android:layout_marginTop="20dp" android:layout_gravity="center">
+            <com.mewhpm.mewsync.ui.SquareButton
+                    android:layout_weight="100"
+                    android:text="1"
+                    android:id="@+id/button11"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    style="@style/RoundButtonTheme" android:textSize="36sp" android:fontFamily="@font/brand"/>
+            <com.mewhpm.mewsync.ui.SquareButton
+                    android:layout_weight="100"
+                    android:text="2"
+                    android:id="@+id/button12"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    style="@style/RoundButtonTheme" android:textSize="36sp" android:fontFamily="@font/brand"/>
+            <com.mewhpm.mewsync.ui.SquareButton
+                    android:layout_weight="100"
+                    android:text="3"
+                    android:id="@+id/button13"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    style="@style/RoundButtonTheme" android:textSize="36sp" android:fontFamily="@font/brand"/>
+        </LinearLayout>
+        <LinearLayout
+                android:layout_weight="100"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:gravity="center" android:layout_margin="0dp"
+                android:padding="1dp" android:layout_gravity="center">
+            <com.mewhpm.mewsync.ui.SquareButton
+                    android:layout_weight="100"
+                    android:text="4"
+                    android:id="@+id/button21"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    style="@style/RoundButtonTheme" android:textSize="36sp" android:fontFamily="@font/brand"/>
+            <com.mewhpm.mewsync.ui.SquareButton
+                    android:layout_weight="100"
+                    android:text="5"
+                    android:id="@+id/button22"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    style="@style/RoundButtonTheme" android:textSize="36sp" android:fontFamily="@font/brand"/>
+            <com.mewhpm.mewsync.ui.SquareButton
+                    android:layout_weight="100"
+                    android:text="6"
+                    android:id="@+id/button23"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    style="@style/RoundButtonTheme" android:textSize="36sp" android:fontFamily="@font/brand"/>
+        </LinearLayout>
+        <LinearLayout
+                android:layout_weight="100"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:gravity="center" android:layout_margin="0dp"
+                android:padding="1dp" android:layout_gravity="center">
+            <com.mewhpm.mewsync.ui.SquareButton
+                    android:layout_weight="100"
+                    android:text="7"
+                    android:id="@+id/button31"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    style="@style/RoundButtonTheme" android:textSize="36sp" android:fontFamily="@font/brand"/>
+            <com.mewhpm.mewsync.ui.SquareButton
+                    android:layout_weight="100"
+                    android:text="8"
+                    android:id="@+id/button32"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    style="@style/RoundButtonTheme" android:textSize="36sp" android:fontFamily="@font/brand"/>
+            <com.mewhpm.mewsync.ui.SquareButton
+                    android:layout_weight="100"
+                    android:text="9"
+                    android:id="@+id/button33"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    style="@style/RoundButtonTheme" android:textSize="36sp" android:fontFamily="@font/brand"/>
+        </LinearLayout>
+        <LinearLayout
+                android:layout_weight="100"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:gravity="center" android:layout_margin="0dp"
+                android:padding="1dp" android:layout_gravity="center">
+            <com.mewhpm.mewsync.ui.SquareButton
+                    android:layout_weight="100"
+                    android:text="Back"
+                    android:id="@+id/button41"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    style="@style/RoundButtonTheme" android:textSize="24sp"
+                    android:textColor="@color/colorBrandDefaultElement" android:fontFamily="@font/brand"/>
+            <com.mewhpm.mewsync.ui.SquareButton
+                    android:layout_weight="100"
+                    android:text="0"
+                    android:id="@+id/button42"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    style="@style/RoundButtonTheme" android:textSize="36sp" android:fontFamily="@font/brand"/>
+            <com.mewhpm.mewsync.ui.SquareButton
+                    android:layout_weight="100"
+                    android:text="OK"
+                    android:id="@+id/button43"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    style="@style/RoundButtonTheme" android:textSize="24sp"
+                    android:textColor="@color/colorBrandDefaultElement" android:fontFamily="@font/brand"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

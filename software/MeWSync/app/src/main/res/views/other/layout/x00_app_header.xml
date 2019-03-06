@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:gravity="center_vertical" android:padding="7dp"
+            android:background="@color/colorBrandDark1">
+        <ImageView
+                android:src="@drawable/mewlogo2"
+                android:layout_height="76dp" android:id="@+id/imageView2"
+                android:adjustViewBounds="true" android:layout_width="wrap_content" android:padding="6dp"/>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:text="@string/mew_hpm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView"
+                    android:textSize="36sp" android:textStyle="bold" android:fontFamily="sans-serif"
+                    android:paddingStart="16dp" android:gravity="center|start"
+                    android:textColor="@color/colorBrandWhite"/>
+            <TextView
+                    android:text="@string/hardware_password_manager"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView2"
+                    android:textColor="@color/colorBrandWhite"
+                    android:paddingStart="20dp"
+                    android:textSize="14sp"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

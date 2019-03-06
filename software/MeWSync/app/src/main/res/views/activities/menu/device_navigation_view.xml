@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="com.mewhpm.mewsync.DeviceActivity">
+
+    <item android:id="@+id/menuItemPasswords"
+          app:ico_color="@color/colorBrandDark1"
+          app:ico_icon="gmd-vpn-key"
+          app:ico_size="28dp"
+          android:checkable="true"
+          android:title="@string/passwords"
+          android:orderInCategory="100"/>
+
+    <item android:id="@+id/menuSync"
+          app:ico_color="@color/colorBrandDark1"
+          app:ico_icon="gmd-cloud-upload"
+          app:ico_size="28dp"
+          android:checkable="true"
+          android:title="@string/sync_with_device"
+          android:orderInCategory="999"/>
+</menu>

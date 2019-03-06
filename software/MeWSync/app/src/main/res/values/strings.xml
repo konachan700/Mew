@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">MeWSync</string>
+    <string name="action_settings">Settings</string>
+    <string name="please_create_new_pincode">Please, create new pincode</string>
+    <string name="please_confirm_your_pincode">Please, confirm your pincode</string>
+    <string name="pincode_cannot_be_empty">Pincode cannot be empty!</string>
+    <string name="entered_pincodes_does_not_match">Entered pincodes does not match!</string>
+    <string name="incorrect_pincode">Incorrect pincode. Please, try again</string>
+    <string name="wait_for_keys_generating">Generate keypair…</string>
+    <string name="no_items_here">No items here</string>
+    <string name="mew_hpm">MeW HPM</string>
+    <string name="hardware_password_manager">Hardware Password Manager</string>
+    <string name="stop_scanning">Stop scanning</string>
+    <string name="passwords">Passwords</string>
+    <string name="sync_with_device">Sync with MeW</string>
+    <string name="change_description">Change</string>
+    <string name="back">Back</string>
+    <string name="change_desc">Change descrition</string>
+</resources>

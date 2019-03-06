@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <include android:layout_width="match_parent" android:layout_height="wrap_content"
+                 layout="@layout/x00_app_header" android:layout_weight="0"/>
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:orientation="vertical" android:gravity="center" android:padding="8dp"
+                      android:background="@drawable/rec_view_list_item_bg">
+
+            <com.mewhpm.mewsync.ui.recyclerview.impl.RecyclerViewDevicesImpl
+                    android:id="@+id/listRV1"
+                    android:name="com.mewhpm.mewsync.fragments.DevicesFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_weight="0"
+                    tools:context=".fragments.DevicesFragment"
+                    tools:listitem="@layout/x01_recyclerview_pair_element"
+                    android:visibility="visible"/>
+            <!--include layout="@layout/x00_no_items_in_list"
+                     android:id="@+id/noItemsInList1"
+                     android:layout_width="match_parent"
+                     android:layout_height="match_parent"
+                     android:layout_weight="1"
+                     android:visibility="visible"/-->
+        </LinearLayout>
+    </LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addNewBleDevBtn1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            app:backgroundTint="@color/colorBrandDark1"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
