@@ -5,6 +5,16 @@
 static bool __mew_input_read(int *x, int *y, int *state);
 
 static volatile uint8_t _mew_ts_isr = 0;
+volatile uint8_t is_bootloader_active = 0;
+
+unsigned int mew_touchscreen_test(void) {
+	int x=0, y=0, state=0;
+	__mew_input_read(&x, &y, &state);
+	if ((x > 16) && (x < 64) && (y > 16) && (y < 64) && (state == 1)) {
+		is_bootloader_active = 1;
+	}
+	return 0;
+}
 
 unsigned int mew_touchscreen_init(void) {
     gpio_mode_setup(MEW_TSC2007_IRQ_PORT, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, MEW_TSC2007_IRQ_PIN); 

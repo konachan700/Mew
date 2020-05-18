@@ -6,8 +6,10 @@
 #include "drivers/system/system.h"
 #include "drivers/i2c/i2c.h"
 #include "drivers/display/display.h"
+#include "drivers/usb/mew_usb_hid.h"
 
 static volatile unsigned long _mew_loop_counter = 0;
+extern volatile uint8_t is_bootloader_active;
 
 const mew_driver drivers[] = {
     {
@@ -17,7 +19,7 @@ const mew_driver drivers[] = {
         NULL,
     }, {
         MEW_DRIVER_ID_DUART, 
-        "\n\n-------- STM32F4 Debug usart started --------",
+        "\n\n STM32F4 Debug usart",
         &mew_init_duart, 
         NULL,
     }, {
@@ -29,7 +31,7 @@ const mew_driver drivers[] = {
         MEW_DRIVER_ID_I2C,
         "STM32F4 I2C",
         &mew_i2c_init,
-        NULL // &mew_i2c_eeprom_test - this test will corrupt your data in the eeprom
+        NULL
     }, {
         MEW_DRIVER_ID_DISPLAY,
         "2.4' TFT SPI display",
@@ -39,34 +41,8 @@ const mew_driver drivers[] = {
         MEW_DRIVER_ID_TOUCHSCREEN,
         "Resistive touchscreen with hardware controller",
         &mew_touchscreen_init,
-        NULL
+		&mew_touchscreen_test
     }, {
-        0
-    }
-};
-
-const mew_loop_handler loop_handlers[] = {
-   /* {
-			MEW_LHANDLER_ID_PACKAGE_PARSER,
-			"Stream to packages parser",
-			&mew_comm_handler
-    }, {
-    		MEW_LHANDLER_ID_BLUETOOTH,
-			"Bluetooth at-terminal",
-			&mew_bluetooth_handler
-    }, {
-    		MEW_LHANDLER_ID_UI,
-			"UI logic handle",
-			&mew_ui_lhandler
-	}, {
-			MEW_LHANDLER_ID_LVGL,
-			"LVGL handle",
-			&mew_lvgl_lhandler
-    }, {
-    		MEW_LHANDLER_ID_SPI_FLASH,
-			"SPI Flash async read/write handler",
-			&mew_spi_flash_handler
-	},*/ {
         0
     }
 };
@@ -107,22 +83,16 @@ int main(void) {
         i++;
     }
 
-    // main loop
-    while(1) {
-        i = 0;
-        while(1) {
-            loop_handler = &loop_handlers[i];
-            if (loop_handler->id == 0) {
-                break;
-            }
-            
-            if (loop_handler->handler() != 0) {
-                mew_debug_die_with_message(loop_handler->display_name);
-            }
-            
-            i++;
-        }
-        _mew_loop_counter++;
+    if (is_bootloader_active == 1) {
+    	mew_hid_usb_init();
+    	mew_debug_print("MeW is in firmware update mode");
+    	while(1) {
+
+
+    	}
     }
+
+    // TODO: jump to real code
+    while(1) {}
     return 1;
 }

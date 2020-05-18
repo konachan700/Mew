@@ -4,6 +4,8 @@
 #include "mew.h"
 
 #include <stdlib.h>
+#include <string.h>
+
 #include <libopencm3/stm32/f4/nvic.h>
 #include <libopencm3/stm32/f4/memorymap.h>
 #include <libopencm3/stm32/rcc.h>
@@ -21,7 +23,7 @@
 
 #define HID_DESCRIPTOR_TYPE                     0x21
 
-#define MEW_KB_REPORT_SIZE                      61
+#define MEW_KB_REPORT_SIZE                      33
 #define MEW_CUSTOM_HID_REPORT_SIZE              64
 
 #define MEW_UPPER_CASE                          0x02

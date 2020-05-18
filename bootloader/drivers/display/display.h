@@ -79,4 +79,6 @@
 unsigned int mew_display_init(void);
 unsigned int mew_touchscreen_init(void);
 
+unsigned int mew_touchscreen_test(void);
+
 #endif
