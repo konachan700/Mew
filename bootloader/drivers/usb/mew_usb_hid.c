@@ -10,24 +10,20 @@ uint8_t usbd_control_buffer[128];
 volatile uint8_t usb_hid_disable = 1;
 
 const unsigned char keyboard_report_descriptor[MEW_KB_REPORT_SIZE] = {
-		 0x06,0x00,0xFF,                        //Usage Page 0xff00
-		   0x09, 0x01,                  //USAGE (Pointer)
-		   0xA1,0x01,                   //Collection (application)
-		      //Input Report
-		      0x19,0x01,                 //Usage Minimum
-		      0x29,0x40,                 //Usage Minimum
-		      0x15,0x00,                 //Logical Minimum
-		      0x26,0xFF,0x00,            //Logical Minimum
-		      0x75,0x08,                 //report size : 8-bit field size
-		      0x95, 64,//Report count
-		      0x81,0x02,                 //Input (data, array, Abs)
-		      //Output Report
-		      0x19,0x01,                 //usage Minimum
-		      0x29,0x40,                 //usage Minimum
-		      0x75,0x08,                 //report size : 8-bit field size
-		      0x95,64,//Report Count
-		      0x91,0x02,                 //Output (data, array, Abs)
-		  0xC0
+	    0x06, 0x00, 0xFF,       // Usage Page = 0xFF00 (Vendor Defined Page 1)
+	    0x09, 0x01,             // Usage (Vendor Usage 1)
+	    0xA1, 0x01,             // Collection (Application)
+	    0x19, 0x01,             //      Usage Minimum
+	    0x29, 0x40,             //      Usage Maximum 	//64 input usages total (0x01 to 0x40)
+	    0x15, 0x01,             //      Logical Minimum (data bytes in the report may have minimum value = 0x00)
+	    0x25, 0x40,      	  	//      Logical Maximum (data bytes in the report may have maximum value = 0x00FF = unsigned 255)
+	    0x75, 0x08,             //      Report Size: 8-bit field size
+	    0x95, 0x40,             //      Report Count: Make sixty-four 8-bit fields (the next time the parser hits an "Input", "Output", or "Feature" item)
+	    0x81, 0x00,             //      Input (Data, Array, Abs): Instantiates input packet fields based on the above report size, count, logical min/max, and usage.
+	    0x19, 0x01,             //      Usage Minimum
+	    0x29, 0x40,             //      Usage Maximum 	//64 output usages total (0x01 to 0x40)
+	    0x91, 0x00,             //      Output (Data, Array, Abs): Instantiates output packet fields.  Uses same report size and count as "Input" fields, since nothing new/different was specified to the parser since the "Input" item.
+	    0xC0                    // End Collection
 };
 
 const struct usb_device_descriptor dev = {
@@ -37,7 +33,7 @@ const struct usb_device_descriptor dev = {
 	.bDeviceClass 			= 0,
 	.bDeviceSubClass 		= 0,
 	.bDeviceProtocol 		= 0,
-	.bMaxPacketSize0 		= 64,
+	.bMaxPacketSize0 		= 8,
 	.idVendor 				= 0x1234,
 	.idProduct 				= 0x4321,
 	.bcdDevice 				= 0x0200,
@@ -140,8 +136,8 @@ static void hid_set_config(usbd_device *usbd_dev, uint16_t wValue) {
 	(void)wValue;
 	(void)usbd_dev;
 
-	usbd_ep_setup(usbd_dev, 0x01, USB_ENDPOINT_ATTR_INTERRUPT, 8, &mew_hid_data_rx);
-	usbd_ep_setup(usbd_dev, 0x81, USB_ENDPOINT_ATTR_INTERRUPT, 8, NULL);
+	usbd_ep_setup(usbd_dev, 0x01, USB_ENDPOINT_ATTR_INTERRUPT, 64, &mew_hid_data_rx);
+	usbd_ep_setup(usbd_dev, 0x81, USB_ENDPOINT_ATTR_INTERRUPT, 64, NULL);
 
 	usbd_register_control_callback(
 				usbd_dev,

@@ -34,8 +34,8 @@ int main(int argc, char **argv) {
 	handle_hid = hid_open(0x1234, 0x4321, NULL);
 	//printf("res_hid = %d\n", (handle_hid != NULL));
 	
-	buf[0] = 0x01;
-	memset(buf, 0, 65);
+	//buf[0] = 0x01;
+	memset(buf, 0xFF, 64);
 	res = hid_write(handle_hid, buf, 64);
 	if (res < 0) {
 		printf("Cannot write to hidraw device %d\n", res);
