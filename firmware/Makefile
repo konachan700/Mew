@@ -45,7 +45,7 @@ OBJS		= $(addprefix ./, $(SRC:%.c=%.o))
 ASMOBJS		= $(addprefix ./, $(ASMSRC:%.s=%.o))
 
 ifeq ($(strip $(OPENCM3_DIR)),)
-OPENCM3_DIR := /home/konata/devel/libopencm3
+OPENCM3_DIR := /home/user/Devel/stm32/libopencm3
 ###/home/misaki/devel/stm32/libopencm3
 $(info Using $(OPENCM3_DIR) path to library)
 endif
@@ -66,7 +66,7 @@ CFLAGS		+= -Wredundant-decls -Wstrict-prototypes
 CFLAGS		+= -fno-common -ffunction-sections -fdata-sections
 #-Werror -pedantic-errors  -Wmissing-prototypes
 CFLAGS  	+= -Wno-sign-compare -Wno-overlength-strings -Wno-unused-function -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-unused-variable
-CFLAGS  	+= -Wno-cast-function-type -Wno-type-limits
+CFLAGS  	+= -Wno-cast-function-type -Wno-type-limits -Wno-shadow
 
 ###############################################################################
 # C & C++ preprocessor common flags

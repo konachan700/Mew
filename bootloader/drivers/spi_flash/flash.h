@@ -1,15 +1,11 @@
 #ifndef _MEW_FLASH_DRIVER_
 #define _MEW_FLASH_DRIVER_
 
-#include "mew.h"
-#include "../hw_crypt/crypto.h"
-
-#include <libopencm3/stm32/gpio.h>
-#include <libopencm3/stm32/spi.h>
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+#include "../hw_crypt/crypto.h"
 
 #define MEW_FLASH_NVIC_RX               	NVIC_DMA2_STREAM0_IRQ
 #define MEW_FLASH_NVIC_TX               	NVIC_DMA2_STREAM3_IRQ

@@ -205,7 +205,7 @@ unsigned int mew_display_init(void) {
 
     _mew_current_disp = &disp_drv;
 
-    lv_theme_t * th = lv_theme_material_init(250, &lv_font_roboto_16);
+    lv_theme_t * th = lv_theme_material_init(250, &lv_font_roboto_12);
     lv_theme_set_current(th);
     
     return 0;

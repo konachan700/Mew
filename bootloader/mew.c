@@ -1,14 +1,15 @@
-// base headers
 #include "mew.h"
 #include "debug.h"
-// drivers
+
+#include <libopencm3/stm32/syscfg.h>
+#include <libopencm3/cm3/scb.h>
+
 #include "drivers/duart/duart.h"
 #include "drivers/system/system.h"
 #include "drivers/i2c/i2c.h"
 #include "drivers/display/display.h"
 #include "drivers/usb/mew_usb_hid.h"
 
-static volatile unsigned long _mew_loop_counter = 0;
 extern volatile uint8_t is_bootloader_active;
 
 const mew_driver drivers[] = {
@@ -50,7 +51,6 @@ const mew_driver drivers[] = {
 int main(void) {
     unsigned int i = 0;
     const mew_driver *drv;
-    const mew_loop_handler *loop_handler;
     
     // init all drivers
     while(1) {
@@ -85,14 +85,21 @@ int main(void) {
 
     if (is_bootloader_active == 1) {
     	mew_hid_usb_init();
+    	mew_display_sync_icon();
     	mew_debug_print("MeW is in firmware update mode");
-    	while(1) {
-
-
+    	while(is_bootloader_active == 1) {
+    		mew_print_loop_handler();
     	}
     }
 
-    // TODO: jump to real code
-    while(1) {}
+	//if ((*(volatile uint32_t *)APP_ADDRESS & 0x2FFE0000) == 0x20000000) {
+		SCB_VTOR = APP_ADDRESS;
+		asm volatile("msr msp, %0"::"g" (*(volatile uint32_t *)APP_ADDRESS));
+		(*(void (**)())(APP_ADDRESS + 4))();
+	//} else {
+	//	mew_debug_die_with_message("Bad firmware detected. Please, update it.");
+	//}
+
+	mew_debug_die_with_message("Something went wrong. Please, reconnect it and update firmware.");
     return 1;
 }

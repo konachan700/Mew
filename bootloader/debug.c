@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "debug.h"
 #include "drivers/duart/duart.h"
 

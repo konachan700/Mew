@@ -1,6 +1,20 @@
+#include "mew.h"
+
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/spi.h>
+#include <libopencm3/stm32/dma.h>
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/stm32/exti.h>
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 #include "flash.h" 
 #include "../system/system.h"
 #include "debug.h"
+#include "drivers/duart/duart.h"
+#include "../hw_crypt/crypto.h"
 
 static void __mew_spi_dma_send(void);
 static void __mew_spi_dma_receive(void);

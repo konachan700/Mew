@@ -1,3 +1,15 @@
+
+#include "mew.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include <libopencm3/stm32/i2c.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/cortex.h>
+
 #include "i2c.h"
 #include "debug.h"
 

@@ -1,5 +1,11 @@
-#include "display.h" 
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/spi.h>
+#include <libopencm3/stm32/dma.h>
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/stm32/exti.h>
+
 #include "debug.h"
+#include "display.h"
 #include "../i2c/i2c.h"
 
 static bool __mew_input_read(int *x, int *y, int *state);

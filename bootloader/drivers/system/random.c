@@ -1,3 +1,14 @@
+
+#include "mew.h"
+
+#include <libopencm3/cm3/systick.h>
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/f4/rng.h>
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 #include "system.h"
 
 static volatile uint32_t _mew_last_random_value = 0;

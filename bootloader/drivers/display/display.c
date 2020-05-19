@@ -1,10 +1,22 @@
-#include "display.h" 
+#include "mew.h"
+
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/spi.h>
+#include <libopencm3/stm32/dma.h>
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/stm32/exti.h>
+
+#include "display.h"
 #include "debug.h"
 #include "../system/system.h"
 
 extern const uint8_t mew_logo_width;
 extern const uint8_t mew_logo_height;
 extern const uint8_t mew_logo_pixel_map[];
+
+extern const unsigned int mew_sync_logo_width;
+extern const unsigned int mew_sync_logo_height;
+extern const unsigned char *mew_sync_logo_pixel_map;
 
 static void __mew_wait(void);
 static void __mew_cmd(void);
@@ -222,6 +234,14 @@ unsigned int mew_display_init(void) {
     mew_display_flush(x1, y1, x1 + mew_logo_width - 1, y1 + mew_logo_height - 1, mew_logo_pixel_map);
 
     return 0;
+}
+
+void mew_display_sync_icon(void) {
+	const int x1 = (240 / 2) - (mew_sync_logo_width / 2);
+	const int y1 = (320 - mew_sync_logo_height - 32);
+
+	mew_display_flush(x1, y1, x1 + mew_sync_logo_width - 1,
+			y1 + mew_sync_logo_height - 1, mew_sync_logo_pixel_map);
 }
 
 static void mew_display_flush_clear(void) {

@@ -1,3 +1,8 @@
+#include "mew.h"
+
+#include <libopencm3/stm32/usart.h>
+#include <libopencm3/stm32/gpio.h>
+#include <stdio.h>
 #include "duart.h"
 
 static unsigned int _mew_duart_state = 0;

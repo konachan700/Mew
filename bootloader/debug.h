@@ -1,9 +1,9 @@
 #ifndef MEW_DEBUG_H
 #define MEW_DEBUG_H
 
-#include "drivers/duart/duart.h"
-
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 void mew_debug_print(const char* message);
 void mew_debug_print_hex(const char* message, unsigned int len);

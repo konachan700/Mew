@@ -1,16 +1,9 @@
 #ifndef MEW_I2C_H
 #define MEW_I2C_H
 
-#include "mew.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-#include <libopencm3/stm32/i2c.h>
-#include <libopencm3/stm32/gpio.h>
-#include <libopencm3/cm3/nvic.h>
-#include <libopencm3/cm3/cortex.h>
 
 #define MEW_I2C_TS_I2C                  I2C3
 #define MEW_I2C_TS_NVIC                 NVIC_I2C3_EV_IRQ

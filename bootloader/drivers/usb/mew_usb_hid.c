@@ -1,13 +1,43 @@
 #include "mew.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+#include <libopencm3/stm32/f4/nvic.h>
+#include <libopencm3/stm32/f4/memorymap.h>
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/cm3/systick.h>
+#include <libopencm3/usb/usbd.h>
+#include <libopencm3/usb/hid.h>
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/stm32/flash.h>
+#include <libopencm3/stm32/crc.h>
+
+#include "drivers/system/system.h"
 #include "debug.h"
 #include "mew_usb_hid.h"
+#include "drivers/duart/duart.h"
+#include "drivers/hw_crypt/crypto.h"
 
 void mew_hid_data_rx(usbd_device *usbd_dev, uint8_t ep);
 
+static void mew_send_future_message(char *block);
+static void mew_send_status(unsigned char status, const char *text);
+
 usbd_device *mew_hid_usbd_dev;
+
+uint32_t mew_hid_ring_counter = 0;
+uint8_t  mew_hid_ring_buffer[64][64];
 
 uint8_t usbd_control_buffer[128];
 volatile uint8_t usb_hid_disable = 1;
+
+static          uint8_t 	mew_usb_dfu_buffer[64];
+static volatile uint8_t 	mew_usb_dfu_state 		= MEW_DFU_MODE_COMMAND;
+static volatile uint32_t 	mew_usb_dfu_offset 		= 0;
+static volatile uint32_t 	mew_usb_dfu_data_len	= 0;
+static volatile int32_t 	mew_usb_dfu_counter		= 0;
 
 const unsigned char keyboard_report_descriptor[MEW_KB_REPORT_SIZE] = {
 	    0x06, 0x00, 0xFF,       // Usage Page = 0xFF00 (Vendor Defined Page 1)
@@ -155,6 +185,7 @@ void mew_hid_usb_disable(void) {
 }
 
 unsigned int mew_hid_usb_init(void) {
+	int i;
     gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO10 | GPIO11 | GPIO12);
     gpio_set_af(GPIOA, GPIO_AF10, GPIO10 | GPIO11 | GPIO12);
 	mew_hid_usbd_dev = usbd_init(&otgfs_usb_driver, &dev, &config, usb_strings, 3, usbd_control_buffer, sizeof(usbd_control_buffer));
@@ -162,23 +193,111 @@ unsigned int mew_hid_usb_init(void) {
     nvic_enable_irq(NVIC_OTG_FS_IRQ);
     usb_hid_disable = 0;
     
+    for (i=0; i<64; i++) mew_hid_ring_buffer[i][0] = 0;
     return 0;
 }
 
 void mew_hid_data_rx(usbd_device *usbd_dev, uint8_t ep) {
+	uint32_t i = 0, offset;
+	char str_buf[64], hash[8];
 	(void)ep;
 	(void)div;
-	char buf[64];
-	memset(buf, 0, 64);
 
-	int len = usbd_ep_read_packet(usbd_dev, 0x01, buf, 64);
+	memset(mew_usb_dfu_buffer, 0, 64);
 
-	mew_duart_print_hex(buf, 64);
+	int len = usbd_ep_read_packet(usbd_dev, 0x01, mew_usb_dfu_buffer, 64);
+	if (mew_usb_dfu_state == MEW_DFU_MODE_COMMAND) {
+		mew_usb_dfu_state 		= MEW_DFU_CMD(mew_usb_dfu_buffer);
+		mew_usb_dfu_offset 		= MEW_DFU_DATA_OFFSET(mew_usb_dfu_buffer);
+		mew_usb_dfu_data_len 	= MEW_DFU_DATA_LEN(mew_usb_dfu_buffer);
+		if (MEW_DFU_CALC_CRC(mew_usb_dfu_buffer) != MEW_DFU_DATA_CRC(mew_usb_dfu_buffer)) {
+			mew_usb_dfu_state = MEW_DFU_MODE_COMMAND;
+			mew_send_status(1, "Bad checksum");
+		} else {
+			switch (mew_usb_dfu_state) {
+			case MEW_DFU_MODE_WRITE_FW:
+				mew_usb_dfu_counter = 0;
+				flash_unlock();
+				for (i=4; i<=11; i++) {
+					flash_erase_sector(i, 0);
+				}
+				flash_lock();
+				mew_send_status(13, "Erase OK. Program mode enable.");
+				return;
+			case MEW_DFU_MODE_VERIFY:
+				mew_send_status(12, "Flash verify mode enable.");
+				break;
+			}
+		}
+		return;
+	} else {
+		switch (mew_usb_dfu_state) {
+		case MEW_DFU_MODE_WRITE_FW:
+			offset = APP_ADDRESS + mew_usb_dfu_counter + mew_usb_dfu_offset;
+
+			flash_unlock();
+			flash_program(offset, mew_usb_dfu_buffer, 64);
+			flash_lock();
+
+			mew_usb_dfu_counter = mew_usb_dfu_counter + 64;
+			if (mew_usb_dfu_counter > mew_usb_dfu_data_len) {
+				mew_send_status(11, "OK                ");
+				mew_usb_dfu_counter = 0;
+				mew_usb_dfu_state = MEW_DFU_MODE_COMMAND;
+			} else {
+				sprintf(str_buf, "0x%08lX", mew_usb_dfu_counter);
+				mew_send_status(0xFF, str_buf);
+			}
+			break;
+		case MEW_DFU_MODE_VERIFY:
+			offset = APP_ADDRESS + mew_usb_dfu_offset;
+			mew_hash8((uint8_t*) offset, mew_usb_dfu_data_len, (uint8_t*) hash);
+			if (memcmp(mew_usb_dfu_buffer, hash, 8) == 0) {
+				mew_send_status(11, "Verify OK.");
+			} else {
+				mew_send_status(11, "Verify failed.");
+			}
+			mew_usb_dfu_state = MEW_DFU_MODE_COMMAND;
+			break;
+		}
+	}
+}
+
+static void mew_send_future_message(char *block) {
+	memcpy(mew_hid_ring_buffer[mew_hid_ring_counter], block, 64);
+	mew_hid_ring_counter++;
+	if (mew_hid_ring_counter >= 64) {
+		mew_hid_ring_counter = 0;
+	}
+}
+
+void mew_print_loop_handler(void) {
+	int i;
+	for (i=0; i<64; i++) {
+		if (mew_hid_ring_buffer[i][0] > 0) {
+			while (usbd_ep_write_packet(mew_hid_usbd_dev, 0x81, mew_hid_ring_buffer[i], 64) == 0) {};
+			mew_delay_ms(1);
+			mew_hid_ring_buffer[i][0] = 0;
+		}
+	}
+}
+
+static void mew_send_status(unsigned char status, const char *text) {
+	int len;
+	char data[64];
+	memset(data, 0, 64);
+
+	data[0] = (char) status;
+	if (text != NULL) {
+		len = strlen(text);
+		if (len > 60) len = 60;
+		memcpy(data + 1, text, len);
+	}
+	mew_send_future_message(data);
 }
 
 void mew_hid_send(char* buf, int len) {
     if (usb_hid_disable == 1) return;
-	if (len != 8) return;
 	usbd_ep_write_packet(mew_hid_usbd_dev, 0x81, buf, len);
 }
 

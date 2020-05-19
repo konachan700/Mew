@@ -1,12 +1,9 @@
 #ifndef MEW_DUART
 #define MEW_DUART
 
-#include "mew.h" 
-
-#include <libopencm3/stm32/usart.h>
-#include <libopencm3/stm32/gpio.h>
-
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define MEW_DEBUG_USART         USART2
 #define MEW_DEBUG_PORT          GPIOA

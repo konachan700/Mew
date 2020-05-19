@@ -1,3 +1,14 @@
+#include "mew.h"
+
+#include <libopencm3/stm32/dma.h>
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/stm32/crypto.h>
+#include <libopencm3/stm32/hash.h>
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 #include "debug.h"
 #include "crypto.h"
 #include "../system/system.h"

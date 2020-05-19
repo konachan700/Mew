@@ -1,6 +1,6 @@
 MEMORY
 {
-	rom (rx)  : ORIGIN = 0x08000000, LENGTH = 1024K
+	rom (rx)  : ORIGIN = 0x08020000, LENGTH = 896K /* first 4 16k sectors are reserved for bootloader, next 64k section - factory config part */
     ccm (rwx) : ORIGIN = 0x10000000, LENGTH = 64K
     ram (rwx) : ORIGIN = 0x20000000, LENGTH = 192K
 } 

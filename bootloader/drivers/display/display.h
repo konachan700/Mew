@@ -1,13 +1,9 @@
 #ifndef MEW_DISPLAY_CONFIG
 #define MEW_DISPLAY_CONFIG
 
-#include "mew.h"
-
-#include <libopencm3/stm32/gpio.h>
-#include <libopencm3/stm32/spi.h>
-#include <libopencm3/stm32/dma.h>
-#include <libopencm3/cm3/nvic.h>
-#include <libopencm3/stm32/exti.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define MEW_12BIT_SWAP(n)                   (((n & 0xFF) << 4) | (n >> 12))
 
@@ -78,6 +74,7 @@
 
 unsigned int mew_display_init(void);
 unsigned int mew_touchscreen_init(void);
+void mew_display_sync_icon(void);
 
 unsigned int mew_touchscreen_test(void);
 
