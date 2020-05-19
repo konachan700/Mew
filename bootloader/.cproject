@@ -62,6 +62,8 @@
                                     <listOptionValue builtIn="false" value="/usr/src/linux"/>
                                     									
                                     <listOptionValue builtIn="false" value="/usr/src/linux/include/linux"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include"/>
                                     								
                                 </option>
                                 								
@@ -90,6 +92,8 @@
                                     <listOptionValue builtIn="false" value="/usr/src/linux"/>
                                     									
                                     <listOptionValue builtIn="false" value="/usr/src/linux/include/linux"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include"/>
                                     								
                                 </option>
                                 								

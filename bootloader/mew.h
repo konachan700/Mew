@@ -35,6 +35,13 @@
 //#define MEW_LHANDLER_ID_BLUETOOTH       0xA4
 
 typedef struct {
+	unsigned char fw_sha256[32];
+	unsigned char fw_serial[16];
+	unsigned int  fw_size;
+
+} mew_vendor_ro_data;
+
+typedef struct {
     unsigned int id;
     const char* display_name;
     unsigned int (*init)(void);

@@ -199,7 +199,8 @@ unsigned int mew_hid_usb_init(void) {
 
 void mew_hid_data_rx(usbd_device *usbd_dev, uint8_t ep) {
 	uint32_t i = 0, offset;
-	char str_buf[64], hash[8];
+	char str_buf[64], hash[32];
+	char* data_p;
 	(void)ep;
 	(void)div;
 
@@ -251,12 +252,22 @@ void mew_hid_data_rx(usbd_device *usbd_dev, uint8_t ep) {
 			break;
 		case MEW_DFU_MODE_VERIFY:
 			offset = APP_ADDRESS + mew_usb_dfu_offset;
-			mew_hash8((uint8_t*) offset, mew_usb_dfu_data_len, (uint8_t*) hash);
-			if (memcmp(mew_usb_dfu_buffer, hash, 8) == 0) {
+			data_p = (char *) offset;
+			mew_sha256_init();
+			for (i=0; i<mew_usb_dfu_data_len; i++) {
+				mew_sha256_add_byte(data_p[i]);
+			}
+			mew_sha256_finalize((uint8_t*) hash);
+
+			if (memcmp(mew_usb_dfu_buffer, hash, 32) == 0) {
 				mew_send_status(11, "Verify OK.");
 			} else {
 				mew_send_status(11, "Verify failed.");
 			}
+
+			memset(mew_usb_dfu_buffer, 0, 64);
+			memcpy(mew_usb_dfu_buffer, hash, 32);
+			mew_send_status(27, (const char *) mew_usb_dfu_buffer);
 			mew_usb_dfu_state = MEW_DFU_MODE_COMMAND;
 			break;
 		}

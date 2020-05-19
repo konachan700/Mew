@@ -14,8 +14,9 @@
 
 #define MEW_PINCODE_LEN 	64
 
-void mew_hash32(uint32_t* data, uint32_t size, uint32_t* result);
-void mew_hash8(uint8_t* data, uint32_t size, uint8_t* result);
+void mew_sha256_init(void);
+void mew_sha256_add_byte(unsigned char b);
+void mew_sha256_finalize(uint8_t* buffer);
 
 void mewcrypt_aes256(uint8_t dir, uint32_t* in_block, uint32_t* out_block, uint32_t count, const uint64_t* key, const uint64_t* iv);
 
