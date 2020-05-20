@@ -207,6 +207,14 @@ const struct usb_config_descriptor config = {
 
 /****************************************************************************************************/
 
+static struct {
+	uint8_t mod;
+	uint8_t reserved;
+	uint8_t keys[6];
+} boot_keys_report;
+
+
+
 usbd_device*		mew_hid_usbd_dev;
 uint8_t 			usbd_control_buffer[128];
 volatile uint8_t 	usb_hid_disable = 1;
@@ -234,7 +242,40 @@ static int hid_raw_control_request(usbd_device *usbd_dev, struct usb_setup_data 
 	return USBD_REQ_NOTSUPP;
 }
 
+static int hid_kb_control_request(usbd_device *usbd_dev, struct usb_setup_data *req, uint8_t **buf, uint16_t *len,
+			void (**complete)(usbd_device *usbd_dev, struct usb_setup_data *req)) {
+	(void)complete;
+	(void)usbd_dev;
 
+	if ((req->bmRequestType & USB_REQ_TYPE_DIRECTION) == USB_REQ_TYPE_IN) {
+		if ((req->bmRequestType & USB_REQ_TYPE_TYPE) == USB_REQ_TYPE_STANDARD) {
+			if (req->bRequest == USB_REQ_GET_DESCRIPTOR) {
+				switch (req->wValue) {
+				case 0x2200:
+					*buf = (uint8_t *) hid_raw_report_descriptor;
+					*len = sizeof(hid_raw_report_descriptor);
+					return USBD_REQ_HANDLED;
+				case 0x2100:
+					*buf = (uint8_t *) hid_raw_function;
+					*len = sizeof(hid_raw_function);
+					return USBD_REQ_HANDLED;
+				}
+			}
+		} else if ((req->bmRequestType & USB_REQ_TYPE_TYPE) == USB_REQ_TYPE_CLASS) {
+
+		}
+
+
+
+	} else {
+
+	}
+
+
+
+
+	return USBD_REQ_NOTSUPP;
+}
 
 
 
