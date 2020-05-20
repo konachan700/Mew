@@ -1,13 +1,16 @@
 #include "mew.h"
 #include "mew_usb_hid.h"
 
-usbd_device *mew_hid_usbd_dev;
+#define MEW_HID_RAW_REPORT_SIZE 28
 
-uint8_t usbd_control_buffer[128];
-volatile uint8_t usb_hid_disable = 1;
+static const char *usb_strings[] = {
+	"JNeko Lab",
+	"MeW HPM Pro",
+	"0000000000000000", // TODO: add hash of serial number
+};
 
-const unsigned char keyboard_report_descriptor[MEW_KB_REPORT_SIZE] =
-{
+/****************************************************************************************************/
+const unsigned char keyboard_report_descriptor[MEW_KB_REPORT_SIZE] ={
 	0x05, 0x01, // USAGE_PAGE (Generic Desktop)
 	0x09, 0x06, // USAGE (Keyboard)
 	0xa1, 0x01, // COLLECTION (Application)
@@ -41,96 +44,203 @@ const unsigned char keyboard_report_descriptor[MEW_KB_REPORT_SIZE] =
 	0xc0        // END_COLLECTION
 };
 
-const struct usb_device_descriptor dev = {
-	.bLength 		= USB_DT_DEVICE_SIZE,
-	.bDescriptorType 	= USB_DT_DEVICE,
-	.bcdUSB 		= 0x0200,
-	.bDeviceClass 		= 0,
-	.bDeviceSubClass 	= 0,
-	.bDeviceProtocol 	= 0,
-	.bMaxPacketSize0 	= 64,
-	.idVendor 		= 0x1234,
-	.idProduct 		= 0x4321,
-	.bcdDevice 		= 0x0200,
-	.iManufacturer 		= 1,
-	.iProduct 		= 2,
-	.iSerialNumber 		= 3,
-	.bNumConfigurations     = 1,
+const unsigned char hid_raw_report_descriptor[MEW_HID_RAW_REPORT_SIZE] = {
+	0x06, 0x00, 0xFF,       // Usage Page = 0xFF00 (Vendor Defined Page 1)
+	0x09, 0x01,             // Usage (Vendor Usage 1)
+	0xA1, 0x01,             // Collection (Application)
+	0x19, 0x01,             //      Usage Minimum
+	0x29, 0x40,             //      Usage Maximum 	//64 input usages total (0x01 to 0x40)
+	0x15, 0x01,             //      Logical Minimum (data bytes in the report may have minimum value = 0x00)
+	0x25, 0x40,      	  	//      Logical Maximum (data bytes in the report may have maximum value = 0x00FF = unsigned 255)
+	0x75, 0x08,             //      Report Size: 8-bit field size
+	0x95, 0x40,             //      Report Count: Make sixty-four 8-bit fields (the next time the parser hits an "Input", "Output", or "Feature" item)
+	0x81, 0x00,             //      Input (Data, Array, Abs): Instantiates input packet fields based on the above report size, count, logical min/max, and usage.
+	0x19, 0x01,             //      Usage Minimum
+	0x29, 0x40,             //      Usage Maximum 	//64 output usages total (0x01 to 0x40)
+	0x91, 0x00,             //      Output (Data, Array, Abs): Instantiates output packet fields.  Uses same report size and count as "Input" fields, since nothing new/different was specified to the parser since the "Input" item.
+	0xC0                    // End Collection
 };
 
-const struct usb_endpoint_descriptor hid_endpoints[] = {{
-	.bLength 		= USB_DT_ENDPOINT_SIZE,
-	.bDescriptorType 	= USB_DT_ENDPOINT,
-	.bEndpointAddress 	= 0x81,
-	.bmAttributes 		= USB_ENDPOINT_ATTR_INTERRUPT,
-	.wMaxPacketSize 	= 8,
-	.bInterval 		= 0x04,
+/****************************************************************************************************/
+const struct usb_device_descriptor dev = {
+	.bLength 					= USB_DT_DEVICE_SIZE,
+	.bDescriptorType 			= USB_DT_DEVICE,
+	.bcdUSB 					= 0x0200,
+	.bDeviceClass 				= 0xEF,
+	.bDeviceSubClass 			= 2,
+	.bDeviceProtocol 			= 1,
+	.bMaxPacketSize0 			= 64,
+	.idVendor 					= 0x6666,
+	.idProduct 					= 0x4343,
+	.bcdDevice 					= 0x0200,
+	.iManufacturer 				= 1,
+	.iProduct 					= 2,
+	.iSerialNumber 				= 3,
+	.bNumConfigurations     	= 1,
+};
+
+/****************************************************************************************************/
+const struct usb_endpoint_descriptor hid_raw_endpoints[] = {{
+	.bLength 					= USB_DT_ENDPOINT_SIZE,
+	.bDescriptorType 			= USB_DT_ENDPOINT,
+	.bEndpointAddress 			= 0x81,
+	.bmAttributes 				= USB_ENDPOINT_ATTR_INTERRUPT,
+	.wMaxPacketSize 			= 64,
+	.bInterval 					= 0x01,
 }, {
-	.bLength 		= USB_DT_ENDPOINT_SIZE,
-	.bDescriptorType 	= USB_DT_ENDPOINT,
-	.bEndpointAddress 	= 0x01,
-	.bmAttributes 		= USB_ENDPOINT_ATTR_INTERRUPT,
-	.wMaxPacketSize 	= 8,
-	.bInterval 		= 0x04,
+	.bLength 					= USB_DT_ENDPOINT_SIZE,
+	.bDescriptorType 			= USB_DT_ENDPOINT,
+	.bEndpointAddress 			= 0x01,
+	.bmAttributes 				= USB_ENDPOINT_ATTR_INTERRUPT,
+	.wMaxPacketSize 			= 64,
+	.bInterval 					= 0x01,
 }};
 
+const struct usb_endpoint_descriptor hid_kb_endpoints[] = {{
+	.bLength 					= USB_DT_ENDPOINT_SIZE,
+	.bDescriptorType 			= USB_DT_ENDPOINT,
+	.bEndpointAddress 			= 0x82,
+	.bmAttributes 				= USB_ENDPOINT_ATTR_INTERRUPT,
+	.wMaxPacketSize 			= 8,
+	.bInterval 					= 0x04,
+}, {
+	.bLength 					= USB_DT_ENDPOINT_SIZE,
+	.bDescriptorType 			= USB_DT_ENDPOINT,
+	.bEndpointAddress 			= 0x02,
+	.bmAttributes 				= USB_ENDPOINT_ATTR_INTERRUPT,
+	.wMaxPacketSize 			= 8,
+	.bInterval 					= 0x04,
+}};
+
+/****************************************************************************************************/
 static const struct {
 	struct usb_hid_descriptor hid_descriptor;
 	struct {
-		uint8_t bReportDescriptorType;
+		uint8_t  bReportDescriptorType;
 		uint16_t wDescriptorLength;
 	} __attribute__((packed)) hid_report;
-} __attribute__((packed)) hid_function = {
+} __attribute__((packed)) hid_raw_function = {
 	.hid_descriptor = {
-		.bLength                        = sizeof(hid_function),
+		.bLength                = sizeof(hid_raw_function),
 		.bDescriptorType 		= USB_DT_HID,
-		.bcdHID 			= 0x0100,
+		.bcdHID 				= 0x0111,
 		.bCountryCode 			= 0,
 		.bNumDescriptors 		= 1,
 	},
 	.hid_report = {
-		.bReportDescriptorType          = USB_DT_REPORT,
+		.bReportDescriptorType  = USB_DT_REPORT,
+		.wDescriptorLength 		= sizeof(hid_raw_report_descriptor),
+	},
+};
+
+static const struct {
+	struct usb_hid_descriptor hid_descriptor;
+	struct {
+		uint8_t  bReportDescriptorType;
+		uint16_t wDescriptorLength;
+	} __attribute__((packed)) hid_report;
+} __attribute__((packed)) hid_kb_function = {
+	.hid_descriptor = {
+		.bLength                = sizeof(hid_kb_function),
+		.bDescriptorType 		= USB_DT_HID,
+		.bcdHID 				= 0x0100,
+		.bCountryCode 			= 0,
+		.bNumDescriptors 		= 1,
+	},
+	.hid_report = {
+		.bReportDescriptorType  = USB_DT_REPORT,
 		.wDescriptorLength 		= sizeof(keyboard_report_descriptor),
 	},
 };
 
-const struct usb_interface_descriptor hid_iface = {
-	.bLength 				= USB_DT_INTERFACE_SIZE,
-	.bDescriptorType 		= USB_DT_INTERFACE,
-	.bInterfaceNumber 		= 0,
-	.bAlternateSetting 		= 0,
-	.bNumEndpoints 			= 2,
-	.bInterfaceClass 		= USB_CLASS_HID,
-	.bInterfaceSubClass             = 1,
-	.bInterfaceProtocol             = 1,
-	.iInterface 			= 0,
-	.endpoint 			= hid_endpoints,
-	.extra 				= &hid_function,
-	.extralen 			= sizeof(hid_function),
+/****************************************************************************************************/
+const struct usb_interface_descriptor hid_raw_iface = {
+	.bLength 					= USB_DT_INTERFACE_SIZE,
+	.bDescriptorType 			= USB_DT_INTERFACE,
+	.bInterfaceNumber 			= 0,
+	.bAlternateSetting 			= 0,
+	.bNumEndpoints 				= 2,
+	.bInterfaceClass 			= USB_CLASS_HID,
+	.bInterfaceSubClass       	= 0,
+	.bInterfaceProtocol      	= 0,
+	.iInterface 				= 0,
+	.endpoint 					= hid_raw_endpoints,
+	.extra 						= &hid_raw_function,
+	.extralen 					= sizeof(hid_raw_function),
 };
 
+const struct usb_interface_descriptor hid_kb_iface = {
+	.bLength 					= USB_DT_INTERFACE_SIZE,
+	.bDescriptorType 			= USB_DT_INTERFACE,
+	.bInterfaceNumber 			= 1,
+	.bAlternateSetting 			= 0,
+	.bNumEndpoints 				= 2,
+	.bInterfaceClass 			= USB_CLASS_HID,
+	.bInterfaceSubClass 	    = 1,
+	.bInterfaceProtocol  	    = 1,
+	.iInterface 				= 0,
+	.endpoint 					= hid_kb_endpoints,
+	.extra 						= &hid_kb_function,
+	.extralen 					= sizeof(hid_kb_function),
+};
+
+/****************************************************************************************************/
 const struct usb_interface ifaces[] = {{
-	.num_altsetting 		= 1,
-	.altsetting 			= &hid_iface,
+	.num_altsetting 			= 1,
+	.altsetting 				= &hid_raw_iface,
+},{
+	.num_altsetting 			= 1,
+	.altsetting 				= &hid_kb_iface,
 }};
 
 const struct usb_config_descriptor config = {
-	.bLength 			= USB_DT_CONFIGURATION_SIZE,
-	.bDescriptorType 		= USB_DT_CONFIGURATION,
-	.wTotalLength 			= 0,
-	.bNumInterfaces 		= 1,
-	.bConfigurationValue            = 1,
-	.iConfiguration 		= 0,
-	.bmAttributes 			= 0xC0,
-	.bMaxPower 			= 0x32,
-	.interface 			= ifaces,
+	.bLength 					= USB_DT_CONFIGURATION_SIZE,
+	.bDescriptorType 			= USB_DT_CONFIGURATION,
+	.wTotalLength 				= 0,
+	.bNumInterfaces 			= 2,
+	.bConfigurationValue     	= 1,
+	.iConfiguration 			= 0,
+	.bmAttributes 				= 0xC0,
+	.bMaxPower 					= 0x32,
+	.interface 					= ifaces,
 };
 
-static const char *usb_strings[] = {
-	"JNeko Lab",
-	"MeW HPM Pro",
-	"MeW00000003", // TODO: add hash of serial number
-};
+/****************************************************************************************************/
+
+usbd_device*		mew_hid_usbd_dev;
+uint8_t 			usbd_control_buffer[128];
+volatile uint8_t 	usb_hid_disable = 1;
+
+/****************************************************************************************************/
+
+static int hid_raw_control_request(usbd_device *usbd_dev, struct usb_setup_data *req, uint8_t **buf, uint16_t *len,
+			void (**complete)(usbd_device *usbd_dev, struct usb_setup_data *req)) {
+	(void)complete;
+	(void)usbd_dev;
+
+	if (((req->bmRequestType & USB_REQ_TYPE_DIRECTION) == USB_REQ_TYPE_IN) &&
+		 (req->bRequest == USB_REQ_GET_DESCRIPTOR)) {
+		switch (req->wValue) {
+		case 0x2200:
+			*buf = (uint8_t *) hid_raw_report_descriptor;
+			*len = sizeof(hid_raw_report_descriptor);
+			return USBD_REQ_HANDLED;
+		case 0x2100:
+			*buf = (uint8_t *) hid_raw_function;
+			*len = sizeof(hid_raw_function);
+			return USBD_REQ_HANDLED;
+		}
+	}
+	return USBD_REQ_NOTSUPP;
+}
+
+
+
+
+
+
+
+
 
 static int hid_control_request(usbd_device *usbd_dev, struct usb_setup_data *req, uint8_t **buf, uint16_t *len,
 			void (**complete)(usbd_device *usbd_dev, struct usb_setup_data *req)) {

@@ -39,7 +39,7 @@ static volatile uint32_t 	mew_usb_dfu_offset 		= 0;
 static volatile uint32_t 	mew_usb_dfu_data_len	= 0;
 static volatile int32_t 	mew_usb_dfu_counter		= 0;
 
-const unsigned char keyboard_report_descriptor[MEW_KB_REPORT_SIZE] = {
+const unsigned char hid_raw_report_descriptor[MEW_KB_REPORT_SIZE] = {
 	    0x06, 0x00, 0xFF,       // Usage Page = 0xFF00 (Vendor Defined Page 1)
 	    0x09, 0x01,             // Usage (Vendor Usage 1)
 	    0xA1, 0x01,             // Collection (Application)
@@ -64,8 +64,8 @@ const struct usb_device_descriptor dev = {
 	.bDeviceSubClass 		= 0,
 	.bDeviceProtocol 		= 0,
 	.bMaxPacketSize0 		= 8,
-	.idVendor 				= 0x1234,
-	.idProduct 				= 0x4321,
+	.idVendor 				= 0x6666,
+	.idProduct 				= 0x4300,
 	.bcdDevice 				= 0x0200,
 	.iManufacturer 			= 1,
 	.iProduct 				= 2,
@@ -105,7 +105,7 @@ static const struct {
 	},
 	.hid_report = {
 		.bReportDescriptorType          = USB_DT_REPORT,
-		.wDescriptorLength 				= sizeof(keyboard_report_descriptor),
+		.wDescriptorLength 				= sizeof(hid_raw_report_descriptor),
 	},
 };
 
@@ -156,8 +156,8 @@ static int hid_control_request(usbd_device *usbd_dev, struct usb_setup_data *req
 		return 0;
 
 	/* Handle the HID report descriptor. */
-	*buf = (uint8_t *)keyboard_report_descriptor;
-	*len = sizeof(keyboard_report_descriptor);
+	*buf = (uint8_t *)hid_raw_report_descriptor;
+	*len = sizeof(hid_raw_report_descriptor);
 
 	return 1;
 }

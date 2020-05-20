@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 	printf("Firmware file size is %d\n", file_size);
 
 	res_hid = hid_init();
-	handle_hid = hid_open(0x1234, 0x4321, NULL);
+	handle_hid = hid_open(0x6666, 0x4300, NULL);
 	
 	memset(buf, 0x00, HID_REPORT_SIZE_OUT);
 
