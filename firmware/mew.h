@@ -28,6 +28,24 @@
 #define MEW_LHANDLER_ID_UI              0xA3
 //#define MEW_LHANDLER_ID_BLUETOOTH       0xA4
 
+//typedef struct {
+//	uint8_t  			description[64];
+//	uint8_t  			login[64];
+//	uint8_t  			sort_id;
+//	uint32_t 			icon_id;
+//	uint32_t 			seed;
+//} mew_ro_password;
+//
+//typedef struct {
+//	uint8_t  			fw_serial_number[16];
+//	uint8_t  			fw_hash[32];
+//	uint32_t 			fw_size;
+//	uint32_t 			fw_version;
+//	mew_ro_password 	passwords[100];
+//
+//
+//} mew_ro_vendor_data;
+
 typedef struct {
     unsigned int id;
     const char* display_name;

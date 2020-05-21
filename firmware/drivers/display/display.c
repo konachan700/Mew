@@ -2,7 +2,7 @@
 #include "debug.h"
 #include "../system/system.h"
 
-#define MEW_GD_BUF_SIZE ((LV_HOR_RES_MAX * LV_VER_RES_MAX) / 3)
+#define MEW_GD_BUF_SIZE ((LV_HOR_RES_MAX * LV_VER_RES_MAX) / 8)
 
 static void __mew_wait(void);
 static void __mew_cmd(void);

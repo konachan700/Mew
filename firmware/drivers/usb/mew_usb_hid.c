@@ -207,19 +207,28 @@ const struct usb_config_descriptor config = {
 
 /****************************************************************************************************/
 
+#define HID_GET_REPORT 		1
+#define HID_GET_IDLE		2
+#define HID_GET_PROTOCOL	3
+
+#define HID_SET_REPORT 		9
+#define HID_SET_IDLE		10
+#define HID_SET_PROTOCOL	11
+
 static struct {
 	uint8_t mod;
 	uint8_t reserved;
 	uint8_t keys[6];
 } boot_keys_report;
 
-
+static uint8_t
+		mew_kb_idle 	= 0,
+		mew_kb_proto 	= 1,
+		mew_kb_leds     = 0;
 
 usbd_device*		mew_hid_usbd_dev;
 uint8_t 			usbd_control_buffer[128];
 volatile uint8_t 	usb_hid_disable = 1;
-
-/****************************************************************************************************/
 
 static int hid_raw_control_request(usbd_device *usbd_dev, struct usb_setup_data *req, uint8_t **buf, uint16_t *len,
 			void (**complete)(usbd_device *usbd_dev, struct usb_setup_data *req)) {
@@ -234,7 +243,7 @@ static int hid_raw_control_request(usbd_device *usbd_dev, struct usb_setup_data 
 			*len = sizeof(hid_raw_report_descriptor);
 			return USBD_REQ_HANDLED;
 		case 0x2100:
-			*buf = (uint8_t *) hid_raw_function;
+			*buf = (uint8_t *) &hid_raw_function;
 			*len = sizeof(hid_raw_function);
 			return USBD_REQ_HANDLED;
 		}
@@ -252,58 +261,71 @@ static int hid_kb_control_request(usbd_device *usbd_dev, struct usb_setup_data *
 			if (req->bRequest == USB_REQ_GET_DESCRIPTOR) {
 				switch (req->wValue) {
 				case 0x2200:
-					*buf = (uint8_t *) hid_raw_report_descriptor;
-					*len = sizeof(hid_raw_report_descriptor);
+					*buf = (uint8_t *) keyboard_report_descriptor;
+					*len = sizeof(keyboard_report_descriptor);
 					return USBD_REQ_HANDLED;
 				case 0x2100:
-					*buf = (uint8_t *) hid_raw_function;
-					*len = sizeof(hid_raw_function);
+					*buf = (uint8_t *) &hid_kb_function;
+					*len = sizeof(hid_kb_function);
 					return USBD_REQ_HANDLED;
 				}
 			}
+			return USBD_REQ_NOTSUPP;
 		} else if ((req->bmRequestType & USB_REQ_TYPE_TYPE) == USB_REQ_TYPE_CLASS) {
-
+			switch (req->bRequest) {
+			case HID_GET_REPORT:
+				*buf = (uint8_t *) &boot_keys_report;
+				*len = sizeof(boot_keys_report);
+				return USBD_REQ_HANDLED;
+			case HID_GET_IDLE:
+				*buf = (uint8_t *) &mew_kb_idle;
+				*len = sizeof(mew_kb_idle);
+				return USBD_REQ_HANDLED;
+			case HID_GET_PROTOCOL:
+				*buf = (uint8_t *) &mew_kb_proto;
+				*len = sizeof(mew_kb_proto);
+				return USBD_REQ_HANDLED;
+			}
 		}
-
-
-
+		return USBD_REQ_NOTSUPP;
 	} else {
-
+		if ((req->bmRequestType & USB_REQ_TYPE_TYPE) == USB_REQ_TYPE_CLASS) {
+			switch (req->bRequest) {
+			case HID_SET_REPORT:
+				if (*len == 1) mew_kb_leds = (*buf)[0];
+				return USBD_REQ_HANDLED;
+			case HID_SET_IDLE:
+				mew_kb_idle = req->wValue >> 8;
+				return USBD_REQ_HANDLED;
+			case HID_SET_PROTOCOL:
+				mew_kb_proto = req->wValue;
+				return USBD_REQ_HANDLED;
+			}
+		}
 	}
-
-
-
-
 	return USBD_REQ_NOTSUPP;
 }
 
-
-
-
-
-
-
 static int hid_control_request(usbd_device *usbd_dev, struct usb_setup_data *req, uint8_t **buf, uint16_t *len,
 			void (**complete)(usbd_device *usbd_dev, struct usb_setup_data *req)) {
-	(void)complete;
-	(void)usbd_dev;
-
-	if ((req->bmRequestType != 0x81) || (req->bRequest != USB_REQ_GET_DESCRIPTOR) || (req->wValue != 0x2200))
-		return 0;
-
-	/* Handle the HID report descriptor. */
-	*buf = (uint8_t *)keyboard_report_descriptor;
-	*len = sizeof(keyboard_report_descriptor);
-
-	return 1;
+	switch (req->wIndex) {
+	case 0:
+		return hid_raw_control_request(usbd_dev, req, buf, len, complete);
+	case 1:
+		return hid_kb_control_request(usbd_dev, req, buf, len, complete);
+	}
+	return USBD_REQ_NEXT_CALLBACK;
 }
 
+/****************************************************************************************************/
 static void hid_set_config(usbd_device *usbd_dev, uint16_t wValue) {
 	(void)wValue;
-	(void)usbd_dev;
 
-	usbd_ep_setup(usbd_dev, 0x01, USB_ENDPOINT_ATTR_INTERRUPT, 8, NULL);
-	usbd_ep_setup(usbd_dev, 0x81, USB_ENDPOINT_ATTR_INTERRUPT, 8, NULL);
+	usbd_ep_setup(usbd_dev, 0x01, USB_ENDPOINT_ATTR_INTERRUPT, 64, NULL);
+	usbd_ep_setup(usbd_dev, 0x81, USB_ENDPOINT_ATTR_INTERRUPT, 64, NULL);
+
+	usbd_ep_setup(usbd_dev, 0x02, USB_ENDPOINT_ATTR_INTERRUPT, 8, NULL);
+	usbd_ep_setup(usbd_dev, 0x82, USB_ENDPOINT_ATTR_INTERRUPT, 8, NULL);
 
 	usbd_register_control_callback(
 				usbd_dev,
@@ -312,6 +334,7 @@ static void hid_set_config(usbd_device *usbd_dev, uint16_t wValue) {
 				hid_control_request);
 }
 
+/****************************************************************************************************/
 void mew_hid_usb_disable(void) {
     if (usb_hid_disable == 1) return;
     usb_hid_disable = 1;

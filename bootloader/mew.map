@@ -2242,12 +2242,12 @@ END GROUP
                 0x000000000800557c       0x15 ././drivers/usb/mew_usb_hid.o
                 0x000000000800557c                hid_iface
  *fill*         0x0000000008005591        0x3 
+ .rodata.hid_raw_report_descriptor
+                0x0000000008005594       0x1c ././drivers/usb/mew_usb_hid.o
+                0x0000000008005594                hid_raw_report_descriptor
  .rodata.ifaces
-                0x0000000008005594       0x10 ././drivers/usb/mew_usb_hid.o
-                0x0000000008005594                ifaces
- .rodata.keyboard_report_descriptor
-                0x00000000080055a4       0x1c ././drivers/usb/mew_usb_hid.o
-                0x00000000080055a4                keyboard_report_descriptor
+                0x00000000080055b0       0x10 ././drivers/usb/mew_usb_hid.o
+                0x00000000080055b0                ifaces
  .rodata.mew_hid_data_rx.str1.4
                 0x00000000080055c0       0x83 ././drivers/usb/mew_usb_hid.o
  *fill*         0x0000000008005643        0x1 
@@ -2916,7 +2916,7 @@ OUTPUT(.//mew.elf elf32-littlearm)
  .debug_line    0x0000000000009c88      0x2e3 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(pwr.o)
  .debug_line    0x0000000000009f6b      0x566 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usb_fx07_common.o)
 
-.debug_str      0x0000000000000000    0x1d68f
+.debug_str      0x0000000000000000    0x1d68e
  .debug_str     0x0000000000000000      0x541 ././mew.o
                                         0x676 (size before relaxing)
  .debug_str     0x0000000000000541      0x203 ././drivers/i2c/i2c.o
@@ -2927,75 +2927,75 @@ OUTPUT(.//mew.elf elf32-littlearm)
                                         0x768 (size before relaxing)
  .debug_str     0x00000000000009a9      0x59f ././drivers/display/display.o
                                         0xc07 (size before relaxing)
- .debug_str     0x0000000000000f48      0x7f7 ././drivers/usb/mew_usb_hid.o
-                                        0xf55 (size before relaxing)
- .debug_str     0x000000000000173f      0x278 ././drivers/spi_flash/flash.o
+ .debug_str     0x0000000000000f48      0x7f6 ././drivers/usb/mew_usb_hid.o
+                                        0xf54 (size before relaxing)
+ .debug_str     0x000000000000173e      0x278 ././drivers/spi_flash/flash.o
                                         0xb79 (size before relaxing)
- .debug_str     0x00000000000019b7       0x9e ././drivers/spi_flash/w25n01gvzeig.o
+ .debug_str     0x00000000000019b6       0x9e ././drivers/spi_flash/w25n01gvzeig.o
                                         0x6c4 (size before relaxing)
- .debug_str     0x0000000000001a55       0x31 ././drivers/flash/otp_storage.o
+ .debug_str     0x0000000000001a54       0x31 ././drivers/flash/otp_storage.o
                                         0x5ce (size before relaxing)
- .debug_str     0x0000000000001a86       0xf3 ././drivers/hw_crypt/aes256.o
+ .debug_str     0x0000000000001a85       0xf3 ././drivers/hw_crypt/aes256.o
                                         0x880 (size before relaxing)
- .debug_str     0x0000000000001b79       0x5e ././drivers/hw_crypt/sha2_256.o
+ .debug_str     0x0000000000001b78       0x5e ././drivers/hw_crypt/sha2_256.o
                                         0x660 (size before relaxing)
- .debug_str     0x0000000000001bd7       0xc2 ././drivers/system/systick.o
+ .debug_str     0x0000000000001bd6       0xc2 ././drivers/system/systick.o
                                         0x815 (size before relaxing)
- .debug_str     0x0000000000001c99       0x56 ././drivers/system/system.o
+ .debug_str     0x0000000000001c98       0x56 ././drivers/system/system.o
                                         0x757 (size before relaxing)
- .debug_str     0x0000000000001cef       0x5d ././drivers/system/random.o
+ .debug_str     0x0000000000001cee       0x5d ././drivers/system/random.o
                                         0x7b7 (size before relaxing)
- .debug_str     0x0000000000001d4c      0x644 ././drivers/system/clock.o
+ .debug_str     0x0000000000001d4b      0x644 ././drivers/system/clock.o
                                         0xd8a (size before relaxing)
- .debug_str     0x0000000000002390       0x64 ././debug.o
+ .debug_str     0x000000000000238f       0x64 ././debug.o
                                         0x6b7 (size before relaxing)
- .debug_str     0x00000000000023f4        0xe ././ui/mew_logo.o
+ .debug_str     0x00000000000023f3        0xe ././ui/mew_logo.o
                                         0x1bb (size before relaxing)
- .debug_str     0x0000000000002402        0xf ././ui/sync_logo.o
+ .debug_str     0x0000000000002401        0xf ././ui/sync_logo.o
                                         0x150 (size before relaxing)
- .debug_str     0x0000000000002411     0x85b8 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(rcc.o)
+ .debug_str     0x0000000000002410     0x85b8 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(rcc.o)
                                        0x88fe (size before relaxing)
- .debug_str     0x000000000000a9c9     0x2522 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(dma_common_f24.o)
+ .debug_str     0x000000000000a9c8     0x2522 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(dma_common_f24.o)
                                        0x709d (size before relaxing)
- .debug_str     0x000000000000ceeb     0x140b /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(gpio_common_all.o)
+ .debug_str     0x000000000000ceea     0x140b /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(gpio_common_all.o)
                                        0x5d05 (size before relaxing)
- .debug_str     0x000000000000e2f6       0x61 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(gpio_common_f0234.o)
+ .debug_str     0x000000000000e2f5       0x61 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(gpio_common_f0234.o)
                                        0x5d27 (size before relaxing)
- .debug_str     0x000000000000e357     0x12fe /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(i2c_common_v1.o)
+ .debug_str     0x000000000000e356     0x12fe /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(i2c_common_v1.o)
                                        0x8e40 (size before relaxing)
- .debug_str     0x000000000000f655     0x107f /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(spi_common_all.o)
+ .debug_str     0x000000000000f654     0x107f /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(spi_common_all.o)
                                        0x8efa (size before relaxing)
- .debug_str     0x00000000000106d4       0x41 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(spi_common_l1f124.o)
+ .debug_str     0x00000000000106d3       0x41 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(spi_common_l1f124.o)
                                        0x8862 (size before relaxing)
- .debug_str     0x0000000000010715     0x1301 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usart_common_all.o)
+ .debug_str     0x0000000000010714     0x1301 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usart_common_all.o)
                                        0x8d98 (size before relaxing)
- .debug_str     0x0000000000011a16       0x2d /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usart_common_f124.o)
+ .debug_str     0x0000000000011a15       0x2d /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usart_common_f124.o)
                                        0x8bac (size before relaxing)
- .debug_str     0x0000000000011a43       0x7e /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(flash_common_f234.o)
+ .debug_str     0x0000000000011a42       0x7e /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(flash_common_f234.o)
                                        0x5060 (size before relaxing)
- .debug_str     0x0000000000011ac1      0x1fd /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(flash_common_f24.o)
+ .debug_str     0x0000000000011ac0      0x1fd /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(flash_common_f24.o)
                                        0x5290 (size before relaxing)
- .debug_str     0x0000000000011cbe      0x52a /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(exti_common_all.o)
+ .debug_str     0x0000000000011cbd      0x52a /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(exti_common_all.o)
                                        0x6244 (size before relaxing)
- .debug_str     0x00000000000121e8      0x102 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(rcc_common_all.o)
+ .debug_str     0x00000000000121e7      0x102 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(rcc_common_all.o)
                                        0x8361 (size before relaxing)
- .debug_str     0x00000000000122ea     0x3208 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usb.o)
+ .debug_str     0x00000000000122e9     0x3208 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usb.o)
                                        0x716a (size before relaxing)
- .debug_str     0x00000000000154f2      0x2ef /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usb_standard.o)
+ .debug_str     0x00000000000154f1      0x2ef /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usb_standard.o)
                                        0x7301 (size before relaxing)
- .debug_str     0x00000000000157e1      0x1d0 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usb_control.o)
+ .debug_str     0x00000000000157e0      0x1d0 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usb_control.o)
                                        0x722a (size before relaxing)
- .debug_str     0x00000000000159b1     0x3381 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usb_f107.o)
+ .debug_str     0x00000000000159b0     0x3381 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usb_f107.o)
                                        0xebd7 (size before relaxing)
- .debug_str     0x0000000000018d32     0x2a45 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(vector.o)
+ .debug_str     0x0000000000018d31     0x2a45 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(vector.o)
                                        0x6371 (size before relaxing)
- .debug_str     0x000000000001b777      0x2eb /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(systick.o)
+ .debug_str     0x000000000001b776      0x2eb /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(systick.o)
                                        0x3c87 (size before relaxing)
- .debug_str     0x000000000001ba62      0x9cf /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(nvic.o)
+ .debug_str     0x000000000001ba61      0x9cf /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(nvic.o)
                                        0x4d1a (size before relaxing)
- .debug_str     0x000000000001c431        0x6 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(pwr.o)
+ .debug_str     0x000000000001c430        0x6 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(pwr.o)
                                        0x4c36 (size before relaxing)
- .debug_str     0x000000000001c437     0x1258 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usb_fx07_common.o)
+ .debug_str     0x000000000001c436     0x1258 /home/user/Devel/stm32/libopencm3/lib/libopencm3_stm32f4.a(usb_fx07_common.o)
                                        0xc71a (size before relaxing)
 
 .comment        0x0000000000000000       0xe3
